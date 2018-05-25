@@ -1,0 +1,76 @@
+<LimitText>:
+    max_characters: 18
+    input_filter: lambda text, from_undo: text[:self.max_characters - len(self.text)]
+    text: ''
+    size_hint: (2.2,1)
+    multiline: False
+    write_tab: False
+
+<Label>:
+    color: 0, 0, 0, 1
+
+<Button>:
+    color: 1, 1, 1, 1
+
+<LabelWidget>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        cols: 1
+        pos_hint: {'center': 1, 'top':1} 
+         
+        Image:
+            source: 'Images/Data_matrix.png'
+            size_hint_y: None
+            height: '70dp'
+            
+        
+        GridLayout:
+            cols : 2
+            rows : 4
+            padding: [10, 10]
+            pos_hint: {'left': 1, 'top':0.7}
+            row_force_default: True
+            row_default_height: '30dp'
+            
+            Label:
+                text: 'Text 1:'
+                
+            LimitText:
+                id: text1
+                text: ''
+                
+            Label:
+                text: 'Text 2:'
+                
+            LimitText:
+                id: text2
+                text: 'Test'
+                   
+            Label:
+                text: 'Text 3:'
+                
+            LimitText:
+                id: text3
+                
+            Label:
+                text: 'Text 4:'
+                
+            LimitText:
+                id: text4
+            
+    BoxLayout:
+        cols: 1     
+        pos_hint: {"right": 1, 'bottom':1}
+        row_force_default: True
+        row_default_height: '40dp'
+        Button:
+            id: print
+            size_hint:(.1,.1)
+            text: "Print label"
+            on_press: app.print_label()

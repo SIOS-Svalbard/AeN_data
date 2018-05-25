@@ -25,7 +25,7 @@ These dictionaries should then be added to the list called fields
 import datetime as dt
 
 __date__ = '2018-05-22'
-__updated__ = '2018-05-23'
+__updated__ = '2018-05-25'
 
 
 uuid = {'name': 'uuid',
@@ -239,11 +239,11 @@ Needs to be smaller than the deepest depth''',
 
 def make_string_dict(name):
     return {'name': name.lower(),
-            'disp_name': name.title(),
+            'disp_name': name.title().replace('_',' '),
             'valid': {
         'validate': 'any',
-        'input_title': name.title(),
-        'input_message': name.title()
+        'input_title': name.title().replace('_',' '),
+        'input_message': name.title().replace('_',' ')
     }
     }
 
@@ -370,7 +370,7 @@ filter = {'name': 'filter',
           'width': 15,
           'valid': {
               'validate': 'list',
-              'source': ['GFF', '10 µm'],
+              'source': ['None','GFF', '10 µm'],
               'input_title': 'Filter',
               'input_message': '''Choose the filter used''',
               'error_title': 'Error',
@@ -449,6 +449,25 @@ subsample_number = {'name': 'subsample_number',
                     }
                     }
 
+sample_owner = {'name': 'sample_owner',
+                    'disp_name': 'Sample Owner',
+                    'width': 24,
+                    'valid': {
+                        'validate': 'any',
+                        'criteria': '>',
+                        'value': 0,
+                        'input_title': 'Integer number of subsamples',
+                        'input_message': '''Integer > 0''',
+                        'error_title': 'Error',
+                        'error_message': 'Integer > 0'
+                    }
+                    }
+
+
+sample_owner = make_string_dict('sample_owner')
+sample_location = make_string_dict('sample_location')
+
+
 
 # List of all the available fields
 fields = [uuid, puuid, shipid, statid,
@@ -465,4 +484,4 @@ fields = [uuid, puuid, shipid, statid,
           filter_vol, methanol_vol,
           sample_vol, subsample_vol, subsample_number,
           colour, smell, description,
-          comment]
+          comment, sample_location, sample_owner]

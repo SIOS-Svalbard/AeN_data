@@ -130,7 +130,7 @@
 			<li>Number</li>
 		</fields>
 	</file>
-		<file name='Water'>
+	<file name='Water'>
 		<disp_name>Water</disp_name>
 		<fields>
 			<li>UUID</li>
@@ -141,14 +141,16 @@
 			<li>Depth</li>
 			<li>Filter</li>
 			<li>Filter_vol</li>
-			<li>Start_date</li>
-			<li>Start_time</li>
-			<li>End_date</li>
-			<li>End_time</li>
+<!-- 			<li>Start_date</li> -->
+<!-- 			<li>Start_time</li> -->
+<!-- 			<li>End_date</li> -->
+<!-- 			<li>End_time</li> -->
 			<li>Methanol_vol</li>
 			<li>Dilution_factor</li>
 			<li>Chlorophyll</li>
 			<li>Phaeo</li>
+			<li>Sample_owner</li>
+			<li>Sample_location</li>
 			<li>Comment</li>
 		</fields>
 	</file>

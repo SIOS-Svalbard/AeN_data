@@ -5,6 +5,7 @@
     size_hint: (2.2,1)
     multiline: False
     write_tab: False
+    inc_num: False
 
 <Label>:
     color: 0, 0, 0, 1
@@ -19,58 +20,95 @@
         Rectangle:
             pos: self.pos
             size: self.size
+            
+    AnchorLayout:
+        anchor_x:  'center'
+        anchor_y:  'top'
+        BoxLayout:
+            orientation:  'vertical'
+            Image:
+                source: 'Images/Data_matrix.png'
+                size_hint_y: None
+                height: '70dp'
+            
+            GridLayout:
+                cols : 4
+                size_hint: (1,0.2)
+                padding: [10, 10]
+                row_force_default: True
+                row_default_height: '30dp'
+                
+                Label:
+                    text: 'Line 1: Date'
+                
+                CheckBox:
+                    id: date
+                    color: 1,0,0,2
+                    on_active: root.activate_checkbox(self, 'date')
+                    
+                Label:
+                    text: 'Line 4: Increment'
+                
+                CheckBox:
+                    id: date
+                    color: 1,0,0,2
+                    on_active: root.activate_checkbox(self, 'inc_num')
 
-    GridLayout:
-        cols: 1
-        pos_hint: {'center': 1, 'top':1} 
-         
-        Image:
-            source: 'Images/Data_matrix.png'
-            size_hint_y: None
-            height: '70dp'
+
+            GridLayout:
+                cols : 2
+                padding: [10, 10]
+                row_force_default: True
+                row_default_height: '30dp'
+                
+                
+                Label:
+                    text: 'Text line 1:'
+                    
+                LimitText:
+                    id: text1
+                    text: ''
             
+                Label:
+                    text: 'Text line 2:'
+                    
+                LimitText:
+                    id: text2
+                    text: ''
+                       
+                Label:
+                    text: 'Text line 3:'
+                    
+                LimitText:
+                    id: text3
+                    
+                Label:
+                    text: 'Text line 4:'
+                    
+                LimitText:
+                    id: text4
+                
         
-        GridLayout:
-            cols : 2
-            rows : 4
-            padding: [10, 10]
-            pos_hint: {'left': 1, 'top':0.7}
-            row_force_default: True
-            row_default_height: '30dp'
-            
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: 'bottom'
+        BoxLayout:
+            height:  '50dp'
             Label:
-                text: 'Text 1:'
-                
-            LimitText:
-                id: text1
-                text: ''
-                
-            Label:
-                text: 'Text 2:'
-                
-            LimitText:
-                id: text2
-                text: 'Test'
-                   
-            Label:
-                text: 'Text 3:'
-                
-            LimitText:
-                id: text3
-                
-            Label:
-                text: 'Text 4:'
-                
-            LimitText:
-                id: text4
-            
-    BoxLayout:
-        cols: 1     
-        pos_hint: {"right": 1, 'bottom':1}
-        row_force_default: True
-        row_default_height: '40dp'
-        Button:
-            id: print
-            size_hint:(.1,.1)
-            text: "Print label"
-            on_press: app.print_label()
+                size_hint:(.1,.1)
+                text: '#N to print:'
+                    
+            TextInput:
+                id: number
+                size_hint:(.1,.1)
+                multiline: False
+                write_tab: False
+                input_filter: 'int'
+                text: '1'
+    
+                    
+            Button:
+                id: print_label
+                size_hint:(.1,.1)
+                text: "Print label"
+                on_press: app.print_label()

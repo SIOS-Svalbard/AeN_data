@@ -31,7 +31,7 @@ from io import BytesIO
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-02'
-__updated__ = '2018-05-22'
+__updated__ = '2018-05-23'
 
 DEBUG = 0
 
@@ -51,7 +51,7 @@ def new_hex_uuid():
 
 class QR(object):
     """
-    QR class for holding the paramters needed to generate the QR code
+    QR class for holding the parameters needed to generate the QR code
 
     """
 

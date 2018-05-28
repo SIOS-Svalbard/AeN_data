@@ -19,6 +19,8 @@
 import sys
 import os
 import uuid
+import warnings
+import datetime as dt
 
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
@@ -39,7 +41,7 @@ from kivy.config import Config
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-25'
-__updated__ = '2018-05-25'
+__updated__ = '2018-05-28'
 
 DEBUG = 1
 TESTRUN = 0
@@ -82,11 +84,21 @@ def create_label(uuid, text1, text2, text3, text4):
 
 class LimitText(TextInput):
     max_characters = NumericProperty(0)
+    inc_num = BooleanProperty(0)
 
 
-class LabelWidget(AnchorLayout):
+class LabelWidget(FloatLayout):
 
-    pass
+    def activate_checkbox(self, checkbox, id):
+        if id == 'date':
+
+            self.ids.text1.text = checkbox.active * dt.date.today().isoformat()
+        elif id == 'test':
+
+            self.ids.text2.text = checkbox.active * 'This is a test'
+        elif id == 'inc_num':
+
+            self.ids.text4.inc_num = True
 
 
 class LabelApp(App):
@@ -102,8 +114,17 @@ class LabelApp(App):
         text2 = self.widget.ids.text2.text
         text3 = self.widget.ids.text3.text
         text4 = self.widget.ids.text4.text
+        for n in range(int(self.widget.ids.number.text)):
 
-        create_label(new_hex_uuid(), text1, text2, text3, text4)
+            zpl = create_label(new_hex_uuid(), text1, text2, text3, text4)
+            # Increase number on prints
+            if self.widget.ids.text4.inc_num:
+                try:
+                    text4 = str(int(text4) + 1)
+                    self.widget.ids.text4.text = text4
+                except ValueError:
+                    warnings.warn(
+                        "WARNING: Text line 4 is not a number, can't increment", UserWarning)
 
 
 def main(argv=None):  # IGNORE:C0111
@@ -111,8 +132,8 @@ def main(argv=None):  # IGNORE:C0111
 
     try:
         args = parse_options()
-        Config.set('graphics', 'width', '300')
-        Config.set('graphics', 'height', '300')
+        Config.set('graphics', 'width', '400')
+        Config.set('graphics', 'height', '400')
         Config.write()
         LabelApp().run()
         return 0

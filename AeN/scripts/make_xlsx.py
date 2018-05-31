@@ -18,7 +18,7 @@ from os.path import os
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-05-23'
+__updated__ = '2018-05-31'
 DEBUG = 1
 
 
@@ -144,6 +144,67 @@ def read_xml(args, xmlfile):
     return files
 
 
+def write_metadata(args, workbook, field_dict):
+    """
+    Adds a metadata sheet to workbook
+
+    Parameters
+    ----------
+    args : argparse object
+        The input arguments
+
+    workbook : xlsxwriter Workbook
+        The workbook for the metadata sheet
+
+    field_dict : dict
+        Contains a dictionary of Field objects and their name, made with 
+        make_dict_of _fields()
+
+    """
+
+    sheet = workbook.add_worksheet('Metadata')
+
+    metadata_fields = ['title', 'abstract', 'pi_name', 'pi_email', 'pi_institution',
+                       'pi_address', 'project_long',
+                       'project_short']
+
+    parameter_format = workbook.add_format({
+        'right': True,
+        'bold': True,
+        'text_wrap': True,
+        'valign': 'left',
+        'indent': 1,
+        'font_size': 12
+    })
+    input_format = workbook.add_format({
+        'bold': False,
+        'text_wrap': True,
+        'valign': 'left',
+        'indent': 1
+    })
+
+    heigth = 15
+    sheet.set_column(0, 0, width=30)
+    sheet.set_column(1, 1, width=50)
+    for ii, mfield in enumerate(metadata_fields):
+        field = field_dict[mfield]
+        sheet.write(ii, 0, field.disp_name, parameter_format)
+        sheet.write(ii, 1, '', input_format)
+        sheet.set_row(ii, heigth)
+        if field.validation is not None:
+            if args.verbose > 0:
+                print("Writing metadata validation")
+            sheet.data_validation(first_row=ii,
+                                  first_col=1,
+                                  last_row=ii,
+                                  last_col=1,
+                                  options=field.validation)
+            if field.cell_format is not None:
+                cell_format = workbook.add_format(field.cell_format)
+                sheet.set_row(
+                    ii, ii, cell_format=cell_format)
+
+
 def make_xlsx(args, file, field_dict):
     """
     Writes the xlsx file based on the the wanted fields
@@ -164,7 +225,10 @@ def make_xlsx(args, file, field_dict):
 
     output = os.path.join(args.dir, file['name'] + '.xlsx')
     workbook = xlsxwriter.Workbook(output)
-    worksheet = workbook.add_worksheet('Data')
+
+    write_metadata(args, workbook, field_dict)
+    # Create sheet for data
+    data_sheet = workbook.add_worksheet('Data')
 
     header_format = workbook.add_format({
         #         'bg_color': '#C6EFCE',
@@ -191,31 +255,31 @@ def make_xlsx(args, file, field_dict):
         field = field_dict[file['fields'][ii]]  # Get the wanted field object
 
         # Write title row
-        worksheet.write(title_row, ii, field.disp_name, field_format)
+        data_sheet.write(title_row, ii, field.disp_name, field_format)
         if field.validation is not None:
             if args.verbose > 0:
                 print("Writing validation for", file['fields'][ii])
-            worksheet.data_validation(first_row=start_row,
-                                      first_col=ii,
-                                      last_row=end_row,
-                                      last_col=ii,
-                                      options=field.validation)
+            data_sheet.data_validation(first_row=start_row,
+                                       first_col=ii,
+                                       last_row=end_row,
+                                       last_col=ii,
+                                       options=field.validation)
         if field.cell_format is not None:
             cell_format = workbook.add_format(field.cell_format)
-            worksheet.set_column(
+            data_sheet.set_column(
                 ii, ii, width=field.width, cell_format=cell_format)
         else:
-            worksheet.set_column(first_col=ii, last_col=ii, width=field.width)
+            data_sheet.set_column(first_col=ii, last_col=ii, width=field.width)
 
     # Add header, done after the other to get correct format
-    worksheet.write(0, 0, 'Measurement', header_format)
-    worksheet.merge_range(0, 1, 0, 2, file['disp_name'], header_format)
+    data_sheet.write(0, 0, 'Measurement', header_format)
+    data_sheet.merge_range(0, 1, 0, 2, file['disp_name'], header_format)
 
-    worksheet.write(1, 0, 'Name', header_format)
-    worksheet.merge_range(1, 1, 1, 2, '', header_format)
+    data_sheet.write(1, 0, 'Name', header_format)
+    data_sheet.merge_range(1, 1, 1, 2, '', header_format)
 
-    worksheet.set_row(0, height=24)
-    worksheet.set_row(1, height=24)
+    data_sheet.set_row(0, height=24)
+    data_sheet.set_row(1, height=24)
 
     workbook.close()
 

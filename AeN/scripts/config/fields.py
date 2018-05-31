@@ -25,7 +25,7 @@ These dictionaries should then be added to the list called fields
 import datetime as dt
 
 __date__ = '2018-05-22'
-__updated__ = '2018-05-25'
+__updated__ = '2018-05-31'
 
 
 uuid = {'name': 'uuid',
@@ -449,23 +449,39 @@ subsample_number = {'name': 'subsample_number',
                     }
                     }
 
-sample_owner = {'name': 'sample_owner',
-                    'disp_name': 'Sample Owner',
-                    'width': 24,
-                    'valid': {
-                        'validate': 'any',
-                        'criteria': '>',
-                        'value': 0,
-                        'input_title': 'Integer number of subsamples',
-                        'input_message': '''Integer > 0''',
-                        'error_title': 'Error',
-                        'error_message': 'Integer > 0'
-                    }
-                    }
+
 
 
 sample_owner = make_string_dict('sample_owner')
 sample_location = make_string_dict('sample_location')
+
+# For metadata fields
+
+title = make_string_dict('title')
+title['valid']['input_message'] = 'A short descriptive title of the dataset'
+
+abstract = make_string_dict('abstract')
+abstract['valid']['input_message'] ='An abstract providing context for the dataset'
+
+pi_name = make_string_dict('pi_name')
+pi_name['disp_name'] = 'Principal investigator (PI)'
+
+pi_email = make_string_dict('pi_email')
+pi_email['disp_name'] = 'PI email'
+
+pi_institution = make_string_dict('pi_institution')
+pi_institution['disp_name'] = 'PI institution'
+
+pi_address = make_string_dict('pi_address')
+pi_address['disp_name'] = 'PI address'
+
+project_long = make_string_dict('project_long')
+project_long['disp_name'] = 'Project long name'
+
+project_short = make_string_dict('project_short')
+project_short['disp_name'] = 'Project short name'
+
+
 
 
 
@@ -484,4 +500,7 @@ fields = [uuid, puuid, shipid, statid,
           filter_vol, methanol_vol,
           sample_vol, subsample_vol, subsample_number,
           colour, smell, description,
-          comment, sample_location, sample_owner]
+          comment, sample_location, sample_owner,
+          title, abstract,
+          pi_name, pi_email, pi_institution, pi_address,
+          project_long, project_short]

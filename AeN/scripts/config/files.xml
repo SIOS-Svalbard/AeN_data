@@ -148,7 +148,7 @@
 		</fields>
 	</file>
 	<file name='Ice_samples'>
-		<disp_name>Water samples</disp_name>
+		<disp_name>Ice samples</disp_name>
 		<fields>
 			<li>UUID</li>
 			<li>SHIPID</li>
@@ -156,8 +156,6 @@
 			<li>Date</li>
 			<li>Depth</li>
 			<li>Water_measurement</li>
-			<li>Filter</li>
-			<li>Filter_vol</li>
 			<li>Sample_vol</li>
 			<li>Sample_owner</li>
 			<li>Storage_temp</li>

@@ -18,6 +18,7 @@
 
 import sys
 import os
+import time
 import uuid
 import warnings
 import datetime as dt
@@ -41,7 +42,7 @@ from kivy.config import Config
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-25'
-__updated__ = '2018-05-28'
+__updated__ = '2018-06-04'
 
 DEBUG = 1
 TESTRUN = 0
@@ -50,7 +51,7 @@ PROFILE = 0
 
 def new_hex_uuid():
     """
-    Generate a new hex UUID based on the host ID and time
+    Generate a new hex UUID based on the host MAC address and time
 
     Returns
     ----------
@@ -61,7 +62,35 @@ def new_hex_uuid():
 
 
 def create_label(uuid, text1, text2, text3, text4):
+    """
+    Creates the ZPL code for the label.
+    Adds a text with the 8 first chracters from the uuid for ease of reading
 
+    Parameters
+    ----------
+    uuid : str
+        The 32 characters hex uuid
+
+    text1 : str
+        First line of text, limited to 18 characters
+
+    text2 : str
+        Second line of text, limited to 18 characters
+
+    text3 : str
+        Third line of text, limited to 18 characters
+
+    text4 : str
+        Fourth line of text, limited to 18 characters    
+
+    Returns
+    ----------
+    zpl : str
+        The formatted ZPL code string that should be sent to the Zebra printer 
+    """
+
+    # This uses a template made with ZebraDesigner, replacing the variables
+    # with the necessary text {X}.
     zpl = '''
     CT~~CD,~CC^~CT~
     ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD15^JUS^LRN^CI0^XZ
@@ -76,13 +105,27 @@ def create_label(uuid, text1, text2, text3, text4):
     ^FT8,231^A0N,21,21^FH\^FD{3}^FS
     ^FT9,198^A0N,21,21^FH\^FD{2}^FS
     ^FT9,166^A0N,21,21^FH\^FD{1}^FS
-    ^PQ1,0,1,Y^XZ'''.format(uuid, text1, text2, text3, text4)
+    ^FT8,27^A0R,21,21^FH\^FD{5}^FS
+    ^PQ1,0,1,Y^XZ'''.format(uuid, text1, text2, text3, text4, uuid[:8])
 
     print(zpl)
     return zpl
 
 
 class LimitText(TextInput):
+    """
+    Overriding TextInput to enable a limited length text field
+
+    Properties
+    ----------
+
+    max_characters : int
+        The max number of characters
+
+    inc_num : Boolean
+        Should the number be increased after a run
+    """
+
     max_characters = NumericProperty(0)
     inc_num = BooleanProperty(0)
 
@@ -125,6 +168,8 @@ class LabelApp(App):
                 except ValueError:
                     warnings.warn(
                         "WARNING: Text line 4 is not a number, can't increment", UserWarning)
+
+                    time.sleep(seconds / 1e6)  # Wait 1 us
 
 
 def main(argv=None):  # IGNORE:C0111

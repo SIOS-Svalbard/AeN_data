@@ -25,7 +25,7 @@ These dictionaries should then be added to the list called fields
 import datetime as dt
 
 __date__ = '2018-05-22'
-__updated__ = '2018-05-31'
+__updated__ = '2018-06-04'
 
 
 uuid = {'name': 'uuid',
@@ -322,6 +322,61 @@ sample_type = {'name': 'sample_type',
                }
                }
 
+water_measurement = {'name': 'water_measurement',
+               'disp_name': 'Measurement type',
+               'width': 20,
+               'long_list': True,
+               'valid': {
+                   'validate': 'list',
+                   'source': [
+                       'deltaO18',
+                       'DIC (total dissolved inorganic carbon)',
+                       'AT (total alkalinity)',
+                       'pH',
+                       'POC/PON',
+                       'CDOM',
+                       'Trace elements',
+                       'XRF',
+                       'TOC',
+                       'DOC',
+                       'Protists large volume',
+                       'Protists small volume',
+                       'mRNA /bacteria',
+                       'DNA protists/bacteria',
+                       'RNA protists/bacteria',
+                       'Pigments',
+                       'SEM coccolithophores',
+                       'Protists culturing',
+                       'Bacterial production',
+                       'Flow cytometry',
+                       'Viral concentration',
+                       'Viral production and decay'
+                       ],
+                   'input_title': 'Measurement type',
+                   'input_message': '''Choose the intended type of measurement for this sample''',
+                   'error_title': 'Error',
+                   'error_message': 'Not a valid measurement type'
+               }
+               }
+
+storage_temp  = {'name': 'storage_temp',
+               'disp_name': 'Storage temp',
+               'width': 15,
+               'valid': {
+                   'validate': 'list',
+                   'source': [
+                       '-196 ᵒC (LN)',
+                       '-80 ᵒC',
+                       '-20 ᵒC',
+                       'Cool room',
+                       'Room temp' ],
+                   'input_title': 'Storage temperature',
+                   'input_message': '''Choose the necessary storage temperature''',
+                   'error_title': 'Error',
+                   'error_message': 'Not a valid storage temperature'
+               }
+               }
+
 dilution_factor = {'name': 'dilution_factor',
                    'disp_name': 'Dilution factor',
                    'width': 20,
@@ -372,7 +427,8 @@ filter = {'name': 'filter',
               'validate': 'list',
               'source': ['None','GFF', '10 µm'],
               'input_title': 'Filter',
-              'input_message': '''Choose the filter used''',
+              'input_message': '''Choose the filter used.
+If no filtering is being done choose None''',
               'error_title': 'Error',
               'error_message': 'Not a valid filter'
           }
@@ -453,7 +509,7 @@ subsample_number = {'name': 'subsample_number',
 
 
 sample_owner = make_string_dict('sample_owner')
-sample_location = make_string_dict('sample_location')
+
 
 # For metadata fields
 
@@ -493,14 +549,14 @@ fields = [uuid, puuid, shipid, statid,
           depth, deepest_depth, shallowest_depth,
           taxon, phylum, classify, order, family,
           species, number, abundance,
-          sample_type, filter,
+          sample_type, water_measurement, filter,
           chlorophyll, phaeo,
           dilution_factor,
           mass,
           filter_vol, methanol_vol,
           sample_vol, subsample_vol, subsample_number,
           colour, smell, description,
-          comment, sample_location, sample_owner,
+          comment, storage_temp, sample_owner,
           title, abstract,
           pi_name, pi_email, pi_institution, pi_address,
           project_long, project_short]

@@ -18,8 +18,12 @@ from os.path import os
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-05-31'
+__updated__ = '2018-06-04'
+
 DEBUG = 1
+
+DEFAULT_FONT = 'Calibri'
+DEFAULT_SIZE = 10
 
 
 class Field(object):
@@ -41,6 +45,8 @@ class Field(object):
         self.disp_name = disp_name  # Title of column
         self.cell_format = None  # For holding the formating of the cell
         self.validation = None  # For holding the validation of the cell
+        self.long_list = False  # For holding the need for an entry in the
+        # variables sheet
         self.width = 20
 
     def set_validation(self, validation):
@@ -80,6 +86,83 @@ class Field(object):
         """
         self.width = width
 
+    def set_long_list(self, long_list):
+        """
+        Set the need for moving the source in the list to a cell range in the
+        variables sheet
+
+        Parameters
+        ----------
+        long_list : Boolean
+            True for enabling the long list.
+
+
+        """
+        self.long_list = long_list
+
+
+class Variable_sheet(object):
+    """
+    Class for handling the variable sheet
+
+    """
+
+    def __init__(self, workbook):
+        """
+        Initialises the sheet
+
+        Parameters
+        ----------
+        workbook: Xlsxwriter workbook
+            The parent workbook where the sheet is added
+
+        """
+        self.workbook = workbook
+        self.name = 'Variables'  # The name of the worksheet
+        self.sheet = workbook.add_worksheet(self.name)
+        self.sheet.hide()  # Hide the sheet
+        # For holding the current row to add variables on
+        self.current_column = 0
+
+    def add_row(self, variable, parameter_list):
+        """
+        Adds a row of parameters to a variable and returns the ref for the list
+
+        Parameters
+        ----------
+        variable : str
+            The name of the variable
+
+        parameter_list : 
+            List of paramters to be added
+
+        Returns
+        ----------
+        ref : str
+            The range of the list in Excel format
+        """
+
+#         print(parameter_list)
+        self.sheet.write(0, self.current_column, variable)
+        name = 'Table_' + variable.replace(' ', '_').capitalize()
+
+        tab = self.sheet.add_table(
+            1, self.current_column,
+            1 + len(parameter_list), self.current_column,
+            {'name': name,
+                'header_row': 0}
+        )
+#         print(tab.properties['name'])
+        #
+
+        for ii, par in enumerate(sorted(parameter_list, key=str.lower)):
+            self.sheet.write(1 + ii, self.current_column, par)
+        ref = '=INDIRECT("' + name + '")'
+
+        # Increment row such that the next gets a new row
+        self.current_column = self.current_column + 1
+        return ref
+
 
 def make_dict_of_fields():
     """
@@ -105,6 +188,8 @@ def make_dict_of_fields():
             new.set_cell_format(field['cell_format'])
         if 'width' in field:
             new.set_width(field['width'])
+        if 'long_list' in field:
+            new.set_long_list(field['long_list'])
 
         field_dict[field['name']] = new
     return field_dict
@@ -169,18 +254,21 @@ def write_metadata(args, workbook, field_dict):
                        'project_short']
 
     parameter_format = workbook.add_format({
+        'font_name': DEFAULT_FONT,
         'right': True,
-        'bold': True,
-        'text_wrap': True,
-        'valign': 'left',
-        'indent': 1,
-        'font_size': 12
-    })
-    input_format = workbook.add_format({
+        'bottom': True,
         'bold': False,
         'text_wrap': True,
         'valign': 'left',
-        'indent': 1
+        'font_size': DEFAULT_SIZE + 2,
+        'bg_color': '#B9F6F5',
+    })
+    input_format = workbook.add_format({
+        'bold': False,
+        'font_name': DEFAULT_FONT,
+        'text_wrap': True,
+        'valign': 'left',
+        'font_size': DEFAULT_SIZE
     })
 
     heigth = 15
@@ -226,28 +314,37 @@ def make_xlsx(args, file, field_dict):
     output = os.path.join(args.dir, file['name'] + '.xlsx')
     workbook = xlsxwriter.Workbook(output)
 
+    # Set font
+    workbook.formats[0].set_font_name(DEFAULT_FONT)
+    workbook.formats[0].set_font_size(DEFAULT_SIZE)
+
     write_metadata(args, workbook, field_dict)
     # Create sheet for data
     data_sheet = workbook.add_worksheet('Data')
+    variable_sheet_obj = Variable_sheet(workbook)
 
     header_format = workbook.add_format({
         #         'bg_color': '#C6EFCE',
-        'bold': True,
+        'font_name': DEFAULT_FONT,
+        'bold': False,
         'text_wrap': False,
         'valign': 'vcenter',
-        'indent': 1,
-        'font_size': 12
+        #         'indent': 1,
+        'font_size': DEFAULT_SIZE + 2
     })
 
     field_format = workbook.add_format({
+        'font_name': DEFAULT_FONT,
         'bottom': True,
-        'bold': True,
+        'right': True,
+        'bold': False,
         'text_wrap': True,
         'valign': 'vcenter',
-        'indent': 1,
+        'font_size': DEFAULT_SIZE + 1,
+        'bg_color': '#B9F6F5'
     })
 
-    title_row = 3  # starting row
+    title_row = 2  # starting row
     start_row = title_row + 1
     end_row = 20000  # ending row
 
@@ -259,12 +356,34 @@ def make_xlsx(args, file, field_dict):
         if field.validation is not None:
             if args.verbose > 0:
                 print("Writing validation for", file['fields'][ii])
-            data_sheet.data_validation(first_row=start_row,
-                                       first_col=ii,
-                                       last_row=end_row,
-                                       last_col=ii,
-                                       options=field.validation)
+
+            if field.long_list:
+                # We need to add the data to the validation sheet
+                # Copying the dict as we need to modify it
+                valid_copy = field.validation.copy()
+
+                # Add the validation variable to the hidden sheet
+                ref = variable_sheet_obj.add_row(
+                    field.name, valid_copy['source'])
+                valid_copy.pop('source', None)
+                valid_copy['value'] = ref
+                data_sheet.data_validation(first_row=start_row,
+                                           first_col=ii,
+                                           last_row=end_row,
+                                           last_col=ii,
+                                           options=valid_copy)
+            else:
+
+                data_sheet.data_validation(first_row=start_row,
+                                           first_col=ii,
+                                           last_row=end_row,
+                                           last_col=ii,
+                                           options=field.validation)
         if field.cell_format is not None:
+            if not('font_name' in field.cell_format):
+                field.cell_format['font_name'] = DEFAULT_FONT
+            if not('font_size' in field.cell_format):
+                field.cell_format['font_size'] = DEFAULT_SIZE
             cell_format = workbook.add_format(field.cell_format)
             data_sheet.set_column(
                 ii, ii, width=field.width, cell_format=cell_format)
@@ -272,15 +391,19 @@ def make_xlsx(args, file, field_dict):
             data_sheet.set_column(first_col=ii, last_col=ii, width=field.width)
 
     # Add header, done after the other to get correct format
-    data_sheet.write(0, 0, 'Measurement', header_format)
-    data_sheet.merge_range(0, 1, 0, 2, file['disp_name'], header_format)
-
-    data_sheet.write(1, 0, 'Name', header_format)
-    data_sheet.merge_range(1, 1, 1, 2, '', header_format)
+    data_sheet.write(0, 0, file['disp_name'], header_format)
 
     data_sheet.set_row(0, height=24)
-    data_sheet.set_row(1, height=24)
 
+    # Freeze the rows at the top
+    data_sheet.freeze_panes(start_row, 0)
+
+    # Colour the rows alternating
+#     row_col = workbook.add_format({'bg_color': '#F7FFFF'})
+#
+#     for row in range(start_row, int(end_row / 100), 2):
+#         data_sheet.set_row(row, cell_format=row_col)
+#         worksheet.write(row, 0, '')
     workbook.close()
 
 

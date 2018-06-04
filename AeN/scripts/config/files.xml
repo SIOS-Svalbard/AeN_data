@@ -44,8 +44,8 @@
 			<li>Comment</li>
 		</fields>
 	</file>
-	<file name='Zooplankton_whole'>
-		<disp_name>Zooplankton Whole</disp_name>
+	<file name='Zooplankton_whole_data'>
+		<disp_name>Zooplankton Whole Data</disp_name>
 		<fields>
 			<li>UUID</li>
 			<li>SHIPID</li>
@@ -86,8 +86,8 @@
 			<li>Number</li>
 		</fields>
 	</file>
-	<file name='Zooplankton_subsample'>
-		<disp_name>Zooplankton Subsample</disp_name>
+	<file name='Zooplankton_subsample_data'>
+		<disp_name>Zooplankton Subsample Data</disp_name>
 		<fields>
 			<li>UUID</li>
 			<li>PUUID</li>
@@ -130,28 +130,48 @@
 			<li>Number</li>
 		</fields>
 	</file>
-	<file name='Water'>
-		<disp_name>Water</disp_name>
+	<file name='Water_samples'>
+		<disp_name>Water samples</disp_name>
 		<fields>
 			<li>UUID</li>
 			<li>SHIPID</li>
 			<li>STATID</li>
 			<li>Date</li>
-			<li>Sample_type</li>
 			<li>Depth</li>
+			<li>Water_measurement</li>
 			<li>Filter</li>
 			<li>Filter_vol</li>
-<!-- 			<li>Start_date</li> -->
-<!-- 			<li>Start_time</li> -->
-<!-- 			<li>End_date</li> -->
-<!-- 			<li>End_time</li> -->
-			<li>Methanol_vol</li>
-			<li>Dilution_factor</li>
-			<li>Chlorophyll</li>
-			<li>Phaeo</li>
+			<li>Sample_vol</li>
 			<li>Sample_owner</li>
-			<li>Sample_location</li>
+			<li>Storage_temp</li>
+			<li>Comment</li>
+		</fields>
+	</file>
+	<file name='Ice_samples'>
+		<disp_name>Water samples</disp_name>
+		<fields>
+			<li>UUID</li>
+			<li>SHIPID</li>
+			<li>STATID</li>
+			<li>Date</li>
+			<li>Depth</li>
+			<li>Water_measurement</li>
+			<li>Filter</li>
+			<li>Filter_vol</li>
+			<li>Sample_vol</li>
+			<li>Sample_owner</li>
+			<li>Storage_temp</li>
 			<li>Comment</li>
 		</fields>
 	</file>
 </config>
+
+<!-- 			<li>Sample_type</li> -->
+<!-- 			<li>Start_date</li> -->
+<!-- 			<li>Start_time</li> -->
+<!-- 			<li>End_date</li> -->
+<!-- 			<li>End_time</li> -->
+<!-- 			<li>Methanol_vol</li> -->
+<!-- 			<li>Dilution_factor</li> -->
+<!-- 			<li>Chlorophyll</li> -->
+<!-- 			<li>Phaeo</li> -->

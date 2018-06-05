@@ -1,4 +1,4 @@
-#!/usr/local/bin/python2.7
+#!/usr/bin/env python3
 # encoding: utf-8
 '''
  -- Creates and prints labels for AeN

@@ -6,19 +6,19 @@
 			<li>UUID</li>
 			<li>SHIPID</li>
 			<li>STATID</li>
-			<li>Date</li>
-			<li>Time</li>
-			<li>Lat</li>
-			<li>Long</li>
-			<li>Depth</li>
+			<li>EventDate</li>
+			<li>eventTime</li>
+			<li>DecimalLatitude</li>
+			<li>DecimalLongitude</li>
+			<li>DepthInMeters</li>
 			<li>Taxon</li>
 			<li>Phylum</li>
-			<li>Classify</li>
+			<li>Class</li>
 			<li>Order</li>
 			<li>Family</li>
-			<li>Abundance</li>
-			<li>Mass</li>
-			<li>Comment</li>
+			<li>individualCount</li>
+			<li>WeightInGrams</li>
+			<li>occurrenceRemarks</li>
 		</fields>
 	</file>
 	<file name='Benthos_grab'>
@@ -27,21 +27,21 @@
 			<li>UUID</li>
 			<li>SHIPID</li>
 			<li>STATID</li>
-			<li>Date</li>
-			<li>Time</li>
-			<li>Lat</li>
-			<li>Long</li>
-			<li>Depth</li>
+			<li>EventDate</li>
+			<li>eventTime</li>
+			<li>DecimalLatitude</li>
+			<li>DecimalLongitude</li>
+			<li>DepthInMeters</li>
 			<li>Taxon</li>
 			<li>Phylum</li>
-			<li>Classify</li>
+			<li>Class</li>
 			<li>Order</li>
 			<li>Family</li>
-			<li>Abundance</li>
+			<li>individualCount</li>
 			<li>Colour</li>
 			<li>Smell</li>
 			<li>Description</li>
-			<li>Comment</li>
+			<li>occurrenceRemarks</li>
 		</fields>
 	</file>
 	<file name='Zooplankton_whole_data'>
@@ -50,40 +50,40 @@
 			<li>UUID</li>
 			<li>SHIPID</li>
 			<li>STATID</li>
-			<li>Date</li>
-			<li>Deepest_depth</li>
-			<li>Shallowest_depth</li>
-			<li>Comment</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
+			<li>EventDate</li>
+			<li>maximumDepthInMeters</li>
+			<li>minimumDepthInMeters</li>
+			<li>occurrenceRemarks</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
 		</fields>
 	</file>
 	<file name='Zooplankton_subsample_data'>
@@ -93,41 +93,41 @@
 			<li>PUUID</li>
 			<li>SHIPID</li>
 			<li>STATID</li>
-			<li>Date</li>
+			<li>EventDate</li>
 			<li>Sample_vol</li>
 			<li>Subsample_vol</li>
 			<li>Subsample_number</li>
-			<li>Comment</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
-			<li>Species</li>
-			<li>Number</li>
+			<li>occurrenceRemarks</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
+			<li>ScientificName</li>
+			<li>individualCount</li>
 		</fields>
 	</file>
 	<file name='Water_samples'>
@@ -136,15 +136,15 @@
 			<li>UUID</li>
 			<li>SHIPID</li>
 			<li>STATID</li>
-			<li>Date</li>
-			<li>Depth</li>
+			<li>EventDate</li>
+			<li>DepthInMeters</li>
 			<li>Water_measurement</li>
 			<li>Filter</li>
 			<li>Filter_vol</li>
 			<li>Sample_vol</li>
 			<li>Sample_owner</li>
 			<li>Storage_temp</li>
-			<li>Comment</li>
+			<li>occurrenceRemarks</li>
 		</fields>
 	</file>
 	<file name='Ice_samples'>
@@ -153,13 +153,13 @@
 			<li>UUID</li>
 			<li>SHIPID</li>
 			<li>STATID</li>
-			<li>Date</li>
-			<li>Depth</li>
+			<li>EventDate</li>
+			<li>DepthInMeters</li>
 			<li>Water_measurement</li>
 			<li>Sample_vol</li>
 			<li>Sample_owner</li>
 			<li>Storage_temp</li>
-			<li>Comment</li>
+			<li>occurrenceRemarks</li>
 		</fields>
 	</file>
 </config>

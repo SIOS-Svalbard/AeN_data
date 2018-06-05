@@ -18,7 +18,7 @@ from os.path import os
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-06-04'
+__updated__ = '2018-06-05'
 
 DEBUG = 1
 
@@ -41,7 +41,7 @@ class Field(object):
         name : str
                The name of the cell column
         """
-        self.name = name  # Name of object
+        self.name = name.lower()  # Name of object
         self.disp_name = disp_name  # Title of column
         self.cell_format = None  # For holding the formating of the cell
         self.validation = None  # For holding the validation of the cell
@@ -180,6 +180,8 @@ def make_dict_of_fields():
 
     field_dict = {}
     for field in fields.fields:
+        # Ensure that we are only working with lower case
+        field['name'] = field['name'].lower()
         new = Field(field['name'], field['disp_name'])
         if 'valid' in field:
             new.set_validation(field['valid'])
@@ -220,7 +222,7 @@ def read_xml(args, xmlfile):
         print("Reading")
     for file in e.findall('file'):
         new = {}
-        new['name'] = file.attrib['name']
+        new['name'] = file.attrib['name'].lower()
         new['disp_name'] = file.find('disp_name').text
         new['fields'] = [
             child.text.lower() for child in file.find('fields').getchildren()]
@@ -349,7 +351,8 @@ def make_xlsx(args, file, field_dict):
     end_row = 20000  # ending row
 
     for ii in range(len(file['fields'])):  # Loop over all the variables needed
-        field = field_dict[file['fields'][ii]]  # Get the wanted field object
+        # Get the wanted field object
+        field = field_dict[file['fields'][ii]]
 
         # Write title row
         data_sheet.write(title_row, ii, field.disp_name, field_format)

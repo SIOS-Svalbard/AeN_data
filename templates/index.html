@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>DwC Excel Template Generator</title>
+<style>
+body { font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif; width: 90%; margin: 0 auto; }
+fieldset { margin-top: 1em; }
+fieldset label { display: block; float: left; width: 24em; margin-right: 1em; }
+fieldset legend { font-weight: bold; text-transform: uppercase; }
+fieldset { user-select: none; }
+main { width: 60%; }
+aside { height: 100%; width: 35%; position: fixed; right: 0; top: 0; border-left: 2px solid #aaa; padding-left: 1em; padding-right: 2em; background: #fcfcfc; }
+
+#select-language { float: right; }
+</style>
+<script>
+function emptySidebar() {
+  var terms = document.getElementsByClassName("term");
+  for(var i = 0; i < terms.length; i++) {
+    terms[i].style.display = 'none';
+  }
+}
+document.addEventListener("DOMContentLoaded", function(e) {
+  emptySidebar();
+  var inputs = document.getElementsByTagName('label');
+  for(var i = 0; i < inputs.length; i++) {
+    inputs[i].onmouseover = function(e) {
+      var t = document.getElementById(e.target.getAttribute('data-help'));
+      if(t) {
+        emptySidebar();
+        t.style.display = 'block';
+      }
+    }
+  }
+});
+</script>
+<aside>
+% for group in config['grouping']:
+  % for name in config['terms'][group]:
+    <% term = Term.get(name) %>
+    <article class=term id='${term.name}'>
+      % if term.label(lang):
+        <h1>${term.name} [${term.label(lang)}]</h1>
+      % else:
+        <h1>${term.name}</h1>
+      % endif
+      <hr>
+      % if term.definition(lang):
+        <p>${term.definition(lang)}
+      % endif
+
+      % if term.example(lang):
+        <p>${term.example(lang)}
+      % endif
+    </article>
+  % endfor
+% endfor
+</aside>
+<main>
+<form id=select-language method=post>
+  <p>
+    <select name=language>
+      % for id, label in config['languages'].iteritems():
+        <option 
+        % if lang == id:
+          selected 
+        % endif
+        value='${id}'>${label}</option>
+      % endfor
+    </select>
+    <input type=submit value="Set language">
+</form>
+<h1>DwC Excel Template Generator</h1>
+<p>Check the boxes next to the terms you want to include in your template and click the <b>Create template</b> button.
+<br><small><a href='http://rs.tdwg.org/dwc/terms/'>Darwin Core Terms: A quick reference guide</a></small>
+<form method=post>
+% for group in config['grouping']:
+  <% terms = config['terms'][group] %>
+  <fieldset>
+    <legend>${group}</legend>
+    % for name in terms:
+      <% term = Term.get(name) %>
+      <label data-help='${term.name}'>
+      <input type=checkbox value=y name='${term.name}'
+      % if name in config['required'] or term.name in config['recommended']:
+        checked='true'
+      % endif
+      >${term.name}</label>
+    % endfor
+  </fieldset>
+% endfor
+<fieldset>
+  <legend>Other Options</legend>
+  <label><input name=uuid type=checkbox value=y checked>Generate occurrence IDs (UUIDs)</label>
+  <label><input name=measurementorfact type=checkbox value=y>Generate a 'Measurement or Fact' sheet</label>
+  <label><input name=metadata type=checkbox value=y disabled>Generate a metadata sheet</label>
+  <label><input name=readme type=checkbox value=y disabled>Generate a README sheet</label>
+</fieldset>
+<p><input type=submit value='Create template'>
+</form>
+</main>
+
+<footer>
+
+</footer>

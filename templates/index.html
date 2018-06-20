@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 <form id=select-language method=post>
   <p>
     <select name=language>
-      % for id, label in config['languages'].iteritems():
+      % for id, label in config['languages'].items():
         <option 
         % if lang == id:
           selected 

@@ -12,13 +12,14 @@ import config.fields as fields
 import sys
 import xlsxwriter
 import xml.etree.ElementTree
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, RawDescriptionHelpFormatter, Namespace
+
 from os.path import os
 
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-06-05'
+__updated__ = '2018-06-21'
 
 DEBUG = 1
 
@@ -180,8 +181,7 @@ def make_dict_of_fields():
 
     field_dict = {}
     for field in fields.fields:
-        # Ensure that we are only working with lower case
-        field['name'] = field['name'].lower()
+        field['name'] = field['name']
         new = Field(field['name'], field['disp_name'])
         if 'valid' in field:
             new.set_validation(field['valid'])
@@ -408,6 +408,31 @@ def make_xlsx(args, file, field_dict):
 #         data_sheet.set_row(row, cell_format=row_col)
 #         worksheet.write(row, 0, '')
     workbook.close()
+
+
+def write_file(url, fields, field_dict):
+    """
+    Method for calling from other python programs
+
+    Parameters
+    ----------
+    url: string
+        The output file
+
+    fields : list
+        A list of the wanted fields
+
+    fields: dict
+        A list of the wanted fields on the format shown in config.fields
+
+    """
+    args = Namespace()
+    args.verbose = 0
+    args.dir = os.path.dirname(url)
+    file = {'name': os.path.basename(url).split('.')[0],
+            'fields': fields}
+
+    make_xlsx(args, file, fields=fields)
 
 
 def main(argv=None):  # IGNORE:C0111

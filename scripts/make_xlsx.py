@@ -8,13 +8,18 @@
 @contact:    pale@unis.no
 @deffield    updated: Updated
 '''
-import config.fields as fields
 import sys
 import xlsxwriter
 import xml.etree.ElementTree
 from argparse import ArgumentParser, RawDescriptionHelpFormatter, Namespace
 
 from os.path import os
+
+aen_config_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), )) +
+                  '/config/')
+
+sys.path.append(aen_config_dir)
+import fields as fields
 
 __all__ = []
 __version__ = 0.1
@@ -42,7 +47,7 @@ class Field(object):
         name : str
                The name of the cell column
         """
-        self.name = name.lower()  # Name of object
+        self.name = name  # Name of object
         self.disp_name = disp_name  # Title of column
         self.cell_format = None  # For holding the formating of the cell
         self.validation = None  # For holding the validation of the cell
@@ -222,10 +227,10 @@ def read_xml(args, xmlfile):
         print("Reading")
     for file in e.findall('file'):
         new = {}
-        new['name'] = file.attrib['name'].lower()
+        new['name'] = file.attrib['name']
         new['disp_name'] = file.find('disp_name').text
         new['fields'] = [
-            child.text.lower() for child in file.find('fields').getchildren()]
+            child.text for child in file.find('fields').getchildren()]
 
         files.append(new)
     return files
@@ -356,6 +361,9 @@ def make_xlsx(args, file, field_dict):
 
         # Write title row
         data_sheet.write(title_row, ii, field.disp_name, field_format)
+
+        # Write row above with parameter name
+        data_sheet.write(title_row - 1, ii, field.name)
         if field.validation is not None:
             if args.verbose > 0:
                 print("Writing validation for", file['fields'][ii])
@@ -376,12 +384,16 @@ def make_xlsx(args, file, field_dict):
                                            last_col=ii,
                                            options=valid_copy)
             else:
-
+                # Need to make sure that 'input_message' is not more than 255
+                valid_copy = field.validation.copy()
+                if len(valid_copy['input_message']) > 255:
+                    valid_copy['input_message'] = valid_copy[
+                        'input_message'][:252] + '...'
                 data_sheet.data_validation(first_row=start_row,
                                            first_col=ii,
                                            last_row=end_row,
                                            last_col=ii,
-                                           options=field.validation)
+                                           options=valid_copy)
         if field.cell_format is not None:
             if not('font_name' in field.cell_format):
                 field.cell_format['font_name'] = DEFAULT_FONT
@@ -400,6 +412,9 @@ def make_xlsx(args, file, field_dict):
 
     # Freeze the rows at the top
     data_sheet.freeze_panes(start_row, 0)
+
+    # Hide ID row
+    data_sheet.set_row(title_row - 1, None, None, {'hidden': True})
 
     # Colour the rows alternating
 #     row_col = workbook.add_format({'bg_color': '#F7FFFF'})
@@ -430,9 +445,10 @@ def write_file(url, fields, field_dict):
     args.verbose = 0
     args.dir = os.path.dirname(url)
     file = {'name': os.path.basename(url).split('.')[0],
+            'disp_name': 'Enter measurement type',
             'fields': fields}
 
-    make_xlsx(args, file, fields=fields)
+    make_xlsx(args, file, field_dict)
 
 
 def main(argv=None):  # IGNORE:C0111

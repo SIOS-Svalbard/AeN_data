@@ -36,7 +36,7 @@ __updated__ = '2018-06-21'
 #==============================================================================
 
 
-uuid = {'name': 'uuid',
+uuid = {'name': 'uuID',
         'disp_name': 'Sample UUID',
         'width': 34,
         'valid': {
@@ -51,7 +51,7 @@ Should be 32 characters long and without -''',
         }
         }
 
-puuid = {'name': 'puuid',
+puuid = {'name': 'puuID',
          'disp_name': 'Parent sample UUID',
          'width': 34,
          'valid': {
@@ -68,20 +68,20 @@ Should be 32 characters long and without -''',
          }
 
 
-shipid = {'name': 'shipid',
-          'disp_name': 'Ship ID',
-          'width': 9,
-          'valid': {
-              'validate': 'list',
-              'source': ['2018101', '2018102', '2018103'],
-              'input_title': 'Ship ID',
-              'input_message': '''This is the same for one cruise''',
-              'error_title': 'Error',
-              'error_message': 'Not a valid ship id'
-          }
-          }
+cruiseID = {'name': 'cruiseID',
+            'disp_name': 'Cruise ID',
+            'width': 9,
+            'valid': {
+                'validate': 'list',
+                'source': ['2018616', '2018707', '2018709', '2018710'],
+                'input_title': 'Cruise ID',
+                'input_message': '''This is the same for one cruise''',
+                'error_title': 'Error',
+                'error_message': 'Not a valid cruise id'
+            }
+            }
 
-statid = {'name': 'statid',
+statID = {'name': 'statID',
           'disp_name': 'Station ID',
           'width': 13,
           'valid': {
@@ -144,7 +144,9 @@ eventTime = {'name': 'eventTime',
                  'minimum': dt.time(0, 0, 0),
                  'maximum': dt.time(23, 59, 59, 999999),
                  'input_title': 'Event Time (UTC)',
-                 'input_message': '''The time in UTC''',
+                 'input_message': '''
+The time in UTC
+Format is HH:MM ''',
                  'error_title': 'Error',
                  'error_message': 'Not a valid time'
              },
@@ -288,6 +290,27 @@ colour = make_string_dict('colour')
 smell = make_string_dict('smell')
 description = make_string_dict('description')
 
+eventRemarks = {'name': 'eventRemarks',
+                'disp_name': 'Event Remarks',
+                'width': 40,
+                'dwcid': 'http://rs.tdwg.org/dwc/terms/eventRemarks',
+                'valid': {
+                         'validate': 'any',
+                         'input_title': 'Event Remarks',
+                         'input_message': 'Comments about the Event.'
+                }
+                }
+
+fieldNotes = {'name': 'fieldNotes',
+              'disp_name': 'Field Notes',
+              'width': 40,
+              'dwcid': 'http://rs.tdwg.org/dwc/terms/fieldNotes',
+              'valid': {
+                  'validate': 'any',
+                  'input_title': 'Field Remarks',
+                  'input_message': 'Notes from the field.'
+              }
+              }
 
 occurrenceRemarks = {'name': 'occurrenceRemarks',
                      'disp_name': 'Occurrence Remarks',
@@ -612,7 +635,7 @@ When forming part of an Identification, this should be the name in lowest level 
 
 #     http://rs.tdwg.org/dwc/rdf/dwcterms.rdf
 # List of all the available fields
-fields = [uuid, puuid, shipid, statid,
+fields = [uuid, puuid, cruiseID, statID,
           eventDate, start_date, end_date,
           eventTime, start_time, end_time,
           decimalLatitude, decimalLongitude,
@@ -626,7 +649,8 @@ fields = [uuid, puuid, shipid, statid,
           filter_vol, methanol_vol,
           sample_vol, subsample_vol, subsample_number,
           colour, smell, description,
-          occurrenceRemarks, storage_temp, sample_owner,
+          occurrenceRemarks, fieldNotes, eventRemarks,
+          storage_temp, sample_owner,
           title, abstract,
           pi_name, pi_email, pi_institution, pi_address,
           project_long, project_short]

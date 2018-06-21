@@ -3,21 +3,21 @@
 	<file name='Benthos_trawl'>
 		<disp_name>Benthos Trawl</disp_name>
 		<fields>
-			<li>UUID</li>
-			<li>SHIPID</li>
-			<li>STATID</li>
-			<li>EventDate</li>
+			<li>uuID</li>
+			<li>cruiseID</li>
+			<li>statID</li>
+			<li>eventDate</li>
 			<li>eventTime</li>
 			<li>DecimalLatitude</li>
 			<li>DecimalLongitude</li>
-			<li>DepthInMeters</li>
+			<li>depthInMeters</li>
 			<li>Taxon</li>
-			<li>Phylum</li>
-			<li>Class</li>
-			<li>Order</li>
-			<li>Family</li>
+			<li>phylum</li>
+			<li>class</li>
+			<li>order</li>
+			<li>family</li>
 			<li>individualCount</li>
-			<li>WeightInGrams</li>
+			<li>weightInGrams</li>
 			<li>occurrenceRemarks</li>
 		</fields>
 	</file>

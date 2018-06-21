@@ -28,7 +28,7 @@ These dictionaries should then be added to the list called fields
 import datetime as dt
 
 __date__ = '2018-05-22'
-__updated__ = '2018-06-05'
+__updated__ = '2018-06-21'
 
 
 #==============================================================================
@@ -109,12 +109,12 @@ eventDate = {'name': 'eventDate',
              'valid': {
                  'validate': 'date',
                  'criteria': 'between',
-                 'minimum': dt.date(2010, 1, 1),
+                 'minimum': dt.date(2000, 1, 1),
                  'maximum': '=TODAY()',
                  'input_title': 'Event Date',
-                 'input_message': '''Can be from 2010-01-01 to today.''',
+                 'input_message': '''Can be from 2000-01-01 to today.''',
                  'error_title': 'Error',
-                 'error_message': 'Not a valid date [2010-01-01, today]'
+                 'error_message': 'Not a valid date [2000-01-01, today]'
              },
              'cell_format': {
                  'num_format': 'yyyy-mm-dd'
@@ -274,14 +274,14 @@ Needs to be smaller than the deepest depth''',
 
 # Method for making a new string property
 def make_string_dict(name):
-    return {'name': name.lower(),
+    return {'name': name,
             'disp_name': name.title().replace('_', ' '),
             'valid': {
-        'validate': 'any',
-        'input_title': name.title().replace('_', ' '),
-        'input_message': name.title().replace('_', ' ')
-    }
-    }
+                'validate': 'any',
+                'input_title': name.title().replace('_', ' '),
+                'input_message': name.title().replace('_', ' ')
+            }
+            }
 
 
 colour = make_string_dict('colour')
@@ -610,6 +610,7 @@ When forming part of an Identification, this should be the name in lowest level 
                   }
 
 
+#     http://rs.tdwg.org/dwc/rdf/dwcterms.rdf
 # List of all the available fields
 fields = [uuid, puuid, shipid, statid,
           eventDate, start_date, end_date,

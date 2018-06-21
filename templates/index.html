@@ -44,10 +44,18 @@ document.addEventListener("DOMContentLoaded", function(e) {
         <h1>${term.name}</h1>
       % endif
       <hr>
+      % if term.validation(lang):
+      	<p><b>Validation info:</b>
+        <p>${term.validation(lang)}
+      % else:
+        <p><b>Validation error:</b>
+        <p>${lang}
+        <p>${term.validations}
+      % endif
       % if term.definition(lang):
+        <p><b>Darwin core info (validation takes precedence for formating):</b>
         <p>${term.definition(lang)}
       % endif
-
       % if term.example(lang):
         <p>${term.example(lang)}
       % endif
@@ -96,10 +104,11 @@ document.addEventListener("DOMContentLoaded", function(e) {
 % endfor
 <fieldset>
   <legend>Other Options</legend>
-  <label><input name=uuid type=checkbox value=y checked>Generate occurrence IDs (UUIDs)</label>
+<!--  <label><input name=uuid type=checkbox value=y checked>Generate occurrence IDs (UUIDs)</label>
   <label><input name=measurementorfact type=checkbox value=y>Generate a 'Measurement or Fact' sheet</label>
   <label><input name=metadata type=checkbox value=y disabled>Generate a metadata sheet</label>
   <label><input name=readme type=checkbox value=y disabled>Generate a README sheet</label>
+  -->
 </fieldset>
 <p><input type=submit value='Create template'>
 </form>

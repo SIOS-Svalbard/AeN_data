@@ -8,15 +8,16 @@ cores:
   - name: aen
     sheets:
       - name: occurrence
-        required: [uuid, shipid, statid, eventDate, decimalLatitude, decimalLongitude]
-        recommended: [shipid]
-        grouping: [required, event, identification ]
+        required: [uuID, cruiseID, statID, eventTime, eventDate, decimalLatitude, decimalLongitude]
+        recommended: [cruiseID]
+        grouping: [required, event, identification, comments ]
         terms:
-          required: [uuid, shipid, statid, eventDate, decimalLatitude, decimalLongitude]
+          required: [uuID, cruiseID, statID, eventDate, eventTime, decimalLatitude, decimalLongitude]
           event: [ start_date, end_date,
-            eventTime, start_time, end_time,
+            start_time, end_time,
             depthInMeters, maximumDepthInMeters, minimumDepthInMeters]
-          identification: [taxon, phylum, classify, order, family]
+          identification: [Taxon, phylum, class, order, family]
+          comments: [occurrenceRemarks, fieldNotes, eventRemarks]
   - name: event
     sheets:
       - name: event

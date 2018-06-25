@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     <% term = Term.get(name) %>
     <article class=term id='${term.name}'>
       % if term.label(lang):
-        <h1>${term.name} [${term.label(lang)}]</h1>
+        <h1>${term.label(lang)} [${term.name}]</h1>
       % else:
         <h1>${term.name}</h1>
       % endif
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     </select>
     <input type=submit value="Set language">
 </form>
-<h1>DwC Excel Template Generator</h1>
+<h1>Nansen Legacy Excel Template Generator</h1>
 <p>Check the boxes next to the terms you want to include in your template and click the <b>Create template</b> button.
 <br><small><a href='http://rs.tdwg.org/dwc/terms/'>Darwin Core Terms: A quick reference guide</a></small>
 <form method=post>

@@ -27,7 +27,7 @@ import shutil
 import http.cookies as Cookie
 import textwrap
 
-__updated__ = '2018-06-21'
+__updated__ = '2018-06-25'
 
 
 # cgitb.enable()
@@ -116,7 +116,8 @@ try:
 
         if not(term.validations):  # Set the validation input
 
-            term.validations = {'en': field['valid']['input_message']}
+            term.validations = {
+                'en': field['valid']['input_message'].replace('\n', '</br>')}
 
 
 except ImportError as e:

@@ -8,15 +8,22 @@ cores:
   - name: aen
     sheets:
       - name: occurrence
-        required: [uuID, cruiseID, statID, eventTime, eventDate, decimalLatitude, decimalLongitude]
-        recommended: [cruiseID]
-        grouping: [required, event, identification, comments ]
+        required: [eventID, cruiseID, stationName, eventTime, eventDate, decimalLatitude, decimalLongitude,bottomDepthInMeters]
+        recommended: []
+        grouping: [required, event,relation, identification, description, measurement, data, comments ]
         terms:
-          required: [uuID, cruiseID, statID, eventDate, eventTime, decimalLatitude, decimalLongitude]
+          required: [eventID, cruiseID, stationName,eventDate, eventTime, decimalLatitude, decimalLongitude, bottomDepthInMeters]
           event: [ start_date, end_date,
+            statID,
             start_time, end_time,
-            depthInMeters, maximumDepthInMeters, minimumDepthInMeters]
+            sampleDepthInMeters, maximumDepthInMeters, minimumDepthInMeters,
+            samplingProtocol]
           identification: [Taxon, phylum, class, order, family]
+          description: [colour, smell, description]
+          measurement: [individualCount, chlorophyll, weightInGrams,
+            seaWaterSalinity, seaWaterTemperatueInCelsius, seaWaterPressure ]
+          data : [dataFilename]
+          relation : [parentEventID]
           comments: [occurrenceRemarks, fieldNotes, eventRemarks]
   - name: event
     sheets:

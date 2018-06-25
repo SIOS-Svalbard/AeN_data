@@ -27,8 +27,9 @@ These dictionaries should then be added to the list called fields
 '''
 import datetime as dt
 
+
 __date__ = '2018-05-22'
-__updated__ = '2018-06-22'
+__updated__ = '2018-06-25'
 
 
 #==============================================================================
@@ -380,20 +381,6 @@ individualCount = {'name': 'individualCount',
                    }
                    }
 
-weightInGrams = {'name': 'weightInGrams',
-                 'disp_name': 'Weight (g)',
-                 'width': 10,
-                 'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
-                 'valid': {
-                     'validate': 'decimal',
-                     'criteria': '>',
-                     'value': 0,
-                     'input_title': 'Weight in grams (g)',
-                     'input_message': '''Weight in grams''',
-                     'error_title': 'Error',
-                     'error_message': 'Float > 0'
-                 }
-                 }
 
 sample_type = {'name': 'sample_type',
                'disp_name': 'Sample type',
@@ -682,6 +669,71 @@ samplingProtocol = {'name': 'samplingProtocol',
                     }
 
 
+# CF names
+
+seaWaterTemperatueInCelsius = {'name': 'seaWaterTemperatueInCelsius',
+                               'disp_name': 'Sea Water Temp (C)',
+                               'width': 21,
+                               'valid': {
+                                   'validate': 'decimal',
+                                   'criteria': '>',
+                                   'value': -10,
+                                   'input_title': 'Sea Water Temp (C)',
+                                   'input_message': '''Sea water temperature in Celsius
+Float number larger than -10 degrees C''',
+                                   'error_title': 'Error',
+                                   'error_message': 'Float > -10 C'
+                               }
+                               }
+
+seaWaterSalinity = {'name': 'seaWaterSalinity',
+                    'disp_name': 'Sea Water Salinity',
+                    'width': 21,
+                    'valid': {
+                        'validate': 'decimal',
+                        'criteria': '>=',
+                        'value': 0,
+                        'input_title': 'Sea Water Salinity',
+                        'input_message': '''Sea water salinity in parts per thousand
+Often using the Practical Salinity Scale of 1978
+Float number larger than or equal to 0
+Example: 0.029''',
+                        'error_title': 'Error',
+                        'error_message': 'Float >= 0'
+                    }
+                    }
+
+seaWaterPressure = {'name': 'seaWaterPressure',
+                    'disp_name': 'Sea Water Pressure (dbar)',
+                    'width': 21,
+                    'valid': {
+                        'validate': 'decimal',
+                        'criteria': '>',
+                        'value': 0,
+                        'input_title': 'Sea Water Pressure (dbar)',
+                        'input_message': '''Sea water pressure in decibar
+Float number larger than 0''',
+                        'error_title': 'Error',
+                        'error_message': 'Float > 0'
+                    }
+                    }
+
+weightInGrams = {'name': 'weightInGrams',
+                 'disp_name': 'Weight (g)',
+                 'width': 10,
+                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                 'valid': {
+                     'validate': 'decimal',
+                     'criteria': '>',
+                     'value': 0,
+                     'input_title': 'Weight in grams (g)',
+                     'input_message': '''Weight in grams''',
+                     'error_title': 'Error',
+                     'error_message': 'Float > 0'
+                 }
+                 }
+
+
 #     http://rs.tdwg.org/dwc/rdf/dwcterms.rdf
 # List of all the available fields
 fields = [uuid, puuid, cruiseID, statID,
@@ -698,6 +750,7 @@ fields = [uuid, puuid, cruiseID, statID,
           chlorophyll, phaeo,
           dilution_factor,
           weightInGrams,
+          seaWaterSalinity, seaWaterTemperatueInCelsius, seaWaterPressure,
           filter_vol, methanol_vol,
           sample_vol, subsample_vol, subsample_number,
           colour, smell, description,

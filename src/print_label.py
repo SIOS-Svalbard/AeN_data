@@ -21,6 +21,7 @@ import os
 import time
 import uuid
 import warnings
+import socket
 import datetime as dt
 
 from argparse import ArgumentParser
@@ -42,7 +43,7 @@ from kivy.config import Config
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-25'
-__updated__ = '2018-06-04'
+__updated__ = '2018-06-25'
 
 DEBUG = 1
 TESTRUN = 0
@@ -91,22 +92,34 @@ def create_label(uuid, text1, text2, text3, text4):
 
     # This uses a template made with ZebraDesigner, replacing the variables
     # with the necessary text {X}.
+#     zpl = '''
+#     CT~~CD,~CC^~CT~
+#     ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD15^JUS^LRN^CI0^XZ
+#     ^XA
+#     ^MMT
+#     ^PW1228
+#     ^LL0295
+#     ^LS0
+#     ^BY110,110^FT51,125^BXN,5,200,22,22,1,~
+#     ^FH\^FD{0}^FS
+#     ^FT8,267^A0N,21,21^FH\^FD{4}^FS
+#     ^FT8,231^A0N,21,21^FH\^FD{3}^FS
+#     ^FT9,198^A0N,21,21^FH\^FD{2}^FS
+#     ^FT9,166^A0N,21,21^FH\^FD{1}^FS
+#     ^FT8,27^A0R,21,21^FH\^FD{5}^FS
+#     ^PQ1,0,1,Y^XZ'''.format(uuid, text1, text2, text3, text4, uuid[:8])
     zpl = '''
     CT~~CD,~CC^~CT~
     ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD15^JUS^LRN^CI0^XZ
     ^XA
     ^MMT
-    ^PW1228
-    ^LL0295
+    ^PW331
+    ^LL1051
     ^LS0
-    ^BY110,110^FT51,125^BXN,5,200,22,22,1,~
+    ^FT48,410^A0N,42,40^FH\^FD{1}^FS
+    ^BY66,66^FT116,622^BXN,3,200,22,22,1,~
     ^FH\^FD{0}^FS
-    ^FT8,267^A0N,21,21^FH\^FD{4}^FS
-    ^FT8,231^A0N,21,21^FH\^FD{3}^FS
-    ^FT9,198^A0N,21,21^FH\^FD{2}^FS
-    ^FT9,166^A0N,21,21^FH\^FD{1}^FS
-    ^FT8,27^A0R,21,21^FH\^FD{5}^FS
-    ^PQ1,0,1,Y^XZ'''.format(uuid, text1, text2, text3, text4, uuid[:8])
+    ^PQ1,0,1,Y^XZ'''.format(uuid, text1)
 
     print(zpl)
     return zpl
@@ -149,7 +162,21 @@ class LabelApp(App):
     def build(self):
         widget = LabelWidget()
         self.widget = widget
+        self.IP = '158.39.46.86'
+        self.PORT = 9100
+        self.BUFFER_SIZE = 1024
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((self.IP, self.PORT))
+
         return widget
+
+    def on_stop(self, *args):
+        print('Exiting')
+        self.socket.close()
+        return True
+
+    def send_to_printer(self, zpl):
+        self.socket.send(bytes(zpl, "utf-8"))
 
     def print_label(self, *args):
         print("Printing label")
@@ -170,6 +197,8 @@ class LabelApp(App):
                         "WARNING: Text line 4 is not a number, can't increment", UserWarning)
 
                     time.sleep(seconds / 1e6)  # Wait 1 us
+
+            self.send_to_printer(zpl)
 
 
 def main(argv=None):  # IGNORE:C0111

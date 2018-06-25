@@ -28,7 +28,7 @@ These dictionaries should then be added to the list called fields
 import datetime as dt
 
 __date__ = '2018-05-22'
-__updated__ = '2018-06-21'
+__updated__ = '2018-06-22'
 
 
 #==============================================================================
@@ -36,32 +36,34 @@ __updated__ = '2018-06-21'
 #==============================================================================
 
 
-uuid = {'name': 'uuID',
-        'disp_name': 'Sample UUID',
+uuid = {'name': 'eventID',
+        'disp_name': 'Sample ID',
         'width': 34,
+        'dwcid': 'http://rs.tdwg.org/dwc/terms/eventID',
         'valid': {
             'validate': 'length',
             'criteria': '==',
             'value': 32,
-            'input_title': 'Sample UUID',
-            'input_message': '''Read this using a code reader.
-Should be 32 characters long and without -''',
+            'input_title': 'Sample ID',
+            'input_message': '''Should be a 32 characters long UUID without -.
+Could be read in with a code reader.''',
             'error_title': 'Error',
-            'error_message': 'Needs to be 32 characters long'
+            'error_message': 'Needs to be a 32 characters long UUID'
         }
         }
 
-puuid = {'name': 'puuID',
+puuid = {'name': 'parentEventID',
          'disp_name': 'Parent sample UUID',
          'width': 34,
+         'dwcid': 'http://rs.tdwg.org/dwc/terms/parentEventID',
          'valid': {
              'validate': 'length',
              'criteria': '==',
              'value': 32,
              'input_title': 'Parent sample UUID',
              'input_message': '''ID of the sample this subsample was taken from.
-Read this using a code reader.
-Should be 32 characters long and without -''',
+Should be a 32 characters long UUID without -
+Could be read in with a code reader.''',
              'error_title': 'Error',
              'error_message': 'Needs to be 32 characters long'
          }
@@ -95,6 +97,16 @@ statID = {'name': 'statID',
               'error_message': 'Not a valid station id'
           }
           }
+
+stationName = {'name': 'stationName',
+               'disp_name': 'Station name',
+               'width': 13,
+               'valid': {
+                   'validate': 'any',
+                   'input_title': 'Station name',
+                   'input_message': 'The name of the station. NLEG..., etc'
+               }
+               }
 
 
 #==============================================================================
@@ -217,20 +229,36 @@ Example: 15.0012''',
 # Depths
 #==============================================================================
 
-depthInMeters = {'name': 'depthInMeters',
-                 'disp_name': 'Depth (m)',
-                 'width': 12,
-                 'valid': {
-                     'validate': 'integer',
-                     'criteria': '>=',
-                     'value': 0,
-                     'input_title': 'Depth (m)',
-                     'input_message': '''The depth in integer meters.
+bottomDepthInMeters = {'name': 'bottomDepthInMeters',
+                       'disp_name': 'Bottom Depth (m)',
+                       'width': 20,
+                       'valid': {
+                           'validate': 'integer',
+                           'criteria': '>=',
+                           'value': 0,
+                           'input_title': 'Bottom Depth (m)',
+                           'input_message': '''The bottom depth in integer meters.
 0 is the surface.''',
-                     'error_title': 'Error',
-                     'error_message': 'Integer >= 0'
-                 }
-                 }
+                           'error_title': 'Error',
+                           'error_message': 'Integer >= 0'
+                       }
+                       }
+
+sampleDepthInMeters = {'name': 'sampleDepthInMeters',
+                       'disp_name': 'Sample Depth (m)',
+                       'width': 20,
+                       'valid': {
+                           'validate': 'integer',
+                           'criteria': '>=',
+                           'value': 0,
+                           'input_title': 'Sample Depth (m)',
+                           'input_message': '''The sample depth in integer meters.
+0 is the surface.''',
+                           'error_title': 'Error',
+                           'error_message': 'Integer >= 0'
+                       }
+                       }
+
 
 maximumDepthInMeters = {'name': 'maximumDepthInMeters',
                         'disp_name': 'Maximum depth(m)',
@@ -633,16 +661,40 @@ When forming part of an Identification, this should be the name in lowest level 
                   }
 
 
+dataFilename = {'name': 'dataFilename',
+                'disp_name': 'Data filename',
+                'width': 13,
+                'valid': {
+                    'validate': 'any',
+                    'input_title': 'Data filename',
+                    'input_message': 'The name of the datafile'
+                }
+                }
+
+samplingProtocol = {'name': 'samplingProtocol',
+                    'disp_name': 'Sampling protocol',
+                    'width': 22,
+                    'valid': {
+                        'validate': 'any',
+                        'input_title': 'Sampling protocol',
+                        'input_message': 'Could be for instance CTD, nutrients, etc.'
+                    }
+                    }
+
+
 #     http://rs.tdwg.org/dwc/rdf/dwcterms.rdf
 # List of all the available fields
 fields = [uuid, puuid, cruiseID, statID,
           eventDate, start_date, end_date,
           eventTime, start_time, end_time,
           decimalLatitude, decimalLongitude,
-          depthInMeters, maximumDepthInMeters, minimumDepthInMeters,
+          bottomDepthInMeters, sampleDepthInMeters,
+          maximumDepthInMeters, minimumDepthInMeters,
           taxon, phylum, classify, order, family,
           scientificName, individualCount,
-          sample_type, water_measurement, filter,
+          stationName, dataFilename,
+          sample_type, samplingProtocol,
+          water_measurement, filter,
           chlorophyll, phaeo,
           dilution_factor,
           weightInGrams,

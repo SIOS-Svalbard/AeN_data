@@ -24,7 +24,7 @@ import fields as fields
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-06-21'
+__updated__ = '2018-06-27'
 
 DEBUG = 1
 
@@ -38,22 +38,38 @@ class Field(object):
 
     """
 
-    def __init__(self, name, disp_name):
+    def __init__(self, name, disp_name, validation={},
+                 cell_format={}, width=20, long_list=False):
         """
         Initialising the object
 
         Parameters
         ----------
         name : str
-               The name of the cell column
+               Name of object
+
+        disp_name : str
+               The title of the column
+
+        validation : dict, optional
+            A dictionary using the keywords defined in xlsxwriter
+
+        cell_format : dict, optional
+            A dictionary using the keywords defined in xlsxwriter
+
+        width : int, optional
+            Number of units for width
+
+        long_list : Boolean, optional
+            True for enabling the long list.
         """
         self.name = name  # Name of object
         self.disp_name = disp_name  # Title of column
-        self.cell_format = None  # For holding the formating of the cell
-        self.validation = None  # For holding the validation of the cell
-        self.long_list = False  # For holding the need for an entry in the
+        self.cell_format = cell_format  # For holding the formating of the cell
+        self.validation = validation  # For holding the validation of the cell
+        self.long_list = long_list  # For holding the need for an entry in the
         # variables sheet
-        self.width = 20
+        self.width = width
 
     def set_validation(self, validation):
         """
@@ -286,7 +302,7 @@ def write_metadata(args, workbook, field_dict):
         sheet.write(ii, 0, field.disp_name, parameter_format)
         sheet.write(ii, 1, '', input_format)
         sheet.set_row(ii, heigth)
-        if field.validation is not None:
+        if field.validation:
             if args.verbose > 0:
                 print("Writing metadata validation")
             sheet.data_validation(first_row=ii,
@@ -294,7 +310,7 @@ def write_metadata(args, workbook, field_dict):
                                   last_row=ii,
                                   last_col=1,
                                   options=field.validation)
-            if field.cell_format is not None:
+            if field.cell_format:
                 cell_format = workbook.add_format(field.cell_format)
                 sheet.set_row(
                     ii, ii, cell_format=cell_format)

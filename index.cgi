@@ -135,11 +135,20 @@ for group in config['grouping']:
 dwcterms.sort()
 
 # Append these to the config under new headline
-dwc_name = 'Other_DwC_Terms'
-config['grouping'].append(dwc_name)
-config['terms'][dwc_name] = []
+dwc_name1 = 'Other_DwC_Terms'
+dwc_name2 = 'Other_DwC_Terms_cont'
+config['grouping'].append(dwc_name1)
+config['grouping'].append(dwc_name2)
+config['terms'][dwc_name1] = []
+config['terms'][dwc_name2] = []
+ii = 0
 for term in dwcterms:
-    config['terms'][dwc_name].append(term.name)
+    if ii < len(dwcterms) / 2:
+        config['terms'][dwc_name1].append(term.name)
+    else:
+        config['terms'][dwc_name2].append(term.name)
+    ii = ii + 1
+
 # print("New config\n", config)
 # print("Other_DwC_Terms\n", config['terms'][dwc_name])
 

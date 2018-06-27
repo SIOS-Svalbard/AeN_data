@@ -10,8 +10,13 @@ Each field is defined as a dictionary which should contain:
 Optional fields are:
     
     width : the width of the cell
+    
     dwcid : The Darwin core identifier (an url), if this is used the rest of the names should
             follow the Darwin core  
+    
+    units : The measurement unit of the variable, using the standard in CF
+           Examples: 'm', 'm s-1', '
+    
     valid : a dictionary with definitions of the validation for the cell, as 
             per keywords used in Xlsxwriter 
             
@@ -29,7 +34,7 @@ import datetime as dt
 
 
 __date__ = '2018-05-22'
-__updated__ = '2018-06-25'
+__updated__ = '2018-06-27'
 
 
 #==============================================================================
@@ -187,6 +192,7 @@ end_time['valid']['input_title'] = 'Extraction end time'
 decimalLatitude = {'name': 'decimalLatitude',
                    'disp_name': 'Latitude',
                    'width': 10,
+                   'units': 'degrees_north',
                    'dwcid': 'http://rs.tdwg.org/dwc/terms/decimalLatitude',
                    'valid': {
                        'validate': 'decimal',
@@ -208,6 +214,7 @@ Example: 78.1500''',
 decimalLongitude = {'name': 'decimalLongitude',
                     'disp_name': 'Longitude',
                     'width': 11,
+                    'units': 'degree_east',
                     'dwcid': 'http://rs.tdwg.org/dwc/terms/decimalLongitude',
                     'valid': {
                         'validate': 'decimal',
@@ -233,6 +240,7 @@ Example: 15.0012''',
 bottomDepthInMeters = {'name': 'bottomDepthInMeters',
                        'disp_name': 'Bottom Depth (m)',
                        'width': 20,
+                       'units': 'm',
                        'valid': {
                            'validate': 'integer',
                            'criteria': '>=',
@@ -248,6 +256,7 @@ bottomDepthInMeters = {'name': 'bottomDepthInMeters',
 sampleDepthInMeters = {'name': 'sampleDepthInMeters',
                        'disp_name': 'Sample Depth (m)',
                        'width': 20,
+                       'units': 'm',
                        'valid': {
                            'validate': 'integer',
                            'criteria': '>=',
@@ -264,6 +273,7 @@ sampleDepthInMeters = {'name': 'sampleDepthInMeters',
 maximumDepthInMeters = {'name': 'maximumDepthInMeters',
                         'disp_name': 'Maximum depth(m)',
                         'width': 19,
+                        'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/maximumDepthInMeters',
                         'valid': {
                             'validate': 'integer',
@@ -283,6 +293,7 @@ maximumDepthInMeters = {'name': 'maximumDepthInMeters',
 minimumDepthInMeters = {'name': 'minimumDepthInMeters',
                         'disp_name': 'Minimum depth (m)',
                         'width': 22,
+                        'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/minimumDepthInMeters',
                         'valid': {
                             'validate': 'integer',
@@ -369,6 +380,7 @@ occurrenceRemarks = {'name': 'occurrenceRemarks',
 individualCount = {'name': 'individualCount',
                    'disp_name': 'Individual Count',
                    'width': 20,
+                   'units': '1',
                    'dwcid': 'http://rs.tdwg.org/dwc/terms/individualCount',
                    'valid': {
                        'validate': 'integer',
@@ -464,33 +476,39 @@ dilution_factor = {'name': 'dilution_factor',
                    }
                    }
 
-chlorophyll = {'name': 'chlorophyll',
-               'disp_name': 'Chla readout value',
-               'width': 20,
-               'valid': {
-                       'validate': 'decimal',
-                       'criteria': '>',
-                       'value': 0,
-                       'input_title': 'Chlorophyll A readout value',
-                       'input_message': '''Positive float number''',
-                       'error_title': 'Error',
-                       'error_message': 'Float > 0'
-               }
-               }
+chlorophyllA = {'name': 'chlorophyllA',
+                'disp_name': 'Chlorophyll a (mg/m^3)',
+                'width': 20,
+                'units': 'mg m-3',
+                'valid': {
+                    'validate': 'decimal',
+                    'criteria': '>=',
+                    'value': 0,
+                    'input_title': 'Chlorophyll a (mg/m^3)',
+                    'input_message': '''
+Chlorophyll in milligrams per cubic meter
+Positive float number (>= 0)''',
+                    'error_title': 'Error',
+                    'error_message': 'Float >= 0'
+                }
+                }
 
-phaeo = {'name': 'phaeo',
-         'disp_name': 'Phaeo read out',
-         'width': 20,
-         'valid': {
-             'validate': 'decimal',
-             'criteria': '>',
-             'value': 0,
-             'input_title': 'Phaeo readout value',
-             'input_message': '''Positive float number''',
-             'error_title': 'Error',
-             'error_message': 'Float > 0'
-         }
-         }
+phaeopigment = {'name': 'phaeopigment',
+                'disp_name': 'Phaeopigment (mg/m^3)',
+                'width': 20,
+                'units': 'mg m-3',
+                'valid': {
+                    'validate': 'decimal',
+                    'criteria': '>',
+                    'value': 0,
+                    'input_title': 'Phaeopigment (mg/m^3)',
+                    'input_message': '''
+Phaeopigment in milligrams per cubic meter
+Positive float number''',
+                    'error_title': 'Error',
+                    'error_message': 'Float > 0'
+                }
+                }
 
 
 filter = {'name': 'filter',
@@ -508,13 +526,13 @@ If no filtering is being done choose None''',
           }
 
 filter_vol = {'name': 'filter_vol',
-              'disp_name': 'Filter volume (ml)',
+              'disp_name': 'Filter volume (mL)',
               'width': 21,
               'valid': {
                   'validate': 'integer',
                   'criteria': '>',
                   'value': 0,
-                  'input_title': 'Filter volume (ml)',
+                  'input_title': 'Filter volume (mL)',
                   'input_message': '''Filter volume in integer millilitres''',
                   'error_title': 'Error',
                   'error_message': 'Integer > 0'
@@ -522,13 +540,14 @@ filter_vol = {'name': 'filter_vol',
               }
 
 methanol_vol = {'name': 'methanol_vol',
-                'disp_name': 'Methanol volume (ml)',
+                'disp_name': 'Methanol volume (mL)',
                 'width': 23,
+                'units': 'mL',
                 'valid': {
                     'validate': 'integer',
                     'criteria': '>',
                     'value': 0,
-                    'input_title': 'Methanol volume (ml)',
+                    'input_title': 'Methanol volume (mL)',
                     'input_message': '''Methanol volume in integer millilitres''',
                     'error_title': 'Error',
                     'error_message': 'Integer > 0'
@@ -536,13 +555,14 @@ methanol_vol = {'name': 'methanol_vol',
                 }
 
 sample_vol = {'name': 'sample_vol',
-              'disp_name': 'Sample volume (ml)',
+              'disp_name': 'Sample volume (mL)',
               'width': 23,
+              'units': 'mL',
               'valid': {
                   'validate': 'integer',
                   'criteria': '>',
                   'value': 0,
-                  'input_title': 'Sample volume (ml)',
+                  'input_title': 'Sample volume (mL)',
                   'input_message': '''Sample volume in integer millilitres''',
                   'error_title': 'Error',
                   'error_message': 'Integer > 0'
@@ -551,13 +571,14 @@ sample_vol = {'name': 'sample_vol',
 
 
 subsample_vol = {'name': 'subsample_vol',
-                 'disp_name': 'Subsample volume (ml)',
+                 'disp_name': 'Subsample volume (mL)',
                  'width': 23,
+                 'units': 'mL',
                  'valid': {
                      'validate': 'integer',
                      'criteria': '>',
                      'value': 0,
-                     'input_title': 'Subsample volume (ml)',
+                     'input_title': 'Subsample volume (mL)',
                      'input_message': '''Subsample volume in integer millilitres''',
                      'error_title': 'Error',
                      'error_message': 'Integer > 0'
@@ -674,6 +695,7 @@ samplingProtocol = {'name': 'samplingProtocol',
 seaWaterTemperatueInCelsius = {'name': 'seaWaterTemperatueInCelsius',
                                'disp_name': 'Sea Water Temp (C)',
                                'width': 21,
+                               'units': 'Celsius',
                                'valid': {
                                    'validate': 'decimal',
                                    'criteria': '>',
@@ -689,6 +711,7 @@ Float number larger than -10 degrees C''',
 seaWaterSalinity = {'name': 'seaWaterSalinity',
                     'disp_name': 'Sea Water Salinity',
                     'width': 21,
+                    'units': '1e-3',
                     'valid': {
                         'validate': 'decimal',
                         'criteria': '>=',
@@ -705,6 +728,7 @@ Example: 0.029''',
 
 seaWaterPressure = {'name': 'seaWaterPressure',
                     'disp_name': 'Sea Water Pressure (dbar)',
+                    'units': 'dbar',
                     'width': 21,
                     'valid': {
                         'validate': 'decimal',
@@ -721,6 +745,7 @@ Float number larger than 0''',
 weightInGrams = {'name': 'weightInGrams',
                  'disp_name': 'Weight (g)',
                  'width': 10,
+                 'units': 'g',
                  #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
                  'valid': {
                      'validate': 'decimal',
@@ -747,7 +772,7 @@ fields = [uuid, puuid, cruiseID, statID,
           stationName, dataFilename,
           sample_type, samplingProtocol,
           water_measurement, filter,
-          chlorophyll, phaeo,
+          chlorophyllA, phaeopigment,
           dilution_factor,
           weightInGrams,
           seaWaterSalinity, seaWaterTemperatueInCelsius, seaWaterPressure,

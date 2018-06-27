@@ -26,8 +26,10 @@ import xlsxwriter
 import shutil
 import http.cookies as Cookie
 import textwrap
+import AeN.scripts.config.fields as fields
+import AeN.scripts.make_xlsx as mx
 
-__updated__ = '2018-06-25'
+__updated__ = '2018-06-27'
 
 
 # cgitb.enable()
@@ -55,6 +57,12 @@ class Term:
         self.validations = {}
         Term.terms.append(self)
 
+    def __lt__(self, other):
+        return self.uri < other.uri
+
+    def __eq__(self, other):
+        return self.uri == other.uri
+
     def translate(self, d, lang):
         if lang in d:
             return d[lang]
@@ -81,6 +89,11 @@ config = yaml.load(
 config['languages'] = yaml.load(
     open(os.path.join("config", "config.yaml"), encoding='utf-8'))['languages']
 
+if 'language' in cookie:
+    language = cookie['language'].value
+else:
+    language = 'en'
+
 
 g = rdflib.Graph()
 g.load("dwcterms.rdf")
@@ -105,26 +118,45 @@ for s, p, o in t:
         elif str(p) == "http://www.w3.org/2004/02/skos/core#prefLabel":
             term.labels[o.language] = str(o)
 
+
+# Make variable to hold terms not specified in config
+dwcterms = Term.terms.copy()
+
+# Remove terms in config
+
+
+for group in config['grouping']:
+    for term in dwcterms:
+        if term.name in config['terms'][group] or term.name == '':
+            #             print("Removing", term.name)
+            dwcterms.remove(term)
+
+dwcterms.sort()
+
+# Append these to the config under new headline
+dwc_name = 'Other_DwC_Terms'
+config['grouping'].append(dwc_name)
+config['terms'][dwc_name] = []
+for term in dwcterms:
+    config['terms'][dwc_name].append(term.name)
+# print("New config\n", config)
+# print("Other_DwC_Terms\n", config['terms'][dwc_name])
+
 # Add terms not in dwc
-try:
-    import AeN.scripts.config.fields as fields
-    for field in fields.fields:
-        term = Term.get(field['name'])
 
-        if not(term.labels):  # Set the label
-            term.labels = {'en': field['disp_name']}
+for field in fields.fields:
+    term = Term.get(field['name'])
 
-        if not(term.validations):  # Set the validation input
+    if not(term.labels):  # Set the label
+        term.labels = {'en': field['disp_name']}
 
-            term.validations = {
-                'en': field['valid']['input_message'].replace('\n', '</br>')}
+    if not(term.validations):  # Set the validation input
+
+        term.validations = {
+            'en': field['valid']['input_message'].replace('\n', '</br>')}
 
 
-except ImportError as e:
-    # Module fields not found
-    pass
-
-ignore = []  # ["Organism", "Occurrence", "Taxon"]  # ?
+# ignore = []  # ["Organism", "Occurrence", "Taxon"]  # ?
 
 mofterms = [
     "measurementID", "measurementType", "measurementValue",
@@ -134,7 +166,7 @@ mofterms = [
 ]
 
 # Is this used?
-dwcterms = [t for t in Term.terms if t.name not in ignore]
+
 
 method = os.environ.get("REQUEST_METHOD", "GET")
 
@@ -144,12 +176,9 @@ from mako.lookup import TemplateLookup
 templates = TemplateLookup(
     directories=['templates'], output_encoding='utf-8')
 
-if 'language' in cookie:
-    language = cookie['language'].value
-else:
-    language = 'en'
 
-# method = 'POST'
+method = 'POST'
+# method = 'Test'
 
 if method == "GET":  # This is for getting the page
 
@@ -182,12 +211,16 @@ elif method == "POST":
         #         print(group)
         for term in config['terms'][group]:
             terms_config.append(term)
+
+
 #     print(terms_config)
 #     print(terms)
     # Use the config terms to sort the terms from the form
     for term in terms_config:
         if term in form and term not in reserved:
             terms.append(term)
+
+        # Add terms from darwin core not in the config
 
     print("Content-Type: application/vnd.ms-excel")
     print("Content-Disposition: attachment; filename=template.xlsx\n")
@@ -198,13 +231,8 @@ elif method == "POST":
 
     path = "/tmp/" + next(tempfile._get_candidate_names()) + '.xlsx'
 
-    import AeN.scripts.make_xlsx as mx
-
     # Need to make the field_dict and append usefull info from dwc
     field_dict = mx.make_dict_of_fields()
-    depth = field_dict['eventDate']
-#     print(depth.name, depth.disp_name, depth.validation)
-#     print(terms)
 
     for t in Term.terms:
         #         print(field)
@@ -218,7 +246,21 @@ elif method == "POST":
                     textwrap.fill(
                         ' '.join(t.definition(language).split()), width=40)
                 field_dict[t.name].set_validation(valid)
-    depth = field_dict['eventDate']
+        else:
+            field_dict[t.name] = mx.Field(
+                name=t.name,
+                disp_name=t.label(language),
+                width=len(t.label(language)),
+                validation={'validate': 'any',
+                            'input_title': t.label(language),
+                            'input_message': 'Darwin core supl. info:\n' +
+                            textwrap.fill(
+                                ' '.join(t.definition(language).split()),
+                                width=40)
+                            }
+
+            )
+
 #     print(depth.name, depth.disp_name, depth.validation)
     mx.write_file(path, terms, field_dict)
 #     workbook = xlsxwriter.Workbook(path)

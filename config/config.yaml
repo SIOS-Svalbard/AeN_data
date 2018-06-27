@@ -20,7 +20,7 @@ cores:
             samplingProtocol]
           identification: [Taxon, phylum, class, order, family]
           description: [colour, smell, description]
-          measurement: [individualCount, chlorophyll, weightInGrams,
+          measurement: [individualCount, chlorophyllA, phaeopigment, weightInGrams,
             seaWaterSalinity, seaWaterTemperatueInCelsius, seaWaterPressure ]
           data : [dataFilename]
           relation : [parentEventID]

@@ -2,13 +2,46 @@
 <meta charset='utf-8'>
 <title>Nansen Legacy Excel Template Generator</title>
 <style>
-body { font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif; width: 90%; margin: 0 auto; }
-fieldset { margin-top: 1em; }
-fieldset label { display: block; float: left; width: 24em; margin-right: 1em; }
-fieldset legend { font-weight: bold; text-transform: uppercase; }
-fieldset { user-select: none; }
-main { width: 60%; }
-aside { height: 100%; width: 35%; position: fixed; right: 0; top: 0; border-left: 2px solid #aaa; padding-left: 1em; padding-right: 2em; background: #fcfcfc; }
+body{ 
+	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
+ 	width: 90%; 
+ 	margin: 0 auto; 
+ }
+fieldset{
+	float:left;
+	margin-top: 1em; 
+	width: 45%; 
+	box-sizing: border-box; 
+}
+fieldset label{ 
+	display: block;
+	float: left;
+	width: 24em;
+	margin-right: 1em;
+}
+fieldset legend{ 
+	font-weight: bold;
+	text-transform: uppercase;
+}
+main{ 
+	width: 60%;
+}
+.wrapper{
+    margin: auto;
+    width: 100%;
+    padding:10px;
+}
+aside{ 
+	height: 100%;
+ 	width: 35%;
+ 	position: fixed;
+ 	right: 0; 
+ 	top: 0; 
+ 	border-left: 2px solid #aaa; 
+ 	padding-left: 1em; 
+ 	padding-right: 2em; 
+ 	background: #fcfcfc; 
+ }
 
 #select-language { float: right; }
 </style>
@@ -48,9 +81,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
       	<p><b>Validation info:</b>
         <p>${term.validation(lang)}
       % else:
-        <p><b>Validation error:</b>
-        <p>${lang}
-        <p>${term.validations}
+        <p><b>No validation</b>
       % endif
       % if term.definition(lang):
         <p><b>Darwin core info (validation takes precedence for formating):</b>
@@ -81,10 +112,12 @@ document.addEventListener("DOMContentLoaded", function(e) {
 <p>Check the boxes next to the terms you want to include in your template and click the <b>Create template</b> button.
 <br><small><a href='http://rs.tdwg.org/dwc/terms/'>Darwin Core Terms: A quick reference guide</a></small>
 <form method=post>
+<p><input type=submit value='Create template'>
+<div class="wrapper">
 % for group in config['grouping']:
   <% terms = config['terms'][group] %>
-  <fieldset>
-    <legend>${group}</legend>
+  <fieldset  >
+    <legend>${group.replace('_',' ')}</legend>
     % for name in sorted(terms):
       <% term = Term.get(name) %>
       <label data-help='${term.name}'>
@@ -102,15 +135,14 @@ document.addEventListener("DOMContentLoaded", function(e) {
     % endfor
   </fieldset>
 % endfor
-<fieldset>
+</div>
+<!--<fieldset>
   <legend>Other Options</legend>
-<!--  <label><input name=uuid type=checkbox value=y checked>Generate occurrence IDs (UUIDs)</label>
+  <label><input name=uuid type=checkbox value=y checked>Generate occurrence IDs (UUIDs)</label>
   <label><input name=measurementorfact type=checkbox value=y>Generate a 'Measurement or Fact' sheet</label>
   <label><input name=metadata type=checkbox value=y disabled>Generate a metadata sheet</label>
   <label><input name=readme type=checkbox value=y disabled>Generate a README sheet</label>
-  -->
-</fieldset>
-<p><input type=submit value='Create template'>
+</fieldset>  -->
 </form>
 </main>
 

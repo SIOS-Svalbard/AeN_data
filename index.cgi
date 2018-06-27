@@ -58,10 +58,11 @@ class Term:
         Term.terms.append(self)
 
     def __lt__(self, other):
-        return self.uri < other.uri
+        #         print(self.uri, other.uri)
+        return self.name.casefold() < other.name.casefold()
 
     def __eq__(self, other):
-        return self.uri == other.uri
+        return self.name.casefold() == other.name.casefold()
 
     def translate(self, d, lang):
         if lang in d:
@@ -177,7 +178,7 @@ templates = TemplateLookup(
     directories=['templates'], output_encoding='utf-8')
 
 
-method = 'POST'
+# method = 'POST'
 # method = 'Test'
 
 if method == "GET":  # This is for getting the page

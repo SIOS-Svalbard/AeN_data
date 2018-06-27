@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
       % if term.label(lang):
         <h1>${term.label(lang)} [${term.name}]</h1>
       % else:
-        <h1>${term.name}</h1>
+        <h1>[${term.name}]</h1>
       % endif
       <hr>
       % if term.validation(lang):
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
   <% terms = config['terms'][group] %>
   <fieldset  >
     <legend>${group.replace('_',' ')}</legend>
-    % for name in sorted(terms):
+    % for name in sorted(terms, key=lambda s: s.casefold()):
       <% term = Term.get(name) %>
       <label data-help='${term.name}'>
       <input type=checkbox value=y name='${term.name}'

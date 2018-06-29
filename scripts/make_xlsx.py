@@ -24,7 +24,7 @@ import fields as fields
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-06-27'
+__updated__ = '2018-06-29'
 
 DEBUG = 1
 
@@ -211,6 +211,8 @@ def make_dict_of_fields():
             new.set_cell_format(field['cell_format'])
         if 'width' in field:
             new.set_width(field['width'])
+        else:
+            new.set_width(len(field['disp_name']))
         if 'long_list' in field:
             new.set_long_list(field['long_list'])
 
@@ -273,8 +275,7 @@ def write_metadata(args, workbook, field_dict):
     sheet = workbook.add_worksheet('Metadata')
 
     metadata_fields = ['title', 'abstract', 'pi_name', 'pi_email', 'pi_institution',
-                       'pi_address', 'project_long',
-                       'project_short']
+                       'pi_address', 'recordedBy', 'projectID']
 
     parameter_format = workbook.add_format({
         'font_name': DEFAULT_FONT,
@@ -305,11 +306,15 @@ def write_metadata(args, workbook, field_dict):
         if field.validation:
             if args.verbose > 0:
                 print("Writing metadata validation")
+            valid_copy = field.validation.copy()
+            if len(valid_copy['input_message']) > 255:
+                valid_copy['input_message'] = valid_copy[
+                    'input_message'][:252] + '...'
             sheet.data_validation(first_row=ii,
                                   first_col=1,
                                   last_row=ii,
                                   last_col=1,
-                                  options=field.validation)
+                                  options=valid_copy)
             if field.cell_format:
                 cell_format = workbook.add_format(field.cell_format)
                 sheet.set_row(

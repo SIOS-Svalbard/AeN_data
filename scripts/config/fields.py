@@ -9,18 +9,26 @@ Each field is defined as a dictionary which should contain:
 
 Optional fields are:
     
-    width : the width of the cell
+    width : int
+            the width of the cell
     
-    dwcid : The Darwin core identifier (an url), if this is used the rest of the names should
+    dwcid : str
+            The Darwin core identifier (an url), if this is used the rest of the names should
             follow the Darwin core  
     
-    units : The measurement unit of the variable, using the standard in CF
+    units : str
+            The measurement unit of the variable, using the standard in CF
            Examples: 'm', 'm s-1', '
     
-    valid : a dictionary with definitions of the validation for the cell, as 
+    cf_name : str
+             The variable name in the CF standard
+    
+    valid : dict
+            a dictionary with definitions of the validation for the cell, as 
             per keywords used in Xlsxwriter 
             
-    cell_format :  a dictionary with definitions of the format for the cell, as
+    cell_format :  dict
+                   a dictionary with definitions of the format for the cell, as
                    per keywords in Xlsxwriter 
 
 These dictionaries should then be added to the list called fields
@@ -31,10 +39,10 @@ These dictionaries should then be added to the list called fields
 @deffield    updated: Updated
 '''
 import datetime as dt
-
+import sys
 
 __date__ = '2018-05-22'
-__updated__ = '2018-06-27'
+__updated__ = '2018-06-29'
 
 
 #==============================================================================
@@ -57,6 +65,7 @@ Could be read in with a code reader.''',
             'error_message': 'Needs to be a 32 characters long UUID'
         }
         }
+
 
 puuid = {'name': 'parentEventID',
          'disp_name': 'Parent sample UUID',
@@ -103,6 +112,7 @@ statID = {'name': 'statID',
               'error_message': 'Not a valid station id'
           }
           }
+
 
 stationName = {'name': 'stationName',
                'disp_name': 'Station name',
@@ -239,14 +249,15 @@ Example: 15.0012''',
 
 bottomDepthInMeters = {'name': 'bottomDepthInMeters',
                        'disp_name': 'Bottom Depth (m)',
-                       'width': 20,
                        'units': 'm',
+                       'cf_name': 'sea_floor_depth_below_sea_surface',
                        'valid': {
                            'validate': 'integer',
                            'criteria': '>=',
                            'value': 0,
                            'input_title': 'Bottom Depth (m)',
-                           'input_message': '''The bottom depth in integer meters.
+                           'input_message': '''Sea floor depth below sea surface.
+Bathymetric depth at measurement site.
 0 is the surface.''',
                            'error_title': 'Error',
                            'error_message': 'Integer >= 0'
@@ -255,7 +266,6 @@ bottomDepthInMeters = {'name': 'bottomDepthInMeters',
 
 sampleDepthInMeters = {'name': 'sampleDepthInMeters',
                        'disp_name': 'Sample Depth (m)',
-                       'width': 20,
                        'units': 'm',
                        'valid': {
                            'validate': 'integer',
@@ -272,7 +282,6 @@ sampleDepthInMeters = {'name': 'sampleDepthInMeters',
 
 maximumDepthInMeters = {'name': 'maximumDepthInMeters',
                         'disp_name': 'Maximum depth(m)',
-                        'width': 19,
                         'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/maximumDepthInMeters',
                         'valid': {
@@ -362,6 +371,19 @@ occurrenceRemarks = {'name': 'occurrenceRemarks',
                          'input_message': 'Comments or notes about the Occurrence.'
                      }
                      }
+
+recordedBy = {'name': 'recordedBy',
+              'disp_name': 'Recorded By',
+              'width': 40,
+              'dwcid': 'http://rs.tdwg.org/dwc/terms/recordedBy',
+              'valid': {
+                  'validate': 'any',
+                  'input_title': 'Recorded By',
+                  'input_message': '''Who has recorded/analysed the data. 
+Can be a concatenated list, separated by: ';'
+Example: John Doe; Ola Nordmann'''
+              }
+              }
 
 # number = {'name': 'number',
 #           'disp_name': 'Number',
@@ -476,40 +498,6 @@ dilution_factor = {'name': 'dilution_factor',
                    }
                    }
 
-chlorophyllA = {'name': 'chlorophyllA',
-                'disp_name': 'Chlorophyll a (mg/m^3)',
-                'width': 20,
-                'units': 'mg m-3',
-                'valid': {
-                    'validate': 'decimal',
-                    'criteria': '>=',
-                    'value': 0,
-                    'input_title': 'Chlorophyll a (mg/m^3)',
-                    'input_message': '''
-Chlorophyll in milligrams per cubic meter
-Positive float number (>= 0)''',
-                    'error_title': 'Error',
-                    'error_message': 'Float >= 0'
-                }
-                }
-
-phaeopigment = {'name': 'phaeopigment',
-                'disp_name': 'Phaeopigment (mg/m^3)',
-                'width': 20,
-                'units': 'mg m-3',
-                'valid': {
-                    'validate': 'decimal',
-                    'criteria': '>',
-                    'value': 0,
-                    'input_title': 'Phaeopigment (mg/m^3)',
-                    'input_message': '''
-Phaeopigment in milligrams per cubic meter
-Positive float number''',
-                    'error_title': 'Error',
-                    'error_message': 'Float > 0'
-                }
-                }
-
 
 filter = {'name': 'filter',
           'disp_name': 'Filter',
@@ -527,7 +515,6 @@ If no filtering is being done choose None''',
 
 filter_vol = {'name': 'filter_vol',
               'disp_name': 'Filter volume (mL)',
-              'width': 21,
               'valid': {
                   'validate': 'integer',
                   'criteria': '>',
@@ -541,7 +528,6 @@ filter_vol = {'name': 'filter_vol',
 
 methanol_vol = {'name': 'methanol_vol',
                 'disp_name': 'Methanol volume (mL)',
-                'width': 23,
                 'units': 'mL',
                 'valid': {
                     'validate': 'integer',
@@ -556,7 +542,6 @@ methanol_vol = {'name': 'methanol_vol',
 
 sample_vol = {'name': 'sample_vol',
               'disp_name': 'Sample volume (mL)',
-              'width': 23,
               'units': 'mL',
               'valid': {
                   'validate': 'integer',
@@ -572,7 +557,6 @@ sample_vol = {'name': 'sample_vol',
 
 subsample_vol = {'name': 'subsample_vol',
                  'disp_name': 'Subsample volume (mL)',
-                 'width': 23,
                  'units': 'mL',
                  'valid': {
                      'validate': 'integer',
@@ -587,7 +571,6 @@ subsample_vol = {'name': 'subsample_vol',
 
 subsample_number = {'name': 'subsample_number',
                     'disp_name': 'Number of subsamples',
-                    'width': 24,
                     'valid': {
                         'validate': 'integer',
                         'criteria': '>',
@@ -612,7 +595,9 @@ title['valid']['input_message'] = 'A short descriptive title of the dataset'
 
 abstract = make_string_dict('abstract')
 abstract['valid'][
-    'input_message'] = 'An abstract providing context for the dataset'
+    'input_message'] = '''An abstract providing context for the dataset.
+It should briefly explain the sampling and analysis procedures used to obtain the data.
+Here it is possible to refer to a published protocol'''
 
 pi_name = make_string_dict('pi_name')
 pi_name['disp_name'] = 'Principal investigator (PI)'
@@ -632,6 +617,18 @@ project_long['disp_name'] = 'Project long name'
 project_short = make_string_dict('project_short')
 project_short['disp_name'] = 'Project short name'
 
+
+projectID = {'name': 'projectID',
+             'disp_name': 'Project ID',
+             'width': 40,
+             'valid': {
+                 'validate': 'any',
+                 'input_title': 'Project ID',
+                 'input_message': '''The project ID.
+For the Nansen Legacy this is:
+The Nansen Legacy (RCN # 276730)'''
+             }
+             }
 
 #==============================================================================
 # Species names
@@ -671,7 +668,6 @@ When forming part of an Identification, this should be the name in lowest level 
 
 dataFilename = {'name': 'dataFilename',
                 'disp_name': 'Data filename',
-                'width': 13,
                 'valid': {
                     'validate': 'any',
                     'input_title': 'Data filename',
@@ -681,7 +677,6 @@ dataFilename = {'name': 'dataFilename',
 
 samplingProtocol = {'name': 'samplingProtocol',
                     'disp_name': 'Sampling protocol',
-                    'width': 22,
                     'valid': {
                         'validate': 'any',
                         'input_title': 'Sampling protocol',
@@ -694,8 +689,8 @@ samplingProtocol = {'name': 'samplingProtocol',
 
 seaWaterTemperatueInCelsius = {'name': 'seaWaterTemperatueInCelsius',
                                'disp_name': 'Sea Water Temp (C)',
-                               'width': 21,
                                'units': 'Celsius',
+                               'cf_name': 'sea_water_temperature',
                                'valid': {
                                    'validate': 'decimal',
                                    'criteria': '>',
@@ -709,9 +704,9 @@ Float number larger than -10 degrees C''',
                                }
 
 seaWaterSalinity = {'name': 'seaWaterSalinity',
-                    'disp_name': 'Sea Water Salinity',
-                    'width': 21,
+                    'disp_name': 'Sea Water Salinity (1e-3)',
                     'units': '1e-3',
+                    'cf_name': 'sea_water_salinity',
                     'valid': {
                         'validate': 'decimal',
                         'criteria': '>=',
@@ -729,7 +724,7 @@ Example: 0.029''',
 seaWaterPressure = {'name': 'seaWaterPressure',
                     'disp_name': 'Sea Water Pressure (dbar)',
                     'units': 'dbar',
-                    'width': 21,
+                    'cf_name': 'sea_water_pressure',
                     'valid': {
                         'validate': 'decimal',
                         'criteria': '>',
@@ -742,9 +737,259 @@ Float number larger than 0''',
                     }
                     }
 
+
+seaWaterChlorophyllA = {'name': 'seaWaterChlorophyllA',
+                        'disp_name': 'Sea Chl A (mg/m^3)',
+                        'units': 'mg m-3',
+                        'valid': {
+                            'validate': 'decimal',
+                            'criteria': '>=',
+                            'value': 0,
+                            'input_title': 'Sea Water Chlorophyll A (mg/m^3)',
+                            'input_message': '''
+Sea Water Chlorophyll in milligrams per cubic meter
+Positive float number (>= 0)''',
+                            'error_title': 'Error',
+                            'error_message': 'Float >= 0'
+                        }
+                        }
+
+seaWaterPhaeopigment = {'name': 'seaWaterPhaeopigment',
+                        'disp_name': 'Sea Phaeo (mg/m^3)',
+                        'units': 'mg m-3',
+                        'valid': {
+                            'validate': 'decimal',
+                            'criteria': '>',
+                            'value': 0,
+                            'input_title': 'Sea Water Phaeopigment (mg/m^3)',
+                            'input_message': '''
+Sea Water Phaeopigment in milligrams per cubic meter
+Positive float number''',
+                            'error_title': 'Error',
+                            'error_message': 'Float > 0'
+                        }
+                        }
+
+seaIceChlorophyllA = {'name': 'seaIceChlorophyllA',
+                      'disp_name': 'Ice Chl A (mg/m^3)',
+                      'units': 'mg m-3',
+                      'valid': {
+                          'validate': 'decimal',
+                          'criteria': '>=',
+                          'value': 0,
+                          'input_title': 'Sea Ice Chlorophyll a (mg/m^3)',
+                          'input_message': '''
+Sea Ice Chlorophyll in milligrams per cubic meter
+Positive float number (>= 0)''',
+                          'error_title': 'Error',
+                          'error_message': 'Float >= 0'
+                      }
+                      }
+
+seaIcePhaeopigment = {'name': 'seaIcePhaeopigment',
+                      'disp_name': 'Ice Phaeo (mg/m^3)',
+                      'units': 'mg m-3',
+                      'valid': {
+                          'validate': 'decimal',
+                          'criteria': '>',
+                          'value': 0,
+                          'input_title': 'Sea Ice Phaeopigment (mg/m^3)',
+                          'input_message': '''
+Sea Ice Phaeopigment in milligrams per cubic meter
+Positive float number''',
+                          'error_title': 'Error',
+                          'error_message': 'Float > 0'
+                      }
+                      }
+
+sedimentChlorophyllA = {'name': 'sedimentChlorophyllA',
+                        'disp_name': 'Sediment Chl A (mg/m^3)',
+                        'units': 'mg m-3',
+                        'valid': {
+                            'validate': 'decimal',
+                            'criteria': '>=',
+                            'value': 0,
+                            'input_title': 'Sediment Chlorophyll a (mg/m^3)',
+                            'input_message': '''
+Sediment Chlorophyll in milligrams per cubic meter
+Positive float number (>= 0)''',
+                            'error_title': 'Error',
+                            'error_message': 'Float >= 0'
+                        }
+                        }
+
+sedimentPhaeopigment = {'name': 'sedimentPhaeopigment',
+                        'disp_name': 'Sediment Phaeo (mg/m^3)',
+                        'units': 'mg m-3',
+                        'valid': {
+                            'validate': 'decimal',
+                            'criteria': '>',
+                            'value': 0,
+                            'input_title': 'Sediment Phaeopigment (mg/m^3)',
+                            'input_message': '''
+Sediment Phaeopigment in milligrams per cubic meter
+Positive float number''',
+                            'error_title': 'Error',
+                            'error_message': 'Float > 0'
+                        }
+                        }
+
+
+seaWaterTotalDIC = {'name': 'seaWaterTotalDIC',
+                    'disp_name': 'Sea DIC (umol/kg)',
+                    'units': 'umol kg-1',
+                    'cf_name': 'mole_concentration_of_dissolved_inorganic_carbon_in_sea_water',
+                    'valid': {
+                        'validate': 'decimal',
+                        'criteria': '>=',
+                        'value': 0,
+                        'input_title': 'Sea Water DIC (umol/kg)',
+                        'input_message': '''
+Sea Water Total dissolved inorganic carbon in umol per kg
+Positive float number''',
+                        'error_title': 'Error',
+                        'error_message': 'Float >= 0'
+                    }
+                    }
+
+seaIceTotalDIC = {'name': 'seaIceTotalDIC',
+                  'disp_name': 'Ice DIC (umol/kg)',
+                  'units': 'umol kg-1',
+                  'valid': {
+                      'validate': 'decimal',
+                      'criteria': '>=',
+                      'value': 0,
+                      'input_title': 'Sea Ice DIC (umol/kg)',
+                      'input_message': '''
+Sea Ice Total dissolved inorganic carbon in umol per kg
+Positive float number''',
+                      'error_title': 'Error',
+                      'error_message': 'Float >= 0'
+                  }
+                  }
+
+seaWaterDeltaO18 = {'name': 'seaWaterDeltaO18',
+                    'disp_name': 'Sea delta-O-18 (1e-3)',
+                    'units': '1e-3',
+                    'valid': {
+                        'validate': 'decimal',
+                        'criteria': '>=',
+                        'value': 0,
+                        'input_title': 'Sea Water delta-O-18 (1e-3)',
+                        'input_message': '''
+Sea Water delta-O-18 in parts per thousand 
+Positive float number''',
+                        'error_title': 'Error',
+                        'error_message': 'Float >= 0'
+                    }
+                    }
+
+seaIceDeltaO18 = {'name': 'seaIceDeltaO18',
+                  'disp_name': 'Ice delta-O-18 (1e-3)',
+                  'units': '1e-3',
+                  'valid': {
+                      'validate': 'decimal',
+                      'criteria': '>=',
+                      'value': 0,
+                      'input_title': 'Sea Ice delta-O-18 (1e-3)',
+                      'input_message': '''
+Sea Ice delta-O-18 in parts per thousand 
+Positive float number''',
+                      'error_title': 'Error',
+                      'error_message': 'Float >= 0'
+                  }
+                  }
+
+seaWaterPH = {'name': 'seaWaterPH',
+              'disp_name': 'Sea Water pH  (total scale)',
+              'units': '1',
+              'cf_name': 'sea_water_ph_reported_on_total_scale',
+              'valid': {
+                  'validate': 'decimal',
+                  'criteria': 'between',
+                  'minimum': -2,
+                  'maximum': 16,
+                  'input_title': 'Sea Water pH  (total scale)',
+                  'input_message': '''
+Is the measure of acidity of seawater, defined as the negative logarithm of 
+the concentration of dissolved hydrogen ions plus bisulfate ions in a sea water
+medium; it can be measured or calculated; when measured the scale is defined 
+according to a series of buffers prepared in artificial seawater containing 
+bisulfate.
+Float in range [-2, 16]''',
+                  'error_title': 'Error',
+                  'error_message': 'Not in range [-2, 16]'
+              }
+              }
+
+seaWaterAlkalinity = {'name': 'seaWaterAlkalinity',
+                      'disp_name': 'Total Alkalinity (umol/kg)',
+                      'units': 'umol kg-1',
+                      'valid': {
+                          'validate': 'decimal',
+                          'criteria': '>=',
+                          'value': 0,
+                          'input_title': 'Sea Water Total Alkalinity (umol/kg)',
+                          'input_message': '''
+Sea Water Total Alkalinity in micromols per kilogram 
+Positive float number''',
+                          'error_title': 'Error',
+                          'error_message': 'Float >= 0'
+                      }
+                      }
+
+seaWaterTOC = {'name': 'seaWaterTOC',
+               'disp_name': 'TOC (mg/L)',
+               'units': 'mg L-1',
+               'valid': {
+                   'validate': 'decimal',
+                   'criteria': '>=',
+                   'value': 0,
+                   'input_title': 'TOC (mg/L)',
+                   'input_message': '''
+Sea Water Total Organic Carbon in milligrams per litre 
+Positive float number''',
+                   'error_title': 'Error',
+                   'error_message': 'Float >= 0'
+               }
+               }
+
+seaWaterPON = {'name': 'seaWaterPON',
+               'disp_name': 'PON (ug/L)',
+               'units': 'ug L-1',
+               'valid': {
+                   'validate': 'decimal',
+                   'criteria': '>=',
+                   'value': 0,
+                   'input_title': 'PON (ug/L)',
+                   'input_message': '''
+Sea Water Quantification of particulate organic nitrogen in micrograms per litre 
+Positive float number''',
+                   'error_title': 'Error',
+                   'error_message': 'Float >= 0'
+               }
+               }
+
+
+seaWaterPOC = {'name': 'seaWaterPOC',
+               'disp_name': 'POC (ug/L)',
+               'units': 'ug L-1',
+               'valid': {
+                   'validate': 'decimal',
+                   'criteria': '>=',
+                   'value': 0,
+                   'input_title': 'POC (ug/L)',
+                   'input_message': '''
+Sea Water Quantification of particulate organic carbon  in micrograms per litre 
+Positive float number''',
+                   'error_title': 'Error',
+                   'error_message': 'Float >= 0'
+               }
+               }
+
+
 weightInGrams = {'name': 'weightInGrams',
                  'disp_name': 'Weight (g)',
-                 'width': 10,
                  'units': 'g',
                  #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
                  'valid': {
@@ -758,29 +1003,30 @@ weightInGrams = {'name': 'weightInGrams',
                  }
                  }
 
-
-#     http://rs.tdwg.org/dwc/rdf/dwcterms.rdf
 # List of all the available fields
-fields = [uuid, puuid, cruiseID, statID,
-          eventDate, start_date, end_date,
-          eventTime, start_time, end_time,
-          decimalLatitude, decimalLongitude,
-          bottomDepthInMeters, sampleDepthInMeters,
-          maximumDepthInMeters, minimumDepthInMeters,
-          taxon, phylum, classify, order, family,
-          scientificName, individualCount,
-          stationName, dataFilename,
-          sample_type, samplingProtocol,
-          water_measurement, filter,
-          chlorophyllA, phaeopigment,
-          dilution_factor,
-          weightInGrams,
-          seaWaterSalinity, seaWaterTemperatueInCelsius, seaWaterPressure,
-          filter_vol, methanol_vol,
-          sample_vol, subsample_vol, subsample_number,
-          colour, smell, description,
-          occurrenceRemarks, fieldNotes, eventRemarks,
-          storage_temp, sample_owner,
-          title, abstract,
-          pi_name, pi_email, pi_institution, pi_address,
-          project_long, project_short]
+fields = [getattr(sys.modules[__name__], item) for item in dir() if not item.startswith(
+    "__") and isinstance(getattr(sys.modules[__name__], item), dict)]
+# uuid, puuid, cruiseID, statID,
+#           eventDate, start_date, end_date,
+#           eventTime, start_time, end_time,
+#           decimalLatitude, decimalLongitude,
+#           bottomDepthInMeters, sampleDepthInMeters,
+#           maximumDepthInMeters, minimumDepthInMeters,
+#           taxon, phylum, classify, order, family,
+#           scientificName, individualCount,
+#           stationName, dataFilename,
+#           sample_type, samplingProtocol,
+#           water_measurement, filter,
+#           chlorophyllA, phaeopigment,
+#           dilution_factor,
+#           weightInGrams,
+#           seaWaterSalinity, seaWaterTemperatueInCelsius, seaWaterPressure,
+#           filter_vol, methanol_vol,
+#           sample_vol, subsample_vol, subsample_number,
+#           colour, smell, description,
+#           occurrenceRemarks, fieldNotes, eventRemarks,
+#           storage_temp, sample_owner,
+#           title, abstract,
+#           pi_name, pi_email, pi_institution, pi_address,
+#           recordedBy,
+#           project_long, project_short, projectID]

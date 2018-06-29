@@ -29,7 +29,7 @@ import textwrap
 import AeN.scripts.config.fields as fields
 import AeN.scripts.make_xlsx as mx
 
-__updated__ = '2018-06-27'
+__updated__ = '2018-06-29'
 
 
 # cgitb.enable()
@@ -135,8 +135,12 @@ for group in config['grouping']:
 dwcterms.sort()
 
 # Append these to the config under new headline
+fill_name = 'Other'
 dwc_name1 = 'Other_DwC_Terms'
 dwc_name2 = 'Other_DwC_Terms_cont'
+if len(config['grouping']) % 2 != 0:
+    config['grouping'].append(fill_name)
+    config['terms'][fill_name] = []
 config['grouping'].append(dwc_name1)
 config['grouping'].append(dwc_name2)
 config['terms'][dwc_name1] = []

@@ -10,7 +10,7 @@ cores:
       - name: occurrence
         required: [eventID, cruiseID, stationName, eventTime, eventDate, decimalLatitude, decimalLongitude,bottomDepthInMeters]
         recommended: []
-        grouping: [required, event,relation, identification, description, measurement, data, comments ]
+        grouping: [required, event,relation, identification, description, measurement, ice, water, sediment, data, comments ]
         terms:
           required: [eventID, cruiseID, stationName,eventDate, eventTime, decimalLatitude, decimalLongitude, bottomDepthInMeters]
           event: [ start_date, end_date,
@@ -20,10 +20,12 @@ cores:
             samplingProtocol]
           identification: [Taxon, phylum, class, order, family]
           description: [colour, smell, description]
-          measurement: [individualCount, chlorophyllA, phaeopigment, weightInGrams,
-            seaWaterSalinity, seaWaterTemperatueInCelsius, seaWaterPressure ]
-          data : [dataFilename]
-          relation : [parentEventID]
+          measurement: [individualCount, weightInGrams]
+          water: [seaWaterAlkalinity, seaWaterChlorophyllA, seaWaterDeltaO18, seaWaterPH, seaWaterPOC, seaWaterPON, seaWaterPhaeopigment, seaWaterPressure, seaWaterSalinity, seaWaterTOC, seaWaterTemperatueInCelsius, seaWaterTotalDIC] 
+          ice: [seaIceChlorophyllA, seaIceDeltaO18, seaIcePhaeopigment, seaIceTotalDIC]
+          sediment: [sedimentChlorophyllA, sedimentPhaeopigment]
+          data: [dataFilename]
+          relation: [parentEventID]
           comments: [occurrenceRemarks, fieldNotes, eventRemarks]
   - name: event
     sheets:

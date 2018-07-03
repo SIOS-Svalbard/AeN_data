@@ -40,9 +40,10 @@ These dictionaries should then be added to the list called fields
 '''
 import datetime as dt
 import sys
+import copy
 
 __date__ = '2018-05-22'
-__updated__ = '2018-06-29'
+__updated__ = '2018-07-03'
 
 
 #==============================================================================
@@ -150,13 +151,13 @@ eventDate = {'name': 'eventDate',
              }
 
 
-start_date = {**eventDate}
+start_date = copy.deepcopy(eventDate)
 start_date['name'] = 'start_date'
 start_date['disp_name'] = 'Start date'
 start_date['valid']['input_title'] = 'Extraction start date'
 start_date.pop('dwcid')
 
-end_date = {**start_date}
+end_date = copy.deepcopy(start_date)
 end_date['name'] = 'end_date'
 end_date['disp_name'] = 'End date'
 end_date['valid']['input_title'] = 'Extraction end date'
@@ -183,13 +184,13 @@ Format is HH:MM ''',
              }
              }
 
-start_time = {**eventTime}
+start_time = copy.deepcopy(eventTime)
 start_time['name'] = 'start_time'
 start_time['disp_name'] = 'Start time'
 start_time['valid']['input_title'] = 'Extraction start time'
 start_time.pop('dwcid')
 
-end_time = {**start_time}
+end_time = copy.deepcopy(start_time)
 end_time['name'] = 'end_time'
 end_time['disp_name'] = 'End time'
 end_time['valid']['input_title'] = 'Extraction end time'

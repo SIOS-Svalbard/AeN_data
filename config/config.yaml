@@ -8,11 +8,11 @@ cores:
   - name: aen
     sheets:
       - name: occurrence
-        required: [eventID, cruiseID, stationName, eventTime, eventDate, decimalLatitude, decimalLongitude,bottomDepthInMeters]
+        required: [eventID, cruiseNumber, stationName, eventTime, eventDate, decimalLatitude, decimalLongitude,bottomDepthInMeters]
         recommended: []
         grouping: [required, event,relation, identification, description, measurement, ice, water, sediment, data, comments ]
         terms:
-          required: [eventID, cruiseID, stationName,eventDate, eventTime, decimalLatitude, decimalLongitude, bottomDepthInMeters]
+          required: [eventID, cruiseNumber, stationName,eventDate, eventTime, decimalLatitude, decimalLongitude, bottomDepthInMeters]
           event: [ start_date, end_date,
             statID,
             start_time, end_time,

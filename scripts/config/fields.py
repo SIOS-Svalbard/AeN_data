@@ -170,12 +170,13 @@ eventTime = {'name': 'eventTime',
              'valid': {
                  'validate': 'time',
                  'criteria': 'between',
-                 'minimum': dt.time(0, 0, 0),
-                 'maximum': dt.time(23, 59, 59, 999999),
+                 'minimum': 0,  # Time in decimal days
+                 'maximum': 0.9999999,  # Time in decimal days
                  'input_title': 'Event Time (UTC)',
                  'input_message': '''
 The time in UTC
-Format is HH:MM ''',
+Format is HH:MM 
+If MM >, 59 HH will be HH+1 ''',
                  'error_title': 'Error',
                  'error_message': 'Not a valid time'
              },

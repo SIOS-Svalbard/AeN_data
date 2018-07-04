@@ -34,6 +34,7 @@ from kivy.uix.bubble import Bubble
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
+from kivy.uix.popup import Popup
 from kivy.properties import BooleanProperty
 from kivy.uix.label import Label
 from kivy.properties import NumericProperty
@@ -43,7 +44,7 @@ from kivy.config import Config
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-25'
-__updated__ = '2018-06-25'
+__updated__ = '2018-07-03'
 
 DEBUG = 1
 TESTRUN = 0
@@ -143,6 +144,29 @@ class LimitText(TextInput):
     inc_num = BooleanProperty(0)
 
 
+class Alert(Popup):
+
+    def __init__(self, title, text):
+        super(Alert, self).__init__()
+        content = AnchorLayout(anchor_x='center', anchor_y='bottom')
+        content.add_widget(
+            Label(text=text, halign='left', valign='top', color=[1, 1, 1, 1])
+        )
+        ok_button = Button(
+            text='Ok', size_hint=(None, None), size=(50, 50))
+        content.add_widget(ok_button)
+
+        popup = Popup(
+            title=title,
+            content=content,
+            size_hint=(None, None),
+            size=(300, 200),
+            auto_dismiss=True,
+        )
+        ok_button.bind(on_press=popup.dismiss)
+        popup.open()
+
+
 class LabelWidget(FloatLayout):
 
     def activate_checkbox(self, checkbox, id):
@@ -162,24 +186,42 @@ class LabelApp(App):
     def build(self):
         widget = LabelWidget()
         self.widget = widget
-        self.IP = '158.39.46.86'
-        self.PORT = 9100
-        self.BUFFER_SIZE = 1024
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((self.IP, self.PORT))
+        self.socket = None
+        self.first_print = True
 
         return widget
 
     def on_stop(self, *args):
         print('Exiting')
-        self.socket.close()
+        if self.socket:
+            self.socket.close()
         return True
 
+    def start_printer(self, ip):
+        self.IP = ip
+        self.PORT = 9100
+        self.BUFFER_SIZE = 1024
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((self.IP, self.PORT))
+
     def send_to_printer(self, zpl):
+
         self.socket.send(bytes(zpl, "utf-8"))
 
     def print_label(self, *args):
         print("Printing label")
+        if self.first_print:
+            if self.widget.ids.ip.text != '':
+                try:
+                    self.start_printer(self.widget.ids.ip.text)
+                except (ConnectionRefusedError, OSError):
+                    Alert('Wrong IP', 'Please input a valid/correct IP')
+                    return
+            else:
+                Alert('Need IP', 'Please input an IP')
+                return
+            self.first_print = False
+
         text1 = self.widget.ids.text1.text
         text2 = self.widget.ids.text2.text
         text3 = self.widget.ids.text3.text

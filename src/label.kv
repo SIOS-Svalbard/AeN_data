@@ -87,11 +87,24 @@
                     
                 LimitText:
                     id: text4
+                    
+            GridLayout:
+                cols : 1
+                padding: [10, 10]
+                row_force_default: True
+                row_default_height: '30dp'
                 
-        
+                Label:
+                    text: 'IP of printer (ex: 192.168.1.1)'
+                        
+                TextInput:
+                    id: ip
+                    size_hint:(.1,.1)   
     AnchorLayout:
         anchor_x: "center"
         anchor_y: 'bottom'
+        
+        
         BoxLayout:
             height:  '50dp'
             Label:

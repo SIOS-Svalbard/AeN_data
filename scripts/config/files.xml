@@ -3,35 +3,26 @@
 	<file name='Benthos_trawl'>
 		<disp_name>Benthos Trawl</disp_name>
 		<fields>
-			<li>uuID</li>
-			<li>cruiseID</li>
+			<li>eventID</li>
+			<li>cruiseNumber</li>
 			<li>statID</li>
 			<li>eventDate</li>
 			<li>eventTime</li>
-			<li>DecimalLatitude</li>
-			<li>DecimalLongitude</li>
-			<li>depthInMeters</li>
-			<li>Taxon</li>
-			<li>phylum</li>
-			<li>class</li>
-			<li>order</li>
-			<li>family</li>
-			<li>individualCount</li>
-			<li>weightInGrams</li>
-			<li>occurrenceRemarks</li>
+			<li>decimalLatitude</li>
+			<li>decimalLongitude</li>
 		</fields>
 	</file>
-	<file name='Benthos_grab'>
+<!--	<file name='Benthos_grab'>
 		<disp_name>Benthos Grab</disp_name>
 		<fields>
 			<li>UUID</li>
 			<li>SHIPID</li>
-			<li>STATID</li>
+			<li>statID</li>
 			<li>EventDate</li>
 			<li>eventTime</li>
-			<li>DecimalLatitude</li>
-			<li>DecimalLongitude</li>
-			<li>DepthInMeters</li>
+			<li>decimalLatitude</li>
+			<li>decimalLongitude</li>
+			<li>depthInMeters</li>
 			<li>Taxon</li>
 			<li>Phylum</li>
 			<li>Class</li>
@@ -44,7 +35,7 @@
 			<li>occurrenceRemarks</li>
 		</fields>
 	</file>
-	<file name='Zooplankton_whole_data'>
+ 	<file name='Zooplankton_whole_data'>
 		<disp_name>Zooplankton Whole Data</disp_name>
 		<fields>
 			<li>UUID</li>
@@ -162,6 +153,7 @@
 			<li>occurrenceRemarks</li>
 		</fields>
 	</file>
+	-->
 </config>
 
 <!-- 			<li>Sample_type</li> -->

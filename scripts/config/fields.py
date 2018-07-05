@@ -43,7 +43,7 @@ import sys
 import copy
 
 __date__ = '2018-05-22'
-__updated__ = '2018-07-04'
+__updated__ = '2018-07-05'
 
 
 #==============================================================================
@@ -92,7 +92,7 @@ cruiseNumber = {'name': 'cruiseNumber',
                 'valid': {
                     'validate': 'list',
                     'source': ['2018616', '2018707', '2018709', '2018710'],
-                    'input_title': 'Cruise ID',
+                    'input_title': 'Cruise NUmber',
                     'input_message': '''This is the same for one cruise''',
                     'error_title': 'Error',
                     'error_message': 'Not a valid cruise number '

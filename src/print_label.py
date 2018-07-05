@@ -44,7 +44,7 @@ from kivy.config import Config
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-25'
-__updated__ = '2018-07-04'
+__updated__ = '2018-07-05'
 
 DEBUG = 1
 TESTRUN = 0
@@ -60,7 +60,7 @@ def new_hex_uuid():
     uuid : string
            uuid expressed as a hex value
     """
-    return uuid.uuid1().hex  # Based on host ID and time
+    return str(uuid.uuid1())  # Based on host ID and time
 
 
 def create_label(uuid, text1, text2, text3, text4):

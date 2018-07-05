@@ -355,6 +355,7 @@ def make_xlsx(args, file, field_dict):
 
     header_format = workbook.add_format({
         #         'bg_color': '#C6EFCE',
+        'font_color': '#FF0000',
         'font_name': DEFAULT_FONT,
         'bold': False,
         'text_wrap': False,
@@ -432,7 +433,11 @@ def make_xlsx(args, file, field_dict):
 
     # Add header, done after the other to get correct format
     data_sheet.write(0, 0, file['disp_name'], header_format)
-
+    # Add hint about pasting
+    data_sheet.merge_range(0, 1, 0, 7,
+                           "When pasting only use 'paste special' / 'paste only', selecting numbers and/or text ",
+                           header_format)
+    # Set height of row
     data_sheet.set_row(0, height=24)
 
     # Freeze the rows at the top
@@ -470,7 +475,7 @@ def write_file(url, fields, field_dict):
     args.verbose = 0
     args.dir = os.path.dirname(url)
     file = {'name': os.path.basename(url).split('.')[0],
-            'disp_name': 'Enter measurement type',
+            'disp_name': 'Replace with measurement type',
             'fields': fields}
 
     make_xlsx(args, file, field_dict)

@@ -53,35 +53,35 @@ __updated__ = '2018-07-05'
 
 uuid = {'name': 'eventID',
         'disp_name': 'Sample ID',
-        'width': 34,
+        'width': 38,
         'dwcid': 'http://rs.tdwg.org/dwc/terms/eventID',
         'valid': {
             'validate': 'length',
             'criteria': '==',
-            'value': 32,
+            'value': 36,
             'input_title': 'Sample ID',
-            'input_message': '''Should be a 32 characters long UUID without -.
+            'input_message': '''Should be a 36 character long UUID including 4 '-'.
 Could be read in with a code reader.''',
             'error_title': 'Error',
-            'error_message': 'Needs to be a 32 characters long UUID'
+            'error_message': "Needs to be a 36 characters long UUID including 4 '- '"
         }
         }
 
 
 puuid = {'name': 'parentEventID',
          'disp_name': 'Parent sample UUID',
-         'width': 34,
+         'width': 38,
          'dwcid': 'http://rs.tdwg.org/dwc/terms/parentEventID',
          'valid': {
              'validate': 'length',
              'criteria': '==',
-             'value': 32,
+             'value': 36,
              'input_title': 'Parent sample UUID',
              'input_message': '''ID of the sample this subsample was taken from.
-Should be a 32 characters long UUID without -
+Should be a 36 characters long UUID including 4 '-'
 Could be read in with a code reader.''',
              'error_title': 'Error',
-             'error_message': 'Needs to be 32 characters long'
+             'error_message': "Needs to be a 36 characters long UUID including 4 '- '"
          }
          }
 

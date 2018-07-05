@@ -31,7 +31,7 @@ from argparse import RawDescriptionHelpFormatter
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-07-03'
-__updated__ = '2018-07-03'
+__updated__ = '2018-07-05'
 
 DEBUG = 1
 
@@ -46,7 +46,7 @@ def create_label():
     """
     uuids = []
     for i in range(4):
-        uuids.append(uuid.uuid1().hex)
+        uuids.append(str(uuid.uuid1()))
         # Ensure that we are not generating them to fast
         time.sleep(1. / 1e6)  # 1 us
 

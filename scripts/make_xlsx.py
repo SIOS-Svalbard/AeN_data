@@ -24,7 +24,7 @@ import fields as fields
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-06-29'
+__updated__ = '2018-07-05'
 
 DEBUG = 1
 
@@ -297,11 +297,13 @@ def write_metadata(args, workbook, field_dict):
 
     heigth = 15
     sheet.set_column(0, 0, width=30)
-    sheet.set_column(1, 1, width=50)
+    sheet.set_column(2, 2, width=50)
     for ii, mfield in enumerate(metadata_fields):
         field = field_dict[mfield]
         sheet.write(ii, 0, field.disp_name, parameter_format)
-        sheet.write(ii, 1, '', input_format)
+        sheet.write(ii, 1, field.name, parameter_format)
+        sheet.set_column(1, 1, None, None, {'hidden': True})
+        sheet.write(ii, 2, '', input_format)
         sheet.set_row(ii, heigth)
         if field.validation:
             if args.verbose > 0:
@@ -372,8 +374,9 @@ def make_xlsx(args, file, field_dict):
         'bg_color': '#B9F6F5'
     })
 
-    title_row = 2  # starting row
-    start_row = title_row + 1
+    title_row = 1  # starting row
+    start_row = title_row + 2
+    parameter_row = title_row + 1  # Parameter row, hidden
     end_row = 20000  # ending row
 
     for ii in range(len(file['fields'])):  # Loop over all the variables needed
@@ -383,8 +386,9 @@ def make_xlsx(args, file, field_dict):
         # Write title row
         data_sheet.write(title_row, ii, field.disp_name, field_format)
 
-        # Write row above with parameter name
-        data_sheet.write(title_row - 1, ii, field.name)
+        # Write row below with parameter name
+        data_sheet.write(parameter_row, ii, field.name)
+        # Write validation
         if field.validation is not None:
             if args.verbose > 0:
                 print("Writing validation for", file['fields'][ii])
@@ -435,7 +439,7 @@ def make_xlsx(args, file, field_dict):
     data_sheet.freeze_panes(start_row, 0)
 
     # Hide ID row
-    data_sheet.set_row(title_row - 1, None, None, {'hidden': True})
+    data_sheet.set_row(parameter_row, None, None, {'hidden': True})
 
     # Colour the rows alternating
 #     row_col = workbook.add_format({'bg_color': '#F7FFFF'})

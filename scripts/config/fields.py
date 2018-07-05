@@ -88,11 +88,10 @@ Could be read in with a code reader.''',
 
 cruiseNumber = {'name': 'cruiseNumber',
                 'disp_name': 'Cruise number',
-                'width': 9,
                 'valid': {
                     'validate': 'list',
                     'source': ['2018616', '2018707', '2018709', '2018710'],
-                    'input_title': 'Cruise NUmber',
+                    'input_title': 'Cruise Number',
                     'input_message': '''This is the same for one cruise''',
                     'error_title': 'Error',
                     'error_message': 'Not a valid cruise number '
@@ -176,7 +175,7 @@ eventTime = {'name': 'eventTime',
                  'input_message': '''
 The time in UTC
 Format is HH:MM 
-If MM >, 59 HH will be HH+1 ''',
+If MM > 59, HH will be HH + 1 ''',
                  'error_title': 'Error',
                  'error_message': 'Not a valid time'
              },

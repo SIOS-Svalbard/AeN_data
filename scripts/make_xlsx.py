@@ -404,6 +404,7 @@ def make_xlsx(args, file, field_dict):
                     field.name, valid_copy['source'])
                 valid_copy.pop('source', None)
                 valid_copy['value'] = ref
+                valid_copy['input_message'].replace('\n', '\n\r')
                 data_sheet.data_validation(first_row=start_row,
                                            first_col=ii,
                                            last_row=end_row,

@@ -24,7 +24,7 @@ import fields as fields
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-22'
-__updated__ = '2018-07-05'
+__updated__ = '2018-07-06'
 
 DEBUG = 1
 
@@ -313,9 +313,9 @@ def write_metadata(args, workbook, field_dict):
                 valid_copy['input_message'] = valid_copy[
                     'input_message'][:252] + '...'
             sheet.data_validation(first_row=ii,
-                                  first_col=1,
+                                  first_col=2,
                                   last_row=ii,
-                                  last_col=1,
+                                  last_col=2,
                                   options=valid_copy)
             if field.cell_format:
                 cell_format = workbook.add_format(field.cell_format)
@@ -415,6 +415,7 @@ def make_xlsx(args, file, field_dict):
                 if len(valid_copy['input_message']) > 255:
                     valid_copy['input_message'] = valid_copy[
                         'input_message'][:252] + '...'
+                valid_copy['input_message'].replace('\n', '\n\r')
                 data_sheet.data_validation(first_row=start_row,
                                            first_col=ii,
                                            last_row=end_row,

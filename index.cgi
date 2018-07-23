@@ -237,7 +237,7 @@ elif method == "POST":
         # Add terms from darwin core not in the config
 
     print("Content-Type: application/vnd.ms-excel")
-    print("Content-Disposition: attachment; filename=template.xlsx\n")
+    print("Content-Disposition: attachment; filename=AeN_cruisenumber_stationnumber_instr_sequence.xlsx\n")
 
 #     for term in Term.terms:
 #         print(term.name, term.definitions)

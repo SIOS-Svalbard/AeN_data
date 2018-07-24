@@ -39,8 +39,7 @@ DEBUG = 1
 def create_label():
     """
     Creates the ZPL code for the label with 4 uuids.
-
-    ----------
+----------
     zpl : str
         The formatted ZPL code string that should be sent to the Zebra printer 
     """
@@ -52,21 +51,22 @@ def create_label():
 
     zpl = '''
 CT~~CD,~CC^~CT~
-^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD15^JUS^LRN^CI0^XZ
+^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD30^JUS^LRN^CI0^XZ
 ^XA
 ^MMT
 ^PW650
-^LL0154
+^LL0100
 ^LS0
-^BY88,88^FT50,138^BXN,4,200,22,22,1,~
+^BY88,88^FT65,119^BXN,3,200,22,22,1,~
 ^FH\^FD{0}^FS
-^BY88,88^FT204,138^BXN,4,200,22,22,1,~
+^BY88,88^FT219,119^BXN,3,200,22,22,1,~
 ^FH\^FD{1}^FS
-^BY88,88^FT358,138^BXN,4,200,22,22,1,~
+^BY88,88^FT373,119^BXN,3,200,22,22,1,~
 ^FH\^FD{2}^FS
-^BY88,88^FT511,138^BXN,4,200,22,22,1,~
+^BY88,88^FT526,119^BXN,3,200,22,22,1,~
 ^FH\^FD{3}^FS
 ^PQ1,0,1,Y^XZ'''.format(uuids[0], uuids[1], uuids[2], uuids[3])
+
 
     del uuids
 

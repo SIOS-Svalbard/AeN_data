@@ -95,18 +95,18 @@ def create_label(uuid, text1, text2, text3, text4):
     # with the necessary text {X}.
     zpl = '''
 CT~~CD,~CC^~CT~
-^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD15^JUS^LRN^CI0^XZ
+^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD30^JUS^LRN^CI0^XZ
 ^XA
 ^MMT
 ^PW898
 ^LL0295
 ^LS0
-^BY110,110^FT506,131^BXN,5,200,22,22,1,~
+^BY110,110^FT506,141^BXN,4,200,22,22,1,~
 ^FH\^FD{0}^FS
-^FT463,171^A0N,21,21^FH\^FD{1}^FS
-^FT463,204^A0N,21,21^FH\^FD{2}^FS
-^FT462,237^A0N,21,21^FH\^FD{3}^FS
-^FT463,273^A0N,21,21^FH\^FD{4}^FS
+^FT463,181^A0N,21,21^FH\^FD{1}^FS
+^FT463,214^A0N,21,21^FH\^FD{2}^FS
+^FT462,247^A0N,21,21^FH\^FD{3}^FS
+^FT463,283^A0N,21,21^FH\^FD{4}^FS
 ^FT462,33^A0R,21,21^FH\^FD{5}^FS
 ^PQ1,0,1,Y^XZ'''.format(uuid, text1, text2, text3, text4, uuid[:8])
 #     zpl = '''
@@ -220,7 +220,7 @@ class LabelApp(App):
             else:
                 Alert('Need IP', 'Please input an IP')
                 return
-            self.first_print = False
+            # self.first_print = False
 
         text1 = self.widget.ids.text1.text
         text2 = self.widget.ids.text2.text
@@ -241,7 +241,8 @@ class LabelApp(App):
                     time.sleep(seconds / 1e6)  # Wait 1 us
 
             self.send_to_printer(zpl)
-
+        # Stop socket after each run
+        self.on_stop()
 
 def main(argv=None):  # IGNORE:C0111
     '''Command line options.'''

@@ -95,7 +95,7 @@ def create_label(uuid, text1, text2, text3, text4):
     # with the necessary text {X}.
     zpl = '''
 CT~~CD,~CC^~CT~
-^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD30^JUS^LRN^CI0^XZ
+^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD30^JUS^LRN^CI28^XZ
 ^XA
 ^MMT
 ^PW898
@@ -108,7 +108,16 @@ CT~~CD,~CC^~CT~
 ^FT462,247^A0N,21,21^FH\^FD{3}^FS
 ^FT463,283^A0N,21,21^FH\^FD{4}^FS
 ^FT462,33^A0R,21,21^FH\^FD{5}^FS
-^PQ1,0,1,Y^XZ'''.format(uuid, text1, text2, text3, text4, uuid[:8])
+^PQ1,0,1,Y^XZ'''.format(uuid, 
+        text1, 
+        text2,
+        text3,
+        text4,
+        # text1.encode(encoding='utf-8'), 
+        # text2.encode(encoding='utf-8'),
+        # text3.encode(encoding='utf-8'),
+        # text4.encode(encoding='utf-8'),
+        uuid[:8])
 #     zpl = '''
 #     CT~~CD,~CC^~CT~
 #     ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD15^JUS^LRN^CI0^XZ

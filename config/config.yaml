@@ -9,23 +9,23 @@ cores:
     sheets:
       - name: occurrence
         required: [eventID, cruiseNumber, stationName, eventTime, eventDate, decimalLatitude, decimalLongitude,bottomDepthInMeters]
-        recommended: []
-        grouping: [required, event,relation, identification, description, measurement, ice, water, sediment, data, comments ]
+        recommended: [eventRemarks,samplingProtocol,parentEventID]
+        grouping: [required, event, properties,identification, description, measurement, trawl_or_net, ice, water, sediment, data, comments ]
         terms:
-          required: [eventID, cruiseNumber, stationName,eventDate, eventTime, decimalLatitude, decimalLongitude, bottomDepthInMeters]
+          required: [eventID,parentEventID, cruiseNumber, stationName,eventDate, eventTime, decimalLatitude, decimalLongitude, bottomDepthInMeters]
           event: [ start_date, end_date,
-            statID,
-            start_time, end_time,
+            statID, recordNumber,
             sampleDepthInMeters, maximumDepthInMeters, minimumDepthInMeters,
-            samplingProtocol]
+            samplingProtocol, gearType, sampleType]
           identification: [Taxon, phylum, class, order, family]
           description: [colour, smell, description]
+          properties: [storageTemp,fixative,sampleLocation]
+          trawl_or_net: [end_time, middle_time, middleDecimalLatitude, middleDecimalLongitude, endDecimalLatitude, endDecimalLongitude]
           measurement: [individualCount, weightInGrams]
           water: [seaWaterAlkalinity, seaWaterChlorophyllA, seaWaterDeltaO18, seaWaterPH, seaWaterPOC, seaWaterPON, seaWaterPhaeopigment, seaWaterPressure, seaWaterSalinity, seaWaterTOC, seaWaterTemperatueInCelsius, seaWaterTotalDIC] 
           ice: [seaIceChlorophyllA, seaIceDeltaO18, seaIcePhaeopigment, seaIceTotalDIC]
           sediment: [sedimentChlorophyllA, sedimentPhaeopigment]
           data: [dataFilename]
-          relation: [parentEventID]
           comments: [occurrenceRemarks, fieldNotes, eventRemarks]
   - name: event
     sheets:

@@ -253,6 +253,78 @@ def read_xml(args, xmlfile):
         files.append(new)
     return files
 
+def write_conversion(args, workbook):
+    """
+    Adds a conversion sheet to workbook
+
+    Parameters
+    ----------
+    args : argparse object
+        The input arguments
+
+    workbook : xlsxwriter Workbook
+        The workbook for the conversion sheet
+
+
+    """
+
+    sheet = workbook.add_worksheet('Conversion')
+
+    parameter_format = workbook.add_format({
+        'font_name': DEFAULT_FONT,
+        'right': True,
+        'bottom': True,
+        'bold': False,
+        'text_wrap': True,
+        'valign': 'left',
+        'font_size': DEFAULT_SIZE + 2,
+        'bg_color': '#B9F6F5',
+    })
+    center_format = workbook.add_format({
+        'font_name': DEFAULT_FONT,
+        'right': True,
+        'bottom': True,
+        'bold': False,
+        'text_wrap': True,
+        'valign': 'center',
+        'font_size': DEFAULT_SIZE + 2,
+        'bg_color': '#23EEFF',
+    })
+    output_format = workbook.add_format({
+        'font_name': DEFAULT_FONT,
+        'right': True,
+        'bottom': True,
+        'bold': False,
+        'text_wrap': True,
+        'valign': 'left',
+        'font_size': DEFAULT_SIZE + 2,
+        'bg_color': '#FF94E8',
+    })
+
+    input_format = workbook.add_format({
+        'bold': False,
+        'font_name': DEFAULT_FONT,
+        'text_wrap': True,
+        'valign': 'left',
+        'font_size': DEFAULT_SIZE
+    })
+
+    heigth = 15
+    sheet.set_column(0, 2, width=30)
+
+    sheet.write(1,0, "Coordinate conversion ",parameter_format)
+    sheet.merge_range(2,0,2,1, "Degree Minutes Seconds ",center_format)
+    sheet.write(3,0, "Degrees ",parameter_format)
+    sheet.write(4,0, "Minutes ",parameter_format)
+    sheet.write(5,0, "Seconds ",parameter_format)
+    sheet.write(6,0, "Decimal degrees ",output_format)
+    sheet.write(6,1, "=B4+B5/60+B6/3600 ",output_format)
+    sheet.merge_range(7,0,7,1, "Degree decimal minutes",center_format)
+    sheet.write(8,0, "Degrees ",parameter_format)
+    sheet.write(9,0, "Decimal minutes ",parameter_format)
+    sheet.write(10,0, "Decimal degrees ",output_format)
+    sheet.write(10,1, "=B9+B10/60 ",output_format)
+
 
 def write_metadata(args, workbook, field_dict):
     """
@@ -454,6 +526,9 @@ def make_xlsx(args, file, field_dict):
 #     for row in range(start_row, int(end_row / 100), 2):
 #         data_sheet.set_row(row, cell_format=row_col)
 #         worksheet.write(row, 0, '')
+
+    write_conversion(args, workbook)
+
     workbook.close()
 
 

@@ -90,7 +90,7 @@ cruiseNumber = {'name': 'cruiseNumber',
                 'disp_name': 'Cruise number',
                 'valid': {
                     'validate': 'list',
-                    'source': ['2018616', '2018707', '2018709', '2018710'],
+                    'source': ['2018616','2018791', '2018707', '2018709', '2018710'],
                     'input_title': 'Cruise Number',
                     'input_message': '''This is the same for one cruise''',
                     'error_title': 'Error',
@@ -99,28 +99,25 @@ cruiseNumber = {'name': 'cruiseNumber',
                 }
 
 statID = {'name': 'statID',
-          'disp_name': 'Station ID',
+          'disp_name': 'Local Station ID',
           'width': 13,
           'valid': {
-              'validate': 'integer',
-              'criteria': '>',
-              'value': 99,
-              'input_title': 'Station ID',
-              'input_message': '''This ID should come from the ship.
->= 100''',
-              'error_title': 'Error',
-              'error_message': 'Not a valid station id'
+              'validate': 'any',
+              'input_title': 'Local Station ID',
+              'input_message': '''This ID is a running series (per gear) for each samling event and is found in the cruise logger.
+'''
           }
           }
 
 
 stationName = {'name': 'stationName',
-               'disp_name': 'Station name',
+               'disp_name': 'Station Name',
                'width': 13,
                'valid': {
                    'validate': 'any',
-                   'input_title': 'Station name',
-                   'input_message': 'The name of the station. NLEG..., etc'
+                   'input_title': 'Station Name',
+                   'input_message': '''The name of the station. NLEG..., etc
+This is recorded as SS(superstation) in the cruise logger.'''
                }
                }
 
@@ -184,16 +181,24 @@ If MM > 59, HH will be HH + 1 ''',
              }
              }
 
-start_time = copy.deepcopy(eventTime)
-start_time['name'] = 'start_time'
-start_time['disp_name'] = 'Start time'
-start_time['valid']['input_title'] = 'Extraction start time'
-start_time.pop('dwcid')
+# start_time = copy.deepcopy(eventTime)
+# start_time['name'] = 'start_time'
+# start_time['disp_name'] = 'Start time'
+# start_time['valid']['input_title'] = 'Extraction start time'
+# start_time.pop('dwcid')
+middle_time = copy.deepcopy(eventTime)
+middle_time['name'] = 'middle_time'
+middle_time['disp_name'] = 'Middle time'
+middle_time['valid']['input_title'] = 'Middle time'
+middle_time['valid']['input_message'] = 'Middle time for event, for instance for noting the deepest point of a trawl or net haul'+ eventTime['valid']['input_message']
+middle_time.pop('dwcid')
 
-end_time = copy.deepcopy(start_time)
+end_time = copy.deepcopy(eventTime)
 end_time['name'] = 'end_time'
 end_time['disp_name'] = 'End time'
-end_time['valid']['input_title'] = 'Extraction end time'
+end_time['valid']['input_title'] = 'End time'
+end_time['valid']['input_message'] = 'End time for event, for instance for use with a trawl or net haul'+ eventTime['valid']['input_message']
+end_time.pop('dwcid')
 
 
 #==============================================================================
@@ -244,6 +249,90 @@ Example: 15.0012''',
                     }
                     }
 
+endDecimalLatitude = {'name': 'endDecimalLatitude',
+                   'disp_name': 'End Latitude',
+                   'units': 'degrees_north',
+                   'valid': {
+                       'validate': 'decimal',
+                       'criteria': 'between',
+                       'minimum': -90,
+                       'maximum': 90,
+                       'input_title': 'End Decimal Latitude',
+                       'input_message': '''Latitude in decimal degrees.
+This is for use with for instance trawls and nets.
+Northern hemisphere is positive.
+Example: 78.1500''',
+                       'error_title': 'Error',
+                       'error_message': 'Not in range [-90, 90]'
+                   },
+                   'cell_format': {
+                       'num_format': '0.0000'
+                   }
+                   }
+
+endDecimalLongitude = {'name': 'endDecimalLongitude',
+                    'disp_name': 'End Longitude',
+                    'units': 'degree_east',
+                    'valid': {
+                        'validate': 'decimal',
+                        'criteria': 'between',
+                        'minimum': -180,
+                        'maximum': 180,
+                        'input_title': 'End Decimal Longitude',
+                        'input_message': '''Longitude in decimal degrees.
+This is for use with for instance trawls and nets.
+East of Greenwich (0) is positive.
+Example: 15.0012''',
+                        'error_title': 'Error',
+                        'error_message': 'Not in range [-180, 180]'
+                    },
+                    'cell_format': {
+                        'num_format': '0.0000'
+                    }
+                    }
+
+
+middleDecimalLatitude = {'name': 'middleDecimalLatitude',
+                   'disp_name': 'Middle Latitude',
+                   'units': 'degrees_north',
+                   'valid': {
+                       'validate': 'decimal',
+                       'criteria': 'between',
+                       'minimum': -90,
+                       'maximum': 90,
+                       'input_title': 'Middle Decimal Latitude',
+                       'input_message': '''Latitude in decimal degrees.
+This is for use with for instance trawls and nets and denotes the depest point.
+Northern hemisphere is positive.
+Example: 78.1500''',
+                       'error_title': 'Error',
+                       'error_message': 'Not in range [-90, 90]'
+                   },
+                   'cell_format': {
+                       'num_format': '0.0000'
+                   }
+                   }
+
+middleDecimalLongitude = {'name': 'middleDecimalLongitude',
+                    'disp_name': 'Middle Longitude',
+                    'units': 'degree_east',
+                    'valid': {
+                        'validate': 'decimal',
+                        'criteria': 'between',
+                        'minimum': -180,
+                        'maximum': 180,
+                        'input_title': 'Middle Decimal Longitude',
+                        'input_message': '''Longitude in decimal degrees.
+This is for use with for instance trawls and nets and denotes the depest point.
+East of Greenwich (0) is positive.
+Example: 15.0012''',
+                        'error_title': 'Error',
+                        'error_message': 'Not in range [-180, 180]'
+                    },
+                    'cell_format': {
+                        'num_format': '0.0000'
+                    }
+                    }
 #==============================================================================
 # Depths
 #==============================================================================
@@ -386,6 +475,16 @@ Example: John Doe; Ola Nordmann'''
               }
               }
 
+recordNumber = {'name': 'recordNumber',
+              'disp_name': 'Record Number',
+              'dwcid': 'http://rs.tdwg.org/dwc/terms/recordNumber',
+              'valid': {
+                  'validate': 'any',
+                  'input_title': 'Recorded Number',
+                  'input_message': '''This is an additional number used to identify the sample. 
+This is in addition to the sample ID (event ID)'''
+              }
+              }
 # number = {'name': 'number',
 #           'disp_name': 'Number',
 #           'width': 10,
@@ -467,7 +566,7 @@ water_measurement = {'name': 'water_measurement',
                      }
                      }
 
-storage_temp = {'name': 'storage_temp',
+storageTemp = {'name': 'storageTemp',
                 'disp_name': 'Storage temp',
                 'width': 15,
                 'valid': {
@@ -485,6 +584,24 @@ storage_temp = {'name': 'storage_temp',
                 }
                 }
 
+fixative = {'name': 'fixative',
+              'disp_name': 'Fixative',
+              'valid': {
+                  'validate': 'any',
+                  'input_title': 'Fixative',
+                  'input_message': '''Fixative used for sample '''
+              }
+              }
+
+sampleLocation = {'name': 'sampleLocation',
+              'disp_name': 'Sample Location',
+              'valid': {
+                  'validate': 'any',
+                  'input_title': 'Sample Location',
+                  'input_message': '''The storage locaiton on shore.
+Thos could for instance be an intitution or something more specific'''
+              }
+              }
 dilution_factor = {'name': 'dilution_factor',
                    'disp_name': 'Dilution factor',
                    'width': 20,
@@ -681,10 +798,29 @@ samplingProtocol = {'name': 'samplingProtocol',
                     'valid': {
                         'validate': 'any',
                         'input_title': 'Sampling protocol',
-                        'input_message': 'Could be for instance CTD, nutrients, etc.'
+                        'input_message': '''This should be a reference to the sampleing protocol used.
+For example: Nansen Legacy sampling protocols version XX section YY.'''
                     }
                     }
 
+gearType = {'name': 'gearType',
+                    'disp_name': 'Gear Type',
+                    'valid': {
+                        'validate': 'any',
+                        'input_title': 'Gear Type',
+                        'input_message': 'The type of gear used to retrive the sample'
+                    }
+                    }
+
+
+sampleType = {'name': 'sampleType',
+                    'disp_name': 'Sample Type',
+                    'valid': {
+                        'validate': 'any',
+                        'input_title': 'Sample Type',
+                        'input_message': 'The type of sample taken'
+                    }
+                    }
 
 # CF names
 

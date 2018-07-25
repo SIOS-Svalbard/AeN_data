@@ -1,0 +1,75 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>Nansen Legacy Excel Template Generator</title>
+<style>
+body{ 
+	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
+ 	width: 90%; 
+ 	margin: 0 auto; 
+ }
+fieldset{
+	float:left;
+	margin-top: 1em; 
+	width: 45%; 
+	box-sizing: border-box; 
+}
+fieldset label{ 
+	display: block;
+	float: left;
+	width: 24em;
+	margin-right: 1em;
+}
+fieldset legend{ 
+	font-weight: bold;
+	text-transform: uppercase;
+}
+main{ 
+	width: 60%;
+}
+.wrapper{
+    margin: auto;
+    width: 100%;
+    padding:10px;
+}
+</style>
+<main>
+<h1>Nansen Legacy Label printing</h1>
+<p>Input the text in the fields.</p>
+<form method=post>
+    <p><input type=submit value='Print label'><br>
+    <br>
+    <table>
+        <tr>
+            <th>Line 1:</th>
+            <th><input type="text" name="text1" value=${today} maxlength="18"></th>
+        </tr>
+        <tr>
+            <th>Line 2:</th>
+            <th><input type="text" name="text2" value="" maxlength="18"></th>
+        </tr>
+        <tr>
+            <th>Line 3:</th>
+            <th><input type="text" name="text3" value="" maxlength="18"></th>
+        </tr>
+        <tr>
+            <th>Line 4:</th>
+            <th><input type="text" name="text4" value="" maxlength="18"></th>
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <th>Number of labels:</th>
+            <th><input type="text" name="n" value="1"></th>
+        </tr>
+        <tr>
+            <th>Printer IP:</th>
+            <th> <input type="text" name="ip" value="10.3.64.237" ></th>
+        </tr>
+    </table>
+
+</main>
+
+<footer>
+
+</footer>

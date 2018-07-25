@@ -464,7 +464,6 @@ occurrenceRemarks = {'name': 'occurrenceRemarks',
 
 recordedBy = {'name': 'recordedBy',
               'disp_name': 'Recorded By',
-              'width': 40,
               'dwcid': 'http://rs.tdwg.org/dwc/terms/recordedBy',
               'valid': {
                   'validate': 'any',
@@ -592,6 +591,21 @@ fixative = {'name': 'fixative',
                   'input_message': '''Fixative used for sample '''
               }
               }
+
+bottleNumber = {'name': 'bottleNumber',
+                   'disp_name': 'Bottle Number',
+                   'valid': {
+                       'validate': 'integer',
+                       'criteria': '>',
+                       'value': 0,
+                       'input_title': 'Bottle Number',
+                       'input_message': '''The bottle number 
+Could be for instance the niskin bottle number.
+Positive integer''',
+                       'error_title': 'Error',
+                       'error_message': 'Integer > 0'
+                   }
+                   }
 
 sampleLocation = {'name': 'sampleLocation',
               'disp_name': 'Sample Location',
@@ -799,7 +813,7 @@ samplingProtocol = {'name': 'samplingProtocol',
                         'validate': 'any',
                         'input_title': 'Sampling protocol',
                         'input_message': '''This should be a reference to the sampleing protocol used.
-For example: Nansen Legacy sampling protocols version XX section YY.'''
+For exampel: Nansen Legacy sampling protocols version XX section YY.'''
                     }
                     }
 

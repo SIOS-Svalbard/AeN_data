@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset='utf-8'>
-<title>Nansen Legacy Excel Template Generator</title>
+<title>Nansen Legacy Label printing</title>
 <style>
 body{ 
 	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
@@ -34,6 +34,7 @@ main{
 </style>
 <main>
 <h1>Nansen Legacy Label printing</h1>
+<a href="../../index.html">Back to index</a><br>
 <p>Input the text in the fields.</p>
 <form method=post>
     <p><input type=submit value='Print label'><br>
@@ -41,7 +42,7 @@ main{
     <table>
         <tr>
             <th>Line 1:</th>
-            <th><input type="text" name="text1" value=${today} maxlength="18"></th>
+            <th><input type="text" name="text1" value="${today} AeN" maxlength="18"></th>
         </tr>
         <tr>
             <th>Line 2:</th>
@@ -52,7 +53,7 @@ main{
             <th><input type="text" name="text3" value="" maxlength="18"></th>
         </tr>
         <tr>
-            <th>Line 4:</th>
+            <th>Name:</th>
             <th><input type="text" name="text4" value="" maxlength="18"></th>
         </tr>
     </table>

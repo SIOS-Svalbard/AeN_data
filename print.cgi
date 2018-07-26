@@ -19,10 +19,10 @@ import uuid
 import datetime as dt
 import socket 
 
-__updated__ = '2018-07-24'
+__updated__ = '2018-07-25'
 
 
-# cgitb.enable()
+cgitb.enable()
 
 
 
@@ -116,7 +116,12 @@ sys.stdout.buffer.write(
 if method == "POST":
     
     form = cgi.FieldStorage()
-    
+    # Check if the label is generated now and not a refresh
+    # sys.stdout.buffer.write(bytes(str(dt.datetime.now().timestamp()-5)+"<br>","utf-8"))
+    if float(form['print'].value)<dt.datetime.now().timestamp()-5:
+        sys.stdout.buffer.write(b"Not printing. Was this a refresh?")
+        sys.exit()
+    # sys.stdout.buffer.write(bytes(form["print"].value+"<br>",'utf-8')) 
     PORT = 9100
     BUFFER_SIZE = 1024
     try: 
@@ -137,8 +142,8 @@ if method == "POST":
 
     for n in range (int(form['n'].value)):
         zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
-        pSocket.send(bytes(zpl,"utf-8"))
-        sys.stdout.buffer.write("Label printed") 
+        # pSocket.send(bytes(zpl,"utf-8"))
+        sys.stdout.buffer.write(bytes("Label printed<br>","utf-8")) 
         # sys.stdout.buffer.write(bytes(zpl,"utf-8"))
 
     pSocket.close()

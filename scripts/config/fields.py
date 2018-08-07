@@ -612,8 +612,8 @@ sampleLocation = {'name': 'sampleLocation',
               'valid': {
                   'validate': 'any',
                   'input_title': 'Sample Location',
-                  'input_message': '''The storage locaiton on shore.
-Thos could for instance be an intitution or something more specific'''
+                  'input_message': '''The storage location on shore.
+This could for instance be an institution or something more specific'''
               }
               }
 dilution_factor = {'name': 'dilution_factor',
@@ -812,7 +812,7 @@ samplingProtocol = {'name': 'samplingProtocol',
                     'valid': {
                         'validate': 'any',
                         'input_title': 'Sampling protocol',
-                        'input_message': '''This should be a reference to the sampleing protocol used.
+                        'input_message': '''This should be a reference to the sampling protocol used.
 For exampel: Nansen Legacy sampling protocols version XX section YY.'''
                     }
                     }

@@ -142,7 +142,7 @@ if method == "POST":
 
     for n in range (int(form['n'].value)):
         zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
-        # pSocket.send(bytes(zpl,"utf-8"))
+        pSocket.send(bytes(zpl,"utf-8"))
         sys.stdout.buffer.write(bytes("Label printed<br>","utf-8")) 
         # sys.stdout.buffer.write(bytes(zpl,"utf-8"))
 

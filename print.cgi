@@ -110,8 +110,19 @@ template = templates.get_template("print.html")
 
 sys.stdout.flush()
 sys.stdout.buffer.write(b"Content-Type: text/html\n\n")
-sys.stdout.buffer.write(
-    template.render(today=str(dt.date.today())))
+
+texts = {"text1":str(dt.date.today())+" AeN","text2":"","text3":"","text4":""}
+incr = False
+
+def write_page(texts,incr):
+    # Write the page
+    sys.stdout.buffer.write(
+        template.render(today=str(dt.date.today()),texts=texts,incr=incr))
+
+
+def warn(message):
+    message = bytes(message,"utf-8")
+    sys.stdout.buffer.write(b'<p style="color:red">'+message+b'</p>')
 
 if method == "POST":
     
@@ -119,7 +130,8 @@ if method == "POST":
     # Check if the label is generated now and not a refresh
     # sys.stdout.buffer.write(bytes(str(dt.datetime.now().timestamp()-5)+"<br>","utf-8"))
     if float(form['print'].value)<dt.datetime.now().timestamp()-5:
-        sys.stdout.buffer.write(b"Not printing. Was this a refresh?")
+        warn("Not printing. Was this a refresh?")
+        write_page(texts,incr)
         sys.exit()
     # sys.stdout.buffer.write(bytes(form["print"].value+"<br>",'utf-8')) 
     PORT = 9100
@@ -128,7 +140,8 @@ if method == "POST":
         pSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         pSocket.connect((form['ip'].value, PORT))
     except (ConnectionRefusedError,OSError):
-        sys.stdout.buffer.write(b"Error, wrong IP")
+        warn(b"Error, wrong IP")
+        write_page(texts,incr)
         sys.exit() 
     def get_value(field):
         if field in form:
@@ -139,12 +152,43 @@ if method == "POST":
     text2 = get_value('text2')
     text3 = get_value('text3')
     text4 = get_value('text4')
+    if "increment" in form:
+        incr = form['increment'].value=="y"
+    else:
+        incr = False
 
-    for n in range (int(form['n'].value)):
-        zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
+    org_text3=text3
+    if incr:
+        try:
+            n_zero = str(len(text3))
+            text3 = int(text3)
+        except ValueError:
+            warn(b'Text3 is not a number and increment is ticked.')
+            write_page(texts,incr)
+            sys.exit()
+    for n in range(int(form['n'].value)):
+        if incr:
+            zpl = create_label(str(uuid.uuid1()),text1, text2, format(text3,"0"+n_zero+"d"), text4)
+        else:
+            zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
         pSocket.send(bytes(zpl,"utf-8"))
-        sys.stdout.buffer.write(bytes("Label printed<br>","utf-8")) 
         # sys.stdout.buffer.write(bytes(zpl,"utf-8"))
+        if incr:
+            text3=text3+1
 
+    warn("Label printed<br>") 
+    if incr:
+        texts = {
+            "text1":text1,
+            "text2":text2,
+            "text3":format(text3,"0"+n_zero+"d"),
+            "text4":text4}
+    else:
+        texts = {
+            "text1":text1,
+            "text2":text2,
+            "text3":text3,
+            "text4":text4}
     pSocket.close()
 
+write_page(texts,incr)

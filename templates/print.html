@@ -48,19 +48,25 @@ function getTime() {
     <table>
         <tr>
             <th>Line 1:</th>
-            <th><input type="text" name="text1" value="${today} AeN" maxlength="18"></th>
+            <th><input type="text" name="text1" value="${texts['text1']}" maxlength="18"></th>
         </tr>
         <tr>
             <th>Line 2:</th>
-            <th><input type="text" name="text2" value="" maxlength="18"></th>
+            <th><input type="text" name="text2" value="${texts['text2']} " maxlength="18"></th>
         </tr>
         <tr>
             <th>Line 3:</th>
-            <th><input type="text" name="text3" value="" maxlength="18"></th>
+            <th><input type="text" name="text3" value="${texts['text3']}" maxlength="18"></th>
+            <th><input type=checkbox value=y name="increment" 
+            % if incr:
+                checked
+             %endif
+             ></th>
+            <th>Increment (needs to be only a number, can have leading zeros e.g. 0001)</th>
         </tr>
         <tr>
             <th>Name:</th>
-            <th><input type="text" name="text4" value="" maxlength="18"></th>
+            <th><input type="text" name="text4" value="${texts['text4']}" maxlength="18"></th>
         </tr>
     </table>
     <br>

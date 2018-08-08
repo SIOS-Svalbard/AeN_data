@@ -135,11 +135,11 @@ eventDate = {'name': 'eventDate',
                  'validate': 'date',
                  'criteria': 'between',
                  'minimum': dt.date(2000, 1, 1),
-                 'maximum': '=TODAY()',
+                 'maximum': '=TODAY()+2',
                  'input_title': 'Event Date',
-                 'input_message': '''Can be from 2000-01-01 to today.''',
+                 'input_message': '''Can be from 2000-01-01 to today +2 days.''',
                  'error_title': 'Error',
-                 'error_message': 'Not a valid date [2000-01-01, today]'
+                 'error_message': 'Not a valid date [2000-01-01, today + 2]'
              },
              'cell_format': {
                  'num_format': 'yyyy-mm-dd'
@@ -773,6 +773,18 @@ phylum = make_string_dict('phylum')
 phylum['dwcid'] = 'http://rs.tdwg.org/dwc/terms/phylum'
 
 # can't call it class as that is a python word
+sex = {'name': 'sex',
+                'disp_name': 'Sex',
+                'dwcid': 'http://rs.tdwg.org/dwc/terms/sex',
+                'valid': {
+                    'validate': 'list',
+                    'source': ['Male', 'Female', 'Undetermined'],
+                    'input_title': 'Sex',
+                    'input_message': '''Male or female. Selected from a list''',
+                    'error_title': 'Error',
+                    'error_message': 'Not a valid sex '
+                }
+                }
 classify = make_string_dict('class')
 classify['dwcid'] = 'http://rs.tdwg.org/dwc/terms/class'
 
@@ -1153,7 +1165,110 @@ weightInGrams = {'name': 'weightInGrams',
                      'error_message': 'Float > 0'
                  }
                  }
+gonadWeightInGrams = {'name': 'gonadWeightInGrams',
+                 'disp_name': 'Gonad Weight (g)',
+                 'units': 'g',
+                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                 'valid': {
+                     'validate': 'decimal',
+                     'criteria': '>',
+                     'value': 0,
+                     'input_title': 'Gonad Weight in grams (g)',
+                     'input_message': '''Wet weight of the gonad in in grams''',
+                     'error_title': 'Error',
+                     'error_message': 'Float > 0'
+                 }
+                 }
 
+liverWeightInGrams = {'name': 'liverWeightInGrams',
+                 'disp_name': 'Liver Weight (g)',
+                 'units': 'g',
+                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                 'valid': {
+                     'validate': 'decimal',
+                     'criteria': '>',
+                     'value': 0,
+                     'input_title': 'Liver Weight in grams (g)',
+                     'input_message': '''Wet weight of the liver in in grams''',
+                     'error_title': 'Error',
+                     'error_message': 'Float > 0'
+                 }
+                 }
+somaticWeightInGrams = {'name': 'somaticWeightInGrams',
+                 'disp_name': 'Somatic Weight (g)',
+                 'units': 'g',
+                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                 'valid': {
+                     'validate': 'decimal',
+                     'criteria': '>',
+                     'value': 0,
+                     'input_title': 'Somatic Weight in grams (g)',
+                     'input_message': '''Wet weight of the fish when all inner organs are removed from the fish gonad in in grams''',
+                     'error_title': 'Error',
+                     'error_message': 'Float > 0'
+                 }
+                 }
+
+forkLengthInMeters = {'name': 'forkLengthInMeters',
+                 'disp_name': 'Fork lenght (cm)',
+                 'units': 'cm',
+                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                 'valid': {
+                     'validate': 'decimal',
+                     'criteria': '>',
+                     'value': 0,
+                     'input_title': 'Fork lenght (cm)',
+                     'input_message': '''The length of a fish measured from the most anterior part of the head to the deepest point of the notch in the tail fin in cm.
+Positive decimal number''',
+                     'error_title': 'Error',
+                     'error_message': 'Float > 0'
+                 }
+                 }
+maturationStage = {'name': 'maturationStage',
+                 'disp_name': 'Maturation Stage',
+                 'units': '1',
+                 'valid': {
+                     'validate': 'integer',
+                     'criteria': 'between',
+                     'minimum': 0,
+                     'maximum': 7,
+                     'input_title': 'Maturation Stage',
+                     'input_message': '''On the basis of shape, size, color of the gonads and other morphological featuers, at least six maturity stages can be recongnized 
+Value in range [0, 7]''',
+                     'error_title': 'Error',
+                     'error_message': 'Int range [0, 7]'
+                 }
+                 }
+
+ectoparasites = {'name': 'ectoparasites',
+                 'disp_name': 'Ectoparasites',
+                 'units': '1',
+                 'valid': {
+                     'validate': 'integer',
+                     'criteria': '>=',
+                     'value': 0,
+                     'input_title': 'Ectoparasites',
+                     'input_message': '''Number of ectoparasites visible on the fins and gills of the fish
+Integer >= 0''',
+                     'error_title': 'Error',
+                     'error_message': 'Int range [0, 7]'
+                 }
+                 }
+
+endoparasites = {'name': 'endoparasites',
+                 'disp_name': 'Endoparasites',
+                 'units': '1',
+                 'valid': {
+                     'validate': 'integer',
+                     'criteria': '>=',
+                     'value': 0,
+                     'input_title': 'Endoparasites',
+                     'input_message': '''Number of endoparasites visible in the body cavity of the fish
+Integer >= 0''',
+                     'error_title': 'Error',
+                     'error_message': 'Int range [0, 7]'
+                 }
+                 }
 # List of all the available fields
 fields = [getattr(sys.modules[__name__], item) for item in dir() if not item.startswith(
     "__") and isinstance(getattr(sys.modules[__name__], item), dict)]

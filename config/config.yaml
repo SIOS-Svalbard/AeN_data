@@ -18,7 +18,7 @@ cores:
             sampleDepthInMeters, maximumDepthInMeters, minimumDepthInMeters,
             samplingProtocol, gearType, bottleNumber, sampleType]
           identification: [Taxon, phylum, class, order, family]
-          description: [colour, smell, description]
+          description: [colour, smell, description, sampleVolumeInMilliliters, filteredVolumeInMilliliters]
           storage: [storageTemp,fixative]
           trawl_or_net: [middle_time, middleDecimalLatitude, middleDecimalLongitude, end_time, endDecimalLatitude, endDecimalLongitude, gonadWeightInGrams, liverWeightInGrams, somaticWeightInGrams, sex, maturationStage, ectoparasites, endoparasites]
           measurement: [individualCount, weightInGrams]

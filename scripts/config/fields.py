@@ -645,16 +645,16 @@ If no filtering is being done choose None''',
           }
           }
 
-filter_vol = {'name': 'filter_vol',
-              'disp_name': 'Filter volume (mL)',
+filteredVolumeInMilliliters = {'name': 'filteredVolumeInMilliliters',
+              'disp_name': 'Filtered volume (mL)',
               'valid': {
-                  'validate': 'integer',
+                  'validate': 'decimal',
                   'criteria': '>',
                   'value': 0,
-                  'input_title': 'Filter volume (mL)',
-                  'input_message': '''Filter volume in integer millilitres''',
+                  'input_title': 'Filtered volume (mL)',
+                  'input_message': '''Filtered volume in decimal millilitres''',
                   'error_title': 'Error',
-                  'error_message': 'Integer > 0'
+                  'error_message': 'Decimal > 0'
               }
               }
 
@@ -672,17 +672,17 @@ methanol_vol = {'name': 'methanol_vol',
                 }
                 }
 
-sample_vol = {'name': 'sample_vol',
+sampleVolumeInMilliliters = {'name': 'sampleVolumeInMilliliters',
               'disp_name': 'Sample volume (mL)',
               'units': 'mL',
               'valid': {
-                  'validate': 'integer',
+                  'validate': 'decimal',
                   'criteria': '>',
                   'value': 0,
                   'input_title': 'Sample volume (mL)',
-                  'input_message': '''Sample volume in integer millilitres''',
+                  'input_message': '''Sample volume in decimal millilitres''',
                   'error_title': 'Error',
-                  'error_message': 'Integer > 0'
+                  'error_message': 'Decimal > 0'
               }
               }
 

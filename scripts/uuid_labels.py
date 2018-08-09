@@ -60,7 +60,7 @@ class QR(object):
             version=3,  # 37 x 37 elements, 352 bits information
             # 15 % correction
             error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=10,  # px per box
+            box_size=9,  # px per box
             border=4,  # boxes for border (min is 4)
         )  # This gives a total size of 370 * 370 px
 
@@ -135,15 +135,22 @@ def make_page(pdf, dpi,gearText,sampleText,M):
     vpitch = 21 
 
     # number
-    cols = 2
-    rows = 13  # 10
+    # print (M)
+    if M>12:
+        cols = 2
+    else:
+        cols = 1
+    
+    rows = round(M/cols)+1
+    # print(rows,cols)
+    skiplast = M%2
 
     # Padding for the QR
     pad = 5
 
     cell_size = 0.35   # mm
-    scale = cell_size / inch * dpi / 2 * 24 / 22
-    print("Scale", scale)
+    # scale = cell_size / inch * dpi / 2 * 24 / 22
+    # print("Scale", scale)
     # Make page
     pdf.set_font('Courier','B',16)
     pdf.add_page()
@@ -151,37 +158,61 @@ def make_page(pdf, dpi,gearText,sampleText,M):
 #     font = ImageFont.truetype(
 #         "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf", 20)
 #     draw = ImageDraw.Draw(page)
-    def add_label(c,r,text):
+    def add_label(c,r,text,xshift,yshift):
         uuid = new_hex_uuid()
         fd, path = tempfile.mkstemp()
-        print(fd,path)
+        #print(fd,path)
         try:
             with os.fdopen(fd, 'w') as tmp:
                 # do stuff with temp file
-                print(uuid)
+                # print(uuid)
                 img = qr.qr_image(uuid)
                 img.save(path, format='PNG', resolution=dpi)
                 pdf.image(
-                        path, x=int(side + (c * hpitch) + len(text)*4 + pad), y=int(top + (r * vpitch) + pad), w=img.size[0] / inch, h=img.size[1] / inch, type='PNG')
+                        path, x=int(side + xshift + len(text)*4 + pad), y=int(top + yshift + pad), w=img.size[0] / inch, h=img.size[1] / inch, type='PNG')
                 pdf.text(
-                        txt=text, x=int(side + (c * hpitch) +  pad), y=int(top + (r * vpitch) + img.size[0]/2/inch + pad))
+                        txt=text, x=int(side + xshift +  pad), y=int(top + yshift + img.size[0]/2/inch + pad))
         finally:
             os.remove(path)
-    for c in range(cols):  # Loop over the columns
-        for r in range(rows):  # Loop over the rows
+
+    xshift = 0
+    yshift = 0
+    ii = 0 
+    for r in range(rows):  # Loop over the rows
+        # print(xshift,yshift)
+        if r!=0 and r%13 ==0:
+            pdf.add_page()
+            xshift = 0
+            yshift = 0
+            ii=ii+12
+        xshift=0
+        for c in range(cols):  # Loop over the columns
+            if skiplast and (c==cols-1 and r==rows-1):
+                print(c,r,"Breaking")
+                break
+
+            jj=ii+(c*12)
+            if jj>M:
+                continue
+
             if not(r==0 and c==1):
                 if r==0 and c==0:
                     text = gearText+" ______________ "
                     pdf.text(
-                        txt="Date _____________", x=int(side + (c * hpitch) +  pad), y=int(top + (r * vpitch) +  pad))
-                    pdf.text(txt=new_hex_uuid()[:8], x=int(side + (c * hpitch ) + 100 +  pad), y=int(top + (r * vpitch) +  pad))
+                        txt="Date _____________", x=int(side + xshift +  pad), y=int(top + yshift +  pad))
+                    pdf.text(txt=new_hex_uuid()[:8], x=int(side + xshift + 100 +  pad), y=int(top + yshift +  pad))
                 else:
-                    text = sampleText+" #" + format(12*c+r,"02d")
-                add_label(c,r,text)
+                    text = sampleText+" #" + format(jj,"02d")
+
+                add_label(c,r,text,xshift,yshift)
+            xshift = xshift + hpitch
+        yshift = yshift + vpitch
+        ii = ii+1
+
             
 
 
-def save_pages(url, gearText="CTD",sampleText="Niskin",M, N=1 ):
+def save_pages(url, gearText="CTD",sampleText="Niskin",M=24, N=1 ):
     """
     Saves multiple pages of QR codes to a pdf file
 
@@ -202,9 +233,9 @@ def save_pages(url, gearText="CTD",sampleText="Niskin",M, N=1 ):
 #     first = make_page(dpi)
 #     if N > 1:
     for ii in range(N):
-        make_page(pdf, dpi)
+        make_page(pdf, dpi,gearText,sampleText,M)
 
-    pdf.output(url + '.pdf', 'F')
+    pdf.output(url, 'F')
 
 
 def main(argv=None):  # IGNORE:C0111
@@ -213,7 +244,7 @@ def main(argv=None):  # IGNORE:C0111
     try:
         args = parse_options()
         output = args.output
-        save_pages(output, N=args.n)
+        save_pages(output+'.pdf', N=args.n,gearText=args.gear,sampleText=args.sample,M=args.m)
         return 0
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
@@ -250,6 +281,12 @@ USAGE
                         version=program_version_message)
     parser.add_argument(
         '-n', dest='n', default=1, type=int, help="Set the number of pages wanted, [default: %(default)s]")
+    parser.add_argument(
+        '--gear', dest='gear', default="CTD", type=str, help="Set the gear type, [default: %(default)s]")
+    parser.add_argument(
+        '--sample', dest='sample', default="Niskin", type=str, help="Set the sample type, [default: %(default)s]")
+    parser.add_argument(
+        '-m', dest='m', default=24, type=int, help="Set the number of samples, [default: %(default)s]")
 
     # Process arguments
     args = parser.parse_args()

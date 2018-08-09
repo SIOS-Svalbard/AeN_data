@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>Nansen Legacy Gear UUID generator</title>
+<style>
+body{ 
+	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
+ 	width: 90%; 
+ 	margin: 0 auto; 
+ }
+fieldset{
+	float:left;
+	margin-top: 1em; 
+	width: 45%; 
+	box-sizing: border-box; 
+}
+fieldset label{ 
+	display: block;
+	float: left;
+	width: 24em;
+	margin-right: 1em;
+}
+fieldset legend{ 
+	font-weight: bold;
+	text-transform: uppercase;
+}
+main{ 
+	width: 60%;
+}
+.wrapper{
+    margin: auto;
+    width: 100%;
+    padding:10px;
+}
+</style>
+<main>
+<h1>Nansen Legacy Gear UUID generator</h1>
+<a href="../../index.html">Back to index</a><br>
+<p>Input the text in the fields.</p>
+<form method=post>
+    <p><button onclick="getTime()" type="submit" name="generate" id="generate" value='1'>Make PDF</button><br>
+    <br>
+    <table>
+        <tr>
+            <th>Gear Name:</th>
+            <th><input type="text" name="gear" value="CTD" ></th>
+        </tr>
+        <tr>
+            <th>Sample Name:</th>
+            <th><input type="text" name="sample" value="Niskin" ></th>
+        </tr>
+        <tr>
+            <th>Number of samples:</th>
+            <th><input type="number" name="m" value="24"></th>
+        </tr>
+        <tr>
+            <th>Number of pages:</th>
+            <th><input type="number" name="n" value="1"></th>
+        </tr>
+    </table>
+</form>
+</main>
+
+<footer>
+
+</footer>

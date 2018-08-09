@@ -19,19 +19,16 @@ import sys
 import os
 import qrcode
 import uuid
-from elaphe import barcode
-from PIL import Image, ImageFont, ImageDraw
+import tempfile
 from fpdf import FPDF
 
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
-from io import BytesIO
-
 
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-05-02'
-__updated__ = '2018-05-23'
+__updated__ = '2018-08-08'
 
 DEBUG = 0
 
@@ -46,7 +43,7 @@ def new_hex_uuid():
     uuid : string
            uuid expressed as a hex value
     """
-    return uuid.uuid1().hex  # Based on host ID and time
+    return str(uuid.uuid1())  # Based on host ID and time
 
 
 class QR(object):
@@ -63,7 +60,7 @@ class QR(object):
             version=3,  # 37 x 37 elements, 352 bits information
             # 15 % correction
             error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=4,  # px per box
+            box_size=10,  # px per box
             border=4,  # boxes for border (min is 4)
         )  # This gives a total size of 370 * 370 px
 
@@ -113,7 +110,7 @@ class PDF(FPDF):
         return filename
 
 
-def make_page(pdf, dpi):
+def make_page(pdf, dpi,gearText,sampleText,M):
     """
     Makes an A4 page and fills it with QR codes
 
@@ -127,74 +124,19 @@ def make_page(pdf, dpi):
     inch = 25.4  # mm
     qr = QR()
 
-# # CILS eppendorf
-#     # Margins
-#     top = 7
-#     side = 9
-#
-#     # Label size
-#     lwidth = 25
-#     lheight = 57
-#
-#     # Spacing
-#     hpitch = 28
-#     vpitch = 71
-#
-#     # number
-#     cols = 7
-#     rows = 4
-
-# CILS Larger
+# CDT
     # Margins
     top = 10
     side = 10
 
-    # Label size
-    lwidth = 51
-    lheight = 25
 
     # Spacing
-    hpitch = 68
-    vpitch = 28
+    hpitch = 100
+    vpitch = 21 
 
     # number
-    cols = 3
-    rows = 2  # 10
-
-#     # Smaller
-#     # Margins
-#     top = 10.5
-#     side = 4.0
-#
-#     # Label size
-#     lwidth = 38
-#     lheight = 21
-#
-#     # Spacing
-#     hpitch = 40.7
-#     vpitch = 21
-#
-#     # number
-#     cols = 5
-#     rows = 13
-
-
-#     # Avery L7152
-#     # Margins
-#     top = 13.7 / inch * dpi
-#     side = 4.7 / inch * dpi
-#
-#     # Label size
-#     lwidth = 99.1 / inch * dpi
-#     lheight = 33.9 / inch * dpi
-#
-#     # Spacing
-#     hpitch = 101.9 / inch * dpi
-#     vpitch = 33.9 / inch * dpi
-#
-#     # number
-#     cols = 2
-#     rows = 8
+    cols = 2
+    rows = 13  # 10
 
     # Padding for the QR
     pad = 5
@@ -203,33 +145,43 @@ def make_page(pdf, dpi):
     scale = cell_size / inch * dpi / 2 * 24 / 22
     print("Scale", scale)
     # Make page
+    pdf.set_font('Courier','B',16)
     pdf.add_page()
 #     page = Image.new('L', (int(width), int(height)), 'white')
 #     font = ImageFont.truetype(
 #         "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf", 20)
 #     draw = ImageDraw.Draw(page)
-    for r in range(rows):  # Loop over the rows
-        for c in range(cols):  # Loop over the columns
-            b = BytesIO()  # For saveing file
-            uuid = new_hex_uuid()
-            print(uuid)
-#             img = qr.qr_image(uuid)
-            img = dm_image(uuid, scale=scale, dpi=dpi)
-            img.save(b, format='PNG', resolution=dpi)
-            b.seek(0)
-            pdf.image(
-                b, x=int(side + (c * hpitch) + pad), y=int(top + (r * vpitch) + pad), w=img.size[0] / inch, h=img.size[1] / inch, type='PNG')
-#             page.paste(
-#                 img, box=(int(side + (c * hpitch) + pad), int(top + (r * vpitch) + pad)))
-#
-#             draw.text(
-#                 (int(side + (c * hpitch) + pad),
-#                  int(top + (r * vpitch) + 5 * pad + img.size[0])),
-#                 uuid, (0), font=font)
-#     return page
+    def add_label(c,r,text):
+        uuid = new_hex_uuid()
+        fd, path = tempfile.mkstemp()
+        print(fd,path)
+        try:
+            with os.fdopen(fd, 'w') as tmp:
+                # do stuff with temp file
+                print(uuid)
+                img = qr.qr_image(uuid)
+                img.save(path, format='PNG', resolution=dpi)
+                pdf.image(
+                        path, x=int(side + (c * hpitch) + len(text)*4 + pad), y=int(top + (r * vpitch) + pad), w=img.size[0] / inch, h=img.size[1] / inch, type='PNG')
+                pdf.text(
+                        txt=text, x=int(side + (c * hpitch) +  pad), y=int(top + (r * vpitch) + img.size[0]/2/inch + pad))
+        finally:
+            os.remove(path)
+    for c in range(cols):  # Loop over the columns
+        for r in range(rows):  # Loop over the rows
+            if not(r==0 and c==1):
+                if r==0 and c==0:
+                    text = gearText+" ______________ "
+                    pdf.text(
+                        txt="Date _____________", x=int(side + (c * hpitch) +  pad), y=int(top + (r * vpitch) +  pad))
+                    pdf.text(txt=new_hex_uuid()[:8], x=int(side + (c * hpitch ) + 100 +  pad), y=int(top + (r * vpitch) +  pad))
+                else:
+                    text = sampleText+" #" + format(12*c+r,"02d")
+                add_label(c,r,text)
+            
 
 
-def save_pages(url, N=1):
+def save_pages(url, gearText="CTD",sampleText="Niskin",M, N=1 ):
     """
     Saves multiple pages of QR codes to a pdf file
 
@@ -253,10 +205,6 @@ def save_pages(url, N=1):
         make_page(pdf, dpi)
 
     pdf.output(url + '.pdf', 'F')
-#     pdf.save(url + '.pdf', "PDF", resolution=dpi,
-#              save_all=True, append_images=pages, )
-#     else:
-#         first.save(url + '.pdf', "PDF", resolution=dpi)
 
 
 def main(argv=None):  # IGNORE:C0111

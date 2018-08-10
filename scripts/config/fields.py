@@ -594,9 +594,9 @@ storageTemp = {'name': 'storageTemp',
                 'valid': {
                     'validate': 'list',
                     'source': [
-                        '-196 ᵒC (LN)',
-                        '-80 ᵒC',
-                        '-20 ᵒC',
+                        'neg 196 C (LN)',
+                        'neg 80 C',
+                        'neg 20 C',
                         'Cool room',
                         'Room temp'],
                     'input_title': 'Storage temperature',

@@ -22,6 +22,10 @@ Optional fields are:
     
     cf_name : str
              The variable name in the CF standard
+
+    inherit : Boolean
+             Is this a variable that can be inherited by childern? 
+             If it is not present its default is False
     
     valid : dict
             a dictionary with definitions of the validation for the cell, as 
@@ -88,6 +92,7 @@ Could be read in with a code reader.''',
 
 cruiseNumber = {'name': 'cruiseNumber',
                 'disp_name': 'Cruise number',
+                'inherit': True,
                 'valid': {
                     'validate': 'list',
                     'source': ['2018616','2018791', '2018707', '2018709', '2018710'],
@@ -100,6 +105,7 @@ cruiseNumber = {'name': 'cruiseNumber',
 
 statID = {'name': 'statID',
           'disp_name': 'Local Station ID',
+          'inherit': True,
           'width': 13,
           'valid': {
               'validate': 'any',
@@ -112,6 +118,7 @@ statID = {'name': 'statID',
 
 stationName = {'name': 'stationName',
                'disp_name': 'Station Name',
+               'inherit': True,
                'width': 13,
                'valid': {
                    'validate': 'any',
@@ -129,6 +136,7 @@ This is recorded as SS(superstation) in the cruise logger.'''
 
 eventDate = {'name': 'eventDate',
              'disp_name': 'Date',
+             'inherit': True,
              'width': 12,
              'dwcid': 'http://rs.tdwg.org/dwc/terms/eventDate',
              'valid': {
@@ -150,17 +158,20 @@ eventDate = {'name': 'eventDate',
 start_date = copy.deepcopy(eventDate)
 start_date['name'] = 'start_date'
 start_date['disp_name'] = 'Start date'
+start_date['inherit'] = True
 start_date['valid']['input_title'] = 'Extraction start date'
 start_date.pop('dwcid')
 
 end_date = copy.deepcopy(start_date)
 end_date['name'] = 'end_date'
 end_date['disp_name'] = 'End date'
+end_date['inherit'] = True
 end_date['valid']['input_title'] = 'Extraction end date'
 
 
 eventTime = {'name': 'eventTime',
              'disp_name': 'Time (UTC)',
+             'inherit': True,
              'width': 13,
              'dwcid': 'http://rs.tdwg.org/dwc/terms/eventTime',
              'valid': {
@@ -189,6 +200,7 @@ If MM > 59, HH will be HH + 1 ''',
 middle_time = copy.deepcopy(eventTime)
 middle_time['name'] = 'middle_time'
 middle_time['disp_name'] = 'Middle time'
+middle_time['inherit'] = True
 middle_time['valid']['input_title'] = 'Middle time'
 middle_time['valid']['input_message'] = 'Middle time for event, for instance for noting the deepest point of a trawl or net haul'+ eventTime['valid']['input_message']
 middle_time.pop('dwcid')
@@ -196,6 +208,7 @@ middle_time.pop('dwcid')
 end_time = copy.deepcopy(eventTime)
 end_time['name'] = 'end_time'
 end_time['disp_name'] = 'End time'
+end_time['inherit'] = True
 end_time['valid']['input_title'] = 'End time'
 end_time['valid']['input_message'] = 'End time for event, for instance for use with a trawl or net haul'+ eventTime['valid']['input_message']
 end_time.pop('dwcid')
@@ -207,6 +220,7 @@ end_time.pop('dwcid')
 
 decimalLatitude = {'name': 'decimalLatitude',
                    'disp_name': 'Latitude',
+                   'inherit': True,
                    'width': 10,
                    'units': 'degrees_north',
                    'dwcid': 'http://rs.tdwg.org/dwc/terms/decimalLatitude',
@@ -229,6 +243,7 @@ Example: 78.1500''',
 
 decimalLongitude = {'name': 'decimalLongitude',
                     'disp_name': 'Longitude',
+                    'inherit': True,
                     'width': 11,
                     'units': 'degree_east',
                     'dwcid': 'http://rs.tdwg.org/dwc/terms/decimalLongitude',
@@ -251,6 +266,7 @@ Example: 15.0012''',
 
 endDecimalLatitude = {'name': 'endDecimalLatitude',
                    'disp_name': 'End Latitude',
+                   'inherit': True,
                    'units': 'degrees_north',
                    'valid': {
                        'validate': 'decimal',
@@ -272,6 +288,7 @@ Example: 78.1500''',
 
 endDecimalLongitude = {'name': 'endDecimalLongitude',
                     'disp_name': 'End Longitude',
+                    'inherit': True,
                     'units': 'degree_east',
                     'valid': {
                         'validate': 'decimal',
@@ -294,6 +311,7 @@ Example: 15.0012''',
 
 middleDecimalLatitude = {'name': 'middleDecimalLatitude',
                    'disp_name': 'Middle Latitude',
+                   'inherit': True,
                    'units': 'degrees_north',
                    'valid': {
                        'validate': 'decimal',
@@ -315,6 +333,7 @@ Example: 78.1500''',
 
 middleDecimalLongitude = {'name': 'middleDecimalLongitude',
                     'disp_name': 'Middle Longitude',
+                    'inherit': True,
                     'units': 'degree_east',
                     'valid': {
                         'validate': 'decimal',
@@ -339,6 +358,7 @@ Example: 15.0012''',
 
 bottomDepthInMeters = {'name': 'bottomDepthInMeters',
                        'disp_name': 'Bottom Depth (m)',
+                       'inherit': True,
                        'units': 'm',
                        'cf_name': 'sea_floor_depth_below_sea_surface',
                        'valid': {
@@ -356,6 +376,7 @@ Bathymetric depth at measurement site.
 
 sampleDepthInMeters = {'name': 'sampleDepthInMeters',
                        'disp_name': 'Sample Depth (m)',
+                       'inherit': True,
                        'units': 'm',
                        'valid': {
                            'validate': 'integer',
@@ -372,6 +393,7 @@ sampleDepthInMeters = {'name': 'sampleDepthInMeters',
 
 maximumDepthInMeters = {'name': 'maximumDepthInMeters',
                         'disp_name': 'Maximum depth(m)',
+                        'inherit': True,
                         'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/maximumDepthInMeters',
                         'valid': {
@@ -391,6 +413,7 @@ maximumDepthInMeters = {'name': 'maximumDepthInMeters',
 # This needs to be follow directly after deepest depth for the function to work
 minimumDepthInMeters = {'name': 'minimumDepthInMeters',
                         'disp_name': 'Minimum depth (m)',
+                        'inherit': True,
                         'width': 22,
                         'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/minimumDepthInMeters',
@@ -733,15 +756,19 @@ Here it is possible to refer to a published protocol'''
 
 pi_name = make_string_dict('pi_name')
 pi_name['disp_name'] = 'Principal investigator (PI)'
+pi_name['inherit'] = True
 
 pi_email = make_string_dict('pi_email')
 pi_email['disp_name'] = 'PI email'
+pi_email['inherit'] = True
 
 pi_institution = make_string_dict('pi_institution')
 pi_institution['disp_name'] = 'PI institution'
+pi_institution['inherit'] = True
 
 pi_address = make_string_dict('pi_address')
 pi_address['disp_name'] = 'PI address'
+pi_address['inherit'] = True
 
 project_long = make_string_dict('project_long')
 project_long['disp_name'] = 'Project long name'

@@ -79,10 +79,10 @@ CT~~CD,~CC^~CT~
 ^LS0
 ^BY110,110^FT506,141^BXN,4,200,22,22,1,~
 ^FH\^FD{0}^FS
-^FT463,181^A0N,21,21^FH\^FD{1}^FS
-^FT463,214^A0N,21,21^FH\^FD{2}^FS
-^FT462,247^A0N,21,21^FH\^FD{3}^FS
-^FT463,283^A0N,21,21^FH\^FD{4}^FS
+^FT445,181^A0N,21,21^FH\^FD{1}^FS
+^FT445,214^A0N,21,21^FH\^FD{2}^FS
+^FT445,247^A0N,21,21^FH\^FD{3}^FS
+^FT445,283^A0N,21,21^FH\^FD{4}^FS
 ^FT462,33^A0R,21,21^FH\^FD{5}^FS
 ^PQ1,0,1,Y^XZ'''.format(uuid, 
         text1, 
@@ -129,10 +129,10 @@ if method == "POST":
     form = cgi.FieldStorage()
     # Check if the label is generated now and not a refresh
     # sys.stdout.buffer.write(bytes(str(dt.datetime.now().timestamp()-5)+"<br>","utf-8"))
-    if float(form['print'].value)<dt.datetime.now().timestamp()-5:
-        warn("Not printing. Was this a refresh?")
-        write_page(texts,incr)
-        sys.exit()
+    # if float(form['print'].value)<dt.datetime.now().timestamp()-75:
+    #     warn("Not printing. Was this a refresh? If not your computer might be out of sync with the time server (limit 75s)<br> Difference to server in seconds:" +str(float(form['print'].value)-dt.datetime.now().timestamp()))
+    #     write_page(texts,incr)
+    #     sys.exit()
     # sys.stdout.buffer.write(bytes(form["print"].value+"<br>",'utf-8')) 
     PORT = 9100
     BUFFER_SIZE = 1024
@@ -140,7 +140,7 @@ if method == "POST":
         pSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         pSocket.connect((form['ip'].value, PORT))
     except (ConnectionRefusedError,OSError):
-        warn(b"Error, wrong IP")
+        warn("Error, wrong IP")
         write_page(texts,incr)
         sys.exit() 
     def get_value(field):
@@ -163,7 +163,7 @@ if method == "POST":
             n_zero = str(len(text3))
             text3 = int(text3)
         except ValueError:
-            warn(b'Text3 is not a number and increment is ticked.')
+            warn('Text3 is not a number and increment is ticked.')
             write_page(texts,incr)
             sys.exit()
     for n in range(int(form['n'].value)):
@@ -172,6 +172,7 @@ if method == "POST":
         else:
             zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
         pSocket.send(bytes(zpl,"utf-8"))
+        # warn("Down for maintainance")
         # sys.stdout.buffer.write(bytes(zpl,"utf-8"))
         if incr:
             text3=text3+1

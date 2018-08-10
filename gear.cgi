@@ -44,7 +44,7 @@ template = templates.get_template("gear.html")
 def warn(message):
     message = bytes(message,"utf-8")
     sys.stdout.buffer.write(b'<p style="color:red">'+message+b'</p>')
-
+# method = "POST"
 if method =="GET":
     sys.stdout.flush()
     sys.stdout.buffer.write(b"Content-Type: text/html\n\n")

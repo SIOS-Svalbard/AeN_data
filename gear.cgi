@@ -55,15 +55,17 @@ elif method == "POST":
     
     form = cgi.FieldStorage()
 
-    def get_value(field):
+    def get_value(field,integer=False):
         if field in form:
             return form[field].value
+        elif integer:
+            return 0
         else:
-            return '10'
+            return ''
     gear = get_value('gear')
     sample = get_value('sample')
-    m = int(get_value('m'))
-    n = int(get_value('n'))
+    m = int(get_value('m',True))
+    n = int(get_value('n',True))
 
     fd, path = tempfile.mkstemp()
     uu.save_pages(path, gearText=gear,sampleText=sample,M=m, N=n )

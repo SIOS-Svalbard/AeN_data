@@ -143,7 +143,10 @@ def make_page(pdf, dpi,gearText,sampleText,M):
     
     rows = round(M/cols)+1
     # print(rows,cols)
-    skiplast = M%2
+    if cols==2:
+        skiplast = M%2
+    else:
+        skiplast = False
 
     # Padding for the QR
     pad = 5
@@ -170,8 +173,12 @@ def make_page(pdf, dpi,gearText,sampleText,M):
                 img.save(path, format='PNG', resolution=dpi)
                 pdf.image(
                         path, x=int(side + xshift + len(text)*4 + pad), y=int(top + yshift + pad), w=img.size[0] / inch, h=img.size[1] / inch, type='PNG')
+                pdf.set_font('Courier','B',16)
                 pdf.text(
                         txt=text, x=int(side + xshift +  pad), y=int(top + yshift + img.size[0]/2/inch + pad))
+                pdf.set_font('Courier','B',10)
+                pdf.text(
+                        txt=uuid[:8], x=int(side + xshift +  len(text)*4), y=int(top + yshift + pad + img.size[0]/inch + 2))
         finally:
             os.remove(path)
 

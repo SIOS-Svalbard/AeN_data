@@ -410,7 +410,7 @@ maximumDepthInMeters = {'name': 'maximumDepthInMeters',
                         }
                         }
 
-# This needs to be follow directly after deepest depth for the function to work
+# If using indirect this needs to be follow directly after deepest depth for the function to work
 minimumDepthInMeters = {'name': 'minimumDepthInMeters',
                         'disp_name': 'Minimum depth (m)',
                         'inherit': True,
@@ -419,14 +419,17 @@ minimumDepthInMeters = {'name': 'minimumDepthInMeters',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/minimumDepthInMeters',
                         'valid': {
                             'validate': 'integer',
-                            'criteria': '<',
-                            'value': '=INDIRECT(ADDRESS(ROW(),COLUMN()-1))',
+                            'criteria': 'between',
+                            'minimum': 0,
+                            'maximum': 9999,
+                            #'criteria': '<',
+                            #'value': '=INDIRECT(ADDRESS(ROW(),COLUMN()-1))',
                             'input_title': 'Minimum depth in (m)',
                             'input_message': '''The minimum depth in integer meters.
 0 m is the surface.
-Needs to be smaller than the deepest depth''',
+Needs to be smaller than the maximum depth''',
                             'error_title': 'Error',
-                            'error_message': 'Integer [0, Deepest depth]'
+                            'error_message': 'Integer [0, 9999]'
                         }
                         }
 

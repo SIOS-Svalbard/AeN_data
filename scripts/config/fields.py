@@ -362,7 +362,7 @@ bottomDepthInMeters = {'name': 'bottomDepthInMeters',
                        'units': 'm',
                        'cf_name': 'sea_floor_depth_below_sea_surface',
                        'valid': {
-                           'validate': 'integer',
+                           'validate': 'decimal',
                            'criteria': '>=',
                            'value': 0,
                            'input_title': 'Bottom Depth (m)',
@@ -370,7 +370,7 @@ bottomDepthInMeters = {'name': 'bottomDepthInMeters',
 Bathymetric depth at measurement site.
 0 is the surface.''',
                            'error_title': 'Error',
-                           'error_message': 'Integer >= 0'
+                           'error_message': 'Float >= 0'
                        }
                        }
 
@@ -379,14 +379,14 @@ sampleDepthInMeters = {'name': 'sampleDepthInMeters',
                        'inherit': True,
                        'units': 'm',
                        'valid': {
-                           'validate': 'integer',
+                           'validate': 'decimal',
                            'criteria': '>=',
                            'value': 0,
                            'input_title': 'Sample Depth (m)',
-                           'input_message': '''The sample depth in integer meters.
+                           'input_message': '''The sample depth in meters.
 0 is the surface.''',
                            'error_title': 'Error',
-                           'error_message': 'Integer >= 0'
+                           'error_message': 'Float >= 0'
                        }
                        }
 
@@ -397,16 +397,16 @@ maximumDepthInMeters = {'name': 'maximumDepthInMeters',
                         'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/maximumDepthInMeters',
                         'valid': {
-                            'validate': 'integer',
+                            'validate': 'decimal',
                             'criteria': 'between',
                             'minimum': 0,
                             'maximum': 9999,
                             'input_title': 'Maximum depth in (m)',
-                            'input_message': '''The maximum depth in integer meters.
+                            'input_message': '''The maximum depth in meters.
 0 m is the surface.
 9999 m is the bottom.''',
                             'error_title': 'Error',
-                            'error_message': 'Integer [0, 9999]'
+                            'error_message': 'Float[0, 9999]'
                         }
                         }
 
@@ -418,18 +418,18 @@ minimumDepthInMeters = {'name': 'minimumDepthInMeters',
                         'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/minimumDepthInMeters',
                         'valid': {
-                            'validate': 'integer',
+                            'validate': 'decimal',
                             'criteria': 'between',
                             'minimum': 0,
                             'maximum': 9999,
                             #'criteria': '<',
                             #'value': '=INDIRECT(ADDRESS(ROW(),COLUMN()-1))',
                             'input_title': 'Minimum depth in (m)',
-                            'input_message': '''The minimum depth in integer meters.
+                            'input_message': '''The minimum depth in decimal meters.
 0 m is the surface.
 Needs to be smaller than the maximum depth''',
                             'error_title': 'Error',
-                            'error_message': 'Integer [0, 9999]'
+                            'error_message': 'Decimal [0, 9999]'
                         }
                         }
 

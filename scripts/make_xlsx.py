@@ -65,7 +65,7 @@ class Field(object):
         """
         self.name = name  # Name of object
         self.disp_name = disp_name  # Title of column
-        self.cell_format = cell_format  # For holding the formating of the cell
+        self.cell_format = cell_format  # For holding the formatting of the cell
         self.validation = validation  # For holding the validation of the cell
         self.long_list = long_list  # For holding the need for an entry in the
         # variables sheet

@@ -19,11 +19,10 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter, Namespace
 
 from os.path import os
 
-aen_config_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), )) +
-                  '/config/')
+aen_config_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), )))
 
 sys.path.append(aen_config_dir)
-import fields as fields
+import config.fields as fields
 from make_xlsx import Field
 
 __all__ = []
@@ -70,8 +69,8 @@ def xlsx_to_array(url,sheetname='Data',skiprows=1):
     Parameters
     ---------
     
-    url: string
-        The url to the xlsx file
+    url: string or io 
+        Can either be a path or and io object
 
     sheetname: str
         The sheet name for the sheet in the xlsx file wanted
@@ -88,8 +87,10 @@ def xlsx_to_array(url,sheetname='Data',skiprows=1):
         A numpy ndarray of objects for the sheet. 
     """
     
-    path = os.path.abspath(url)
-    data = pd.read_excel(path,sheetname=sheetname, skiprows=skiprows).as_matrix()    
+    if isinstance(url,str):
+
+        url = os.path.abspath(url)
+    data = pd.read_excel(url,sheetname=sheetname, skiprows=skiprows).as_matrix()    
     
     # Convert Timestamps to dates
     return data
@@ -141,14 +142,14 @@ def get_validator(valid):
             return Evaluator(valid,func = lambda self,x: eval("len(x) "+ self.valid['criteria'] + str(self.valid['value'])))
     elif validate == 'decimal':
         if criteria == 'between':
-            return Evaluator(valid,func=lambda self,x: self.valid['minimum'] <= float(x) <= self.valid['maximum'])
+            return Evaluator(valid,func=lambda self,x: (isinstance(x,int) or isinstance(x,float)) and self.valid['minimum'] <= float(x) <= self.valid['maximum'])
         else:
-            return Evaluator(valid, func=lambda self,x: eval("float(x) "+ self.valid['criteria'] + "self.valid['value']"))
+            return Evaluator(valid, func=lambda self,x: (isinstance(x,int) or isinstance(x,float)) and eval("float(x) "+ self.valid['criteria'] + "self.valid['value']"))
     elif validate == 'integer':
         if criteria == 'between':
-            return Evaluator(valid, func=lambda self,x: self.valid['minimum'] <= int(x) <= self.valid['maximum'])
+            return Evaluator(valid, func=lambda self,x: isinstance(x,int) and self.valid['minimum'] <= int(x) <= self.valid['maximum'])
         else:
-            return Evaluator(valid, func=lambda self,x: eval("int(x) "+ self.valid['criteria'] + "int(self.valid['value'])"))
+            return Evaluator(valid, func=lambda self,x: isinstance(x,int) and eval("int(x) "+ self.valid['criteria'] + "int(self.valid['value'])"))
     elif validate == 'time':
         if criteria == 'between':
             if isinstance(valid['minimum'],float) or isinstance(valid['minimum'],int):
@@ -324,10 +325,15 @@ def check_array(data,checker_list,skiprows):
     # Check that every cell is correct
     for col in range(data.shape[1]):
         checker = checker_list[data[0,col]] 
+        rows = []
         for row in range(1,data.shape[0]):
             if not(check_value(data[row,col],checker)):
+                if good:
+                    errors.append("Content errors")
                 good = False
-                errors.append("Row: "+ str(row+skiprows+2) + ', Column: ' + checker.disp_name + ' ('+checker.name +')')
+                rows.append(row+skiprows+2)
+        if rows !=[]:        
+            errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(rows) )
 
     # Check that the uuids in eventID are unique
     if 'eventID' in data[0,:]:
@@ -337,12 +343,47 @@ def check_array(data,checker_list,skiprows):
             # We have found dupes
             good = False
             dups = ind.get_duplicates()
-            errors.append('Duplicate uuids in eventID (sampleID)')
+            first = True
             for dup in dups:
-                errors.append("Rows: "+str(ind.get_indexer_for([dup]).tolist()) + ', UUID: '+dup)
+                if not(np.isnan(dup)):
+                    if first:
+                        first = False
+                        errors.append('Duplicate uuids in eventID (sampleID)')
+                    errors.append("Rows: "+to_ranges_str(ind.get_indexer_for([dup]).tolist()) + ', UUID: '+dup)
 
     return good, errors
 
+def to_ranges_str(lis):
+    out = '['+str(lis[0])
+    if len(lis)==2:
+       out = out + ', ' + str(lis[1])
+    elif len(lis)>2:
+        first = lis[0]
+        prev = first 
+        ii=1
+        for l in lis[1:]:
+            
+            if l==prev+1:
+                prev =l
+                ii=ii+1
+            else:
+                # longer step
+                if ii>2:
+                    out = out+ ' - ' +str(prev)
+                else:
+                    out = out +', '+str(prev)
+                prev = l
+                first = l
+                out = out + ', ' + str(first)
+                ii=0
+        if ii>2:
+            out = out+ ' - ' +str(prev)
+        else:
+            out = out +', '+str(prev)
+        
+
+    out = out + ']'
+    return out    
 
                 
 
@@ -382,14 +423,14 @@ def run(input):
     # Read in data and prune of custom columns
     skiprows = 1
     data = prune(xlsx_to_array(input,skiprows=1))
-    print(check_array(data, checker_list, skiprows))
+    return check_array(data, checker_list, skiprows)
 
 def main(argv=None):  # IGNORE:C0111
     '''Command line options.'''
     try:
         args = parse_options()
         input = args.input
-        run(input)    
+        print(run(input))    
         return 0
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###

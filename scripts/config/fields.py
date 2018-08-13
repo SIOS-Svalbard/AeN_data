@@ -875,6 +875,14 @@ sampleType = {'name': 'sampleType',
                     }
                     }
 
+seaIceCoreType = {'name': 'seaIceCoreType',
+                    'disp_name': 'Sea Ice Core Type',
+                    'valid': {
+                        'validate': 'any',
+                        'input_title': 'Sea Ice Core Type',
+                        'input_message': 'The analysis the sea ice core is intended for'
+                    }
+                    }
 # CF names
 
 seaWaterTemperatueInCelsius = {'name': 'seaWaterTemperatueInCelsius',

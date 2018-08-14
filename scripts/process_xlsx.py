@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 import xml.etree.ElementTree
+from xlrd import XLRDError
 from argparse import ArgumentParser, RawDescriptionHelpFormatter, Namespace
 
 
@@ -31,6 +32,25 @@ __date__ = '2018-08-11'
 __updated__ = '2018-08-11'
 
 DEBUG = 1
+
+REQUIERED = ['eventID', 
+        'cruiseNumber',
+        'stationName',
+        'eventTime',
+        'eventDate',
+        'decimalLatitude',
+        'decimalLongitude',
+        'bottomDepthInMeters',
+        'eventRemarks',
+        'samplingProtocol',
+        'parentEventID',
+        'sampleLocation',
+        'pi_name',
+        'pi_email',
+        'pi_institution',
+        'recordedBy',
+        'sampleType']
+
 
 def make_valid_dict():
     """
@@ -56,7 +76,7 @@ def make_valid_dict():
         if 'inherit' in field:
             new.inherit = field['inherit']
         if 'units' in field:
-            new.inherit = field['units']
+            new.units = field['units']
 #             print(new.validation)
         field_dict[field['name']] = new
     return field_dict
@@ -91,9 +111,20 @@ def xlsx_to_array(url,sheetname='Data',skiprows=1):
 
         url = os.path.abspath(url)
     data = pd.read_excel(url,sheetname=sheetname, skiprows=skiprows).as_matrix()    
-    
+        
+        
     # Convert Timestamps to dates
     return data
+
+def format_num(num):
+    
+    num_str = str(num).replace(',','.').replace("'",'')
+
+    try:
+        out = int(num_str)
+    except ValueError:
+        out = float(num_str)
+    return out
 
 def get_validator(valid):
     """
@@ -114,7 +145,7 @@ def get_validator(valid):
     """
     validate = valid['validate'] 
     if validate == 'any':
-        return Evaluator(valid,func= lambda self,x: isinstance(x,str))
+        return Evaluator(valid,func= lambda self,x: isinstance(str(x),str))
     elif validate == 'list':
         source = valid['source']
         return Evaluator(source, func=lambda self,x : str(x) in self.valid)
@@ -207,6 +238,27 @@ def get_validator(valid):
         # print(valid)
         raise NotImplementedError("No validator available for the object")
 
+def is_nan(value):
+    """
+    Checks if value is 'nan'
+    
+    Parameters
+    ---------
+    
+    value: object 
+        The object to be checked that it is not nan
+    
+    Returns
+    ---------
+    
+    isnan: Boolean 
+        True: nan
+        False: not nan
+    """
+    return str(value).lower() == 'nan'
+
+    
+
 class Evaluator(object):
 
     def __init__(self,valid,func=None):
@@ -256,7 +308,7 @@ class Checker(Field):
 
 def check_value(value,checker):
     """
-    Checke the value with the checker.
+    Check the value with the checker.
     Does some additional checks in addition to the checks in checker
     
     Parameters
@@ -276,7 +328,7 @@ def check_value(value,checker):
         False, failed
     """
     
-    if value == 'nan' or (isinstance(value,float) and np.isnan(value)):
+    if is_nan(value) or (isinstance(value,float) and np.isnan(value)):
         return True
     if checker.validation['validate'] == 'length':
         if 'eventid' in checker.name.lower():
@@ -287,6 +339,12 @@ def check_value(value,checker):
                 return False
     if checker.validation['validate']=='date' and not(value.__class__ == dt.date(1,1,1).__class__):
         return checker.validator.evaluate(value.date())
+    elif checker.validation['validate']=='integer' or checker.validation['validate']=='decimal'  :
+        try:
+            num = format_num(value)
+        except ValueError:
+            num = value 
+        return checker.validator.evaluate(num)
     else:
         return checker.validator.evaluate(value)
 
@@ -314,7 +372,7 @@ def check_array(data,checker_list,skiprows):
     ---------
     
     good : Boolean
-        A boolean specifying if te data pased the checks (True)
+        A boolean specifying if the data passed the checks (True)
 
     errors: list of strings
         A string per error, describing where the error was found
@@ -323,33 +381,53 @@ def check_array(data,checker_list,skiprows):
     good = True
     errors = []
     # Check that every cell is correct
+    evID = np.where(data[0,:]=='eventID')[0][0]
+    pID = np.where(data[0,:]=='parentEventID')[0][0]
+
     for col in range(data.shape[1]):
-        checker = checker_list[data[0,col]] 
+        if is_nan(data[0,col]):
+            continue
+        # print(data[0,col])
+        try : 
+            checker = checker_list[data[0,col]] 
+        except KeyError:
+            good = False
+            errors.append("Column name not known, Row: 3, value: "+ str(data[0,col]))
+            continue
         rows = []
+        missing = []
+        req = checker.name in REQUIERED
+        # Checking type
         for row in range(1,data.shape[0]):
             if not(check_value(data[row,col],checker)):
                 if good:
                     errors.append("Content errors")
                 good = False
                 rows.append(row+skiprows+2)
+            if req and is_nan(data[row,col]):
+                if not(is_nan(data[row,evID])):
+                    if checker.inherit and is_nan(data[row,pID]):
+                        missing.append(row+skiprows+2)
         if rows !=[]:        
-            errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(rows) )
+            errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(rows) + ' Error: Content in wrong format' )
+        if missing !=[]:
+            errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(missing) + ' Error: Required value missing (parent UUID missing?)' )
 
     # Check that the uuids in eventID are unique
     if 'eventID' in data[0,:]:
         index = np.where(data[0,:]=='eventID')[0][0]
-        ind = pd.Index(data[1:,index])
+        ind = pd.Index(data[1:,index].astype(np.str))
         if ind.has_duplicates:
             # We have found dupes
-            good = False
             dups = ind.get_duplicates()
             first = True
             for dup in dups:
-                if not(np.isnan(dup)):
+                if not(is_nan(dup)):
                     if first:
                         first = False
                         errors.append('Duplicate uuids in eventID (sampleID)')
-                    errors.append("Rows: "+to_ranges_str(ind.get_indexer_for([dup]).tolist()) + ', UUID: '+dup)
+                    errors.append("Rows: "+to_ranges_str((ind.get_indexer_for([dup])+skiprows+3).tolist()) + ', UUID: '+dup)
+                    good = False
 
     return good, errors
 
@@ -418,11 +496,50 @@ def prune(data):
     """
     return data[:,data[0,:]!=''] 
 
+def clean(data):
+    """
+    Goes through the array and cleans up the data
+    Fixes some numbers that have not been converted correctly
+    Converts uuids to lower and makes sure seperator is '-' and not '+' '/'
+    
+    Parameters
+    ---------
+    
+    data: nunpy ndarray of objects
+        The data to be cleaned, first row should be the header row
+    
+    Returns
+    ---------
+   
+    cleaned_data: numpy ndarray of objects
+        The cleaned data
+    
+    """
+    cleaned_data = np.copy(data) 
+    for col in range(data.shape[1]):
+        name = data[0,col]
+        for row in range(1,data.shape[0]):
+            if 'eventid' in name.lower() and not(is_nan(data[row,col])):
+                cleaned_data[row,col] = data[row,col].replace('+','-').replace('/','-')
+            else:
+                try:
+                    num = format_num(data[row,col])
+                    cleaned_data[row,col]=num
+                except ValueError:
+                    continue 
+
+    return cleaned_data
+    
+
 def run(input):
     checker_list = make_valid_dict()
     # Read in data and prune of custom columns
     skiprows = 1
-    data = prune(xlsx_to_array(input,skiprows=1))
+    try:
+        data = prune(xlsx_to_array(input,skiprows=1))
+        data = clean(data)
+    except XLRDError: 
+        return False, ["Does not contain the 'Data' sheet. Is this the correct file?"]
     return check_array(data, checker_list, skiprows)
 
 def main(argv=None):  # IGNORE:C0111

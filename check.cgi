@@ -55,7 +55,9 @@ def warn(message):
 
 if method == "POST":
     
+    sys.stdout.buffer.write(b"<!doctype html>\n<html>\n <meta charset='utf-8'>")
     form = cgi.FieldStorage()
+    warn(form['myfile'].filename)
     # print(form['myfile'].value)
     # warn(form)
     good, error = px.run(io.BytesIO(form['myfile'].value))
@@ -66,5 +68,7 @@ if method == "POST":
         warn("The following errors were found:")
     for line in error:
         warn(line)
+        
+    sys.stdout.buffer.write(b'</html>')
 elif method == "GET":
     write_page()

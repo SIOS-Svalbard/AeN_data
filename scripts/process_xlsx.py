@@ -29,7 +29,7 @@ from make_xlsx import Field
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-08-11'
-__updated__ = '2018-08-11'
+__updated__ = '2018-08-16'
 
 DEBUG = 1
 
@@ -117,6 +117,32 @@ def xlsx_to_array(url,sheetname='Data',skiprows=1):
     return data
 
 def format_num(num):
+    """
+    Convert a string with a number to a number by removing common mistakes 
+    in Excel.
+    Converts ',' to '.'
+    Removes leading "'"
+    If resulting string can be converted to an int, it is returned as an int,
+    if not, it is returned as a float. If it can not be converted to a float,
+    it throws a ValueError.
+    
+    
+    Parameters
+    ---------
+    
+    num: object
+        The number to be converted. 
+        If it is an int or float, nothing is done with it.
+        Needs to be convertible into a string.
+    Returns
+    ---------
+    
+    out: int or float
+        The resulting int or float.
+    """
+   
+    if isinstance(num,int) or isinstance(num,float):
+        return num
     
     num_str = str(num).replace(',','.').replace("'",'')
 
@@ -126,117 +152,6 @@ def format_num(num):
         out = float(num_str)
     return out
 
-def get_validator(valid):
-    """
-    Checks a parameter according to the defined validation
-
-    Parameters
-    ---------
-
-    valid: dict
-        The valid dictionary defined in the fields.py file
-
-    Returns
-    ---------
-
-    validator: Evaluator
-        A validator in the form of an Evaluator object
-
-    """
-    validate = valid['validate'] 
-    if validate == 'any':
-        return Evaluator(valid,func= lambda self,x: isinstance(str(x),str))
-    elif validate == 'list':
-        source = valid['source']
-        return Evaluator(source, func=lambda self,x : str(x) in self.valid)
-
-    criteria = valid['criteria'] 
-    def _formula_to_date(formula):
-
-        form = formula.replace('=','')
-        if 'TODAY()' in form:
-            form =form.replace('TODAY()','dt.date.today()')
-        if '+' in form:
-            parts = form.split('+')
-            parts[1] = 'dt.timedelta(days=' + parts[1] + ')'
-            form = parts[0] + '+' + parts[1]
-        elif '-' in form:
-            parts = form.split('-')
-            parts[1] = 'dt.timedelta(days=' + parts[1] + ')'
-            form = parts[0] + '-' + parts[1]
-        return eval(form)
-    
-    if validate == 'length':
-        if criteria == 'between':
-            return Evaluator(valid,func=lambda self,x: self.valid['minimum'] <= len(x) <= self.valid['maximum'])
-        else:
-            return Evaluator(valid,func = lambda self,x: eval("len(x) "+ self.valid['criteria'] + str(self.valid['value'])))
-    elif validate == 'decimal':
-        if criteria == 'between':
-            return Evaluator(valid,func=lambda self,x: (isinstance(x,int) or isinstance(x,float)) and self.valid['minimum'] <= float(x) <= self.valid['maximum'])
-        else:
-            return Evaluator(valid, func=lambda self,x: (isinstance(x,int) or isinstance(x,float)) and eval("float(x) "+ self.valid['criteria'] + "self.valid['value']"))
-    elif validate == 'integer':
-        if criteria == 'between':
-            return Evaluator(valid, func=lambda self,x: isinstance(x,int) and self.valid['minimum'] <= int(x) <= self.valid['maximum'])
-        else:
-            return Evaluator(valid, func=lambda self,x: isinstance(x,int) and eval("int(x) "+ self.valid['criteria'] + "int(self.valid['value'])"))
-    elif validate == 'time':
-        if criteria == 'between':
-            if isinstance(valid['minimum'],float) or isinstance(valid['minimum'],int):
-                minimum = (dt.datetime(1,1,1,0,0)+dt.timedelta(days=valid['minimum'])).time()
-                maximum = (dt.datetime(1,1,1,0,0)+dt.timedelta(days=valid['maximum'])).time()
-            else:
-                minimum = valid['minimum']
-                maximum = valid['maximum']
-            ev = Evaluator(valid)
-            ev.minimum = minimum
-            ev.maximum = maximum
-            ev.set_func(lambda self,x: self.minimum <= x <= self.maximum)
-            return ev
-        else:
-            if isinstance(valid['value'],float) or isinstance(valid['value'],int):
-                limit =  (dt.datetime(1,1,1,0,0)+dt.timedelta(days=valid['value'])).time()
-            else:
-                limit = valid['value']
-
-            ev = Evaluator(valid)
-            ev.limit = limit
-            ev.set_func(lambda self,x: eval("x"+ self.valid['criteria']+ "self.limit"))
-            return ev
-    elif validate == 'date':
-        # print("Date")
-        if criteria == 'between':
-            # print("Between")
-            minimum = valid['minimum']
-            maximum = valid['maximum']
-            if not(isinstance(minimum,dt.date)):
-                # We now have a fomula
-                minimum = _formula_to_date(minimum) 
-            if not(isinstance(maximum,dt.date)):
-                # We now have a fomula
-                maximum = _formula_to_date(maximum) 
-            ev = Evaluator(valid)
-            ev.minimum = minimum
-            ev.maximum = maximum
-            ev.set_func(lambda self,x: self.minimum <= x <= self.maximum)
-            # ev.set_func(lambda self,x: print(self.minimum , x , self.maximum))
-            return ev
-
-        else:
-            limit =  valid['value']
-            if not(isinstance(limit,dt.date)):
-                # We now have a fomula
-                limit = _formula_to_date(limit) 
-
-            ev = Evaluator(valid)
-            ev.limit =limit
-            
-            ev.set_func(lambda self,x: eval("x"+ self.valid['criteria']+ "self.limit"))
-
-            return ev
-        # print(valid)
-        raise NotImplementedError("No validator available for the object")
 
 def is_nan(value):
     """
@@ -260,18 +175,84 @@ def is_nan(value):
     
 
 class Evaluator(object):
+    """ An object for holding a function for evaluating a type of data.
+    The function should take two arguments, self and a value. By referencing and
+    setting values on the object with self, it is possible to evaludate on
+    multiple conditions."""
 
-    def __init__(self,valid,func=None):
+    def __init__(self,validation,func=None):
+        """
+        Initialise the Evaluator object.
         
-        self.valid = valid
-        if func != None:
-            self.eval = func
+        Parameters
+        ---------
+        
+        validation: dict
+            A dict containing the validation information.
+            Can be used in evaluator function by referencingthe property 
+            self.validation 
 
-    def set_func(self,func):
+        func: lambda function, optional
+            This function should take two inputs, self and a value.
+            If this is not set here, it needs to be set using the set_func
+            method
+            Should return a boolean, where True means the value has passed the 
+            test
+            An example of a functions is:
+            lambda self,x : self.valid['value'] < len(x)
+
+        """
+        
+        
+        self.validation = validation 
+        self.eval = func
+
+    def set_func(self, func):
+        """
+        Method for setting the evaluator function.
+
+        
+        Parameters
+        ---------
+        
+        func: lambda function, optional
+            This function should take two inputs, self and a value.
+            If this is not set here, it needs to be set using the set_func
+            method
+            Should return a boolean, where True means the value has passed the 
+            test
+            An example of a functions is:
+            lambda self, x : self.valid['value'] < len(x)
+        """
+        
         self.eval = func
 
     def evaluate(self,value):
-        return self.eval(self,value)
+        """
+        Evaluate value with the evaluator
+        
+        Parameters
+        ---------
+        
+        value: object
+            The value to be evaluated
+            Needs to be in a format that the function understands
+        
+        Returns
+        ---------
+        
+        res: Boolean
+            The result from the evaluator
+            True, means that the value passed the evaluation
+        """
+        
+        if self.eval==None:
+            raise NameError("No evaluator, set it during initialisation or with the 'set_func' method")
+        res = self.eval(self,value)
+        if not(isinstance(res,bool)):
+            raise ValueError("The evaluator function is not returing a boolean")
+        return res
+
 
 
 class Checker(Field):
@@ -286,6 +267,13 @@ class Checker(Field):
         Parameters
         ---------
         
+        inherit: Boolean, optional
+            Should the given field be inherited.
+            Default: False
+
+        units: string, optional
+            The units of the field
+
         *args: arguments for Field
 
         **kwargs: keyword arguments for Field
@@ -301,9 +289,157 @@ class Checker(Field):
         self.units = units
 
     def set_validation(self,validation):
+        """
+        Method for setting the validation by reading the dictionary
+        and converting it using the
+        
+        Parameters
+        ---------
+        
+        validation: dict
+            The specifications of the validation as a dict
+            See the valid dict in Fields for details
+        
+        """
+        
         Field.set_validation(self,validation)
-        self.validator = get_validator(self.validation)
+        self.validator = self.get_validator(self.validation)
 
+    def get_validator(self,validation=None):
+        """
+        Checks a parameter according to the defined validation
+
+        Parameters
+        ---------
+
+        validation: dict, optional
+            The valid dictionary defined in the fields.py file
+            If not set, reads from the object
+
+        Returns
+        ---------
+
+        validator: Evaluator
+            A validator in the form of an Evaluator object
+
+        """
+        
+        if validation == None:
+            validation = self.validation
+
+        validate = validation['validate'] 
+        if validate == 'any':
+            return Evaluator(validation,func= lambda self,x: isinstance(str(x),str))
+        elif validate == 'list':
+            source = validation['source']
+            return Evaluator(source, func=lambda self,x : str(x) in self.validation)
+
+        criteria = validation['criteria'] 
+
+        def _formula_to_date(formula):
+            """
+            Internal function for converting validation date functions (Excel 
+            function) to a datetime date object
+            
+            Parameters
+            ---------
+            
+            formula: str
+                The Excel formula to be converted
+                Supports simple addition and subtraction and the function TODAY
+            
+            Returns
+            ---------
+            
+            date: datetime date object  
+                The resulting date from the fomula
+            """
+            
+
+            form = formula.replace('=','')
+            if 'TODAY()' in form:
+                form =form.replace('TODAY()','dt.date.today()')
+            if '+' in form:
+                parts = form.split('+')
+                parts[1] = 'dt.timedelta(days=' + parts[1] + ')'
+                form = parts[0] + '+' + parts[1]
+            elif '-' in form:
+                parts = form.split('-')
+                parts[1] = 'dt.timedelta(days=' + parts[1] + ')'
+                form = parts[0] + '-' + parts[1]
+            return eval(form)
+        
+        if validate == 'length':
+            if criteria == 'between':
+                return Evaluator(validation,func=lambda self,x: self.validation['minimum'] <= len(x) <= self.validation['maximum'])
+            else:
+                return Evaluator(validation,func = lambda self,x: eval("len(x) "+ self.validation['criteria'] + str(self.validation['value'])))
+        elif validate == 'decimal':
+            if criteria == 'between':
+                return Evaluator(validation,func=lambda self,x: (isinstance(x,int) or isinstance(x,float)) and self.validation['minimum'] <= float(x) <= self.validation['maximum'])
+            else:
+                return Evaluator(validation, func=lambda self,x: (isinstance(x,int) or isinstance(x,float)) and eval("float(x) "+ self.validation['criteria'] + "self.validation['value']"))
+        elif validate == 'integer':
+            if criteria == 'between':
+                return Evaluator(validation, func=lambda self,x: isinstance(x,int) and self.validation['minimum'] <= int(x) <= self.validation['maximum'])
+            else:
+                return Evaluator(validation, func=lambda self,x: isinstance(x,int) and eval("int(x) "+ self.validation['criteria'] + "int(self.validation['value'])"))
+        elif validate == 'time':
+            if criteria == 'between':
+                if isinstance(validation['minimum'],float) or isinstance(validation['minimum'],int):
+                    minimum = (dt.datetime(1,1,1,0,0)+dt.timedelta(days=validation['minimum'])).time()
+                    maximum = (dt.datetime(1,1,1,0,0)+dt.timedelta(days=validation['maximum'])).time()
+                else:
+                    minimum = validation['minimum']
+                    maximum = validation['maximum']
+                ev = Evaluator(validation)
+                ev.minimum = minimum
+                ev.maximum = maximum
+                ev.set_func(lambda self,x: self.minimum <= x <= self.maximum)
+                return ev
+            else:
+                if isinstance(validation['value'],float) or isinstance(validation['value'],int):
+                    limit =  (dt.datetime(1,1,1,0,0)+dt.timedelta(days=validation['value'])).time()
+                else:
+                    limit = validation['value']
+
+                ev = Evaluator(validation)
+                ev.limit = limit
+                ev.set_func(lambda self,x: eval("x"+ self.validation['criteria']+ "self.limit"))
+                return ev
+        elif validate == 'date':
+            # print("Date")
+            if criteria == 'between':
+                # print("Between")
+                minimum = validation['minimum']
+                maximum = validation['maximum']
+                if not(isinstance(minimum,dt.date)):
+                    # We now have a fomula
+                    minimum = _formula_to_date(minimum) 
+                if not(isinstance(maximum,dt.date)):
+                    # We now have a fomula
+                    maximum = _formula_to_date(maximum) 
+                ev = Evaluator(validation)
+                ev.minimum = minimum
+                ev.maximum = maximum
+                ev.set_func(lambda self,x: self.minimum <= x <= self.maximum)
+                # ev.set_func(lambda self,x: print(self.minimum , x , self.maximum))
+                return ev
+
+            else:
+                limit =  validation['value']
+                if not(isinstance(limit,dt.date)):
+                    # We now have a fomula
+                    limit = _formula_to_date(limit) 
+
+                ev = Evaluator(validation)
+                ev.limit =limit
+                
+                ev.set_func(lambda self,x: eval("x"+ self.validation['criteria']+ "self.limit"))
+
+                return ev
+            # print(valid)
+            raise NotImplementedError("No validator available for the object")
 
 
 def check_value(value,checker):
@@ -432,6 +568,24 @@ def check_array(data,checker_list,skiprows):
     return good, errors
 
 def to_ranges_str(lis):
+    """
+    Conversion of a list for integers to a string containing ranges.
+    For instance [1, 2, 3, 4] will be returned as the string [1 - 4]
+    
+    Parameters
+    ---------
+    
+    lis: list of ints
+        The list to be converted
+    
+    Returns
+    ---------
+    
+    out: string 
+        The resulting string with ranges for sequences consisting of more than 
+        two steps. Enclosed in swuare ([]) brackets
+    """
+    
     out = '['+str(lis[0])
     if len(lis)==2:
        out = out + ', ' + str(lis[1])
@@ -532,6 +686,30 @@ def clean(data):
     
 
 def run(input):
+    """
+    Method for running the checker on the given input.
+    If importing in another program, this should be called instead of the main 
+    function
+    
+    Parameters
+    ---------
+    
+    input: string or file like object
+        The file to be checked. Can be anything the pandas read_excel method 
+        excepts (string url, file like object,...)
+    
+    Returns
+    ---------
+    
+    good: Boolean
+        The result.
+        True: pass 
+        False: fail
+
+    errors: string
+        String specifying where the errors were found
+    """
+    
     checker_list = make_valid_dict()
     # Read in data and prune of custom columns
     skiprows = 1
@@ -543,7 +721,9 @@ def run(input):
     return check_array(data, checker_list, skiprows)
 
 def main(argv=None):  # IGNORE:C0111
-    '''Command line options.'''
+    '''Main function
+    Reads in the Command line options.
+    and runs the run function'''
     try:
         args = parse_options()
         input = args.input

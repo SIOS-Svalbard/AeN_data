@@ -155,7 +155,7 @@ def format_num(num):
 
 def is_nan(value):
     """
-    Checks if value is 'nan'
+    Checks if value is 'nan' or NaT 
     
     Parameters
     ---------
@@ -170,7 +170,9 @@ def is_nan(value):
         True: nan
         False: not nan
     """
-    return str(value).lower() == 'nan'
+    isnan =str(value).lower() == 'nan' 
+    isnat = str(value).lower() =='nat'
+    return isnan or isnat 
 
     
 
@@ -516,9 +518,23 @@ def check_array(data,checker_list,skiprows):
     """
     good = True
     errors = []
+    
+    # Check that all the required columns are there
+
+    for req in REQUIERED:
+        if not(req in data[0,:]):
+            # print("Missing "+req)
+            good = False
+            errors.append("Missing required column: " + req)
+    
+    if not(good):
+        errors.append("Missing required column(s), not doing any more tests until fixed")
+        return good, errors
+
     # Check that every cell is correct
     evID = np.where(data[0,:]=='eventID')[0][0]
     pID = np.where(data[0,:]=='parentEventID')[0][0]
+
 
     for col in range(data.shape[1]):
         if is_nan(data[0,col]):
@@ -622,9 +638,6 @@ def to_ranges_str(lis):
 
 
 
-
-
-
 #    sheet = workbook.add_worksheet('Metadata')
 
 #    metadata_fields = ['title', 'abstract', 'pi_name', 'pi_email', 'pi_institution',
@@ -648,7 +661,16 @@ def prune(data):
     data: numpy ndarray of objects
         The pruned data
     """
-    return data[:,data[0,:]!=''] 
+
+    # print(data[0,:])
+    re_ind = [] 
+    for col in range(data.shape[1]):
+        name = data[0,col]
+        # Remove columns without name:
+        if is_nan(name) or name =='': 
+            re_ind.append(col)
+            
+    return np.delete(data,re_ind,axis=1)
 
 def clean(data):
     """
@@ -673,7 +695,7 @@ def clean(data):
     for col in range(data.shape[1]):
         name = data[0,col]
         for row in range(1,data.shape[0]):
-            if 'eventid' in name.lower() and not(is_nan(data[row,col])):
+            if not(is_nan(data[row,col])) and 'eventid' in name.lower() :
                 cleaned_data[row,col] = data[row,col].replace('+','-').replace('/','-')
             else:
                 try:

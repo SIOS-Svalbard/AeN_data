@@ -49,20 +49,20 @@ def write_page():
         template.render())
 
 
-def warn(message):
+def warn(message,color='red'):
     message = bytes(message,"utf-8")
-    sys.stdout.buffer.write(b'<p style="color:red">'+message+b'</p>')
+    sys.stdout.buffer.write(b'<p style="color:'+bytes(color,"utf-8")+b'">'+message+b'</p>')
 
 if method == "POST":
     
     sys.stdout.buffer.write(b"<!doctype html>\n<html>\n <meta charset='utf-8'>")
     form = cgi.FieldStorage()
-    warn(form['myfile'].filename)
+    warn(form['myfile'].filename,color='black')
     # print(form['myfile'].value)
     # warn(form)
     good, error = px.run(io.BytesIO(form['myfile'].value))
     if good:
-        warn("File OK :)")
+        warn("File OK :)",color='green')
     else:
         warn("File is not ok :(")
         warn("The following errors were found:")

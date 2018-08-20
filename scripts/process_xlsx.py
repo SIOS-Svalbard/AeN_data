@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 import xml.etree.ElementTree
+import xlsxwriter as xl
 from xlrd import XLRDError
 from argparse import ArgumentParser, RawDescriptionHelpFormatter, Namespace
 
@@ -416,10 +417,10 @@ class Checker(Field):
                 minimum = validation['minimum']
                 maximum = validation['maximum']
                 if not(isinstance(minimum,dt.date)):
-                    # We now have a fomula
+                    # We now have a formula
                     minimum = _formula_to_date(minimum) 
                 if not(isinstance(maximum,dt.date)):
-                    # We now have a fomula
+                    # We now have a formula
                     maximum = _formula_to_date(maximum) 
                 ev = Evaluator(validation)
                 ev.minimum = minimum
@@ -431,7 +432,7 @@ class Checker(Field):
             else:
                 limit =  validation['value']
                 if not(isinstance(limit,dt.date)):
-                    # We now have a fomula
+                    # We now have a formula
                     limit = _formula_to_date(limit) 
 
                 ev = Evaluator(validation)
@@ -580,6 +581,53 @@ def check_array(data,checker_list,skiprows):
                         errors.append('Duplicate uuids in eventID (sampleID)')
                     errors.append("Rows: "+to_ranges_str((ind.get_indexer_for([dup])+skiprows+3).tolist()) + ', UUID: '+dup)
                     good = False
+
+    return good, errors
+
+def check_meta(metadata,checker_list,skipcols=1):
+    """
+    Checks the data according to the validators in the checker_list
+    Returns True if the data is good, as well as an empty string
+    
+    Parameters
+    ---------
+    
+    metadata : numpy ndarray of objects
+        The metadata to be checked.
+        The first column should contain the names of the fields as specified in fields.py
+    
+    checker_list : dict of Checker objects
+        This is a list of the possible checkers made by make_valid_dict 
+
+    skipcols: int, optional
+        The number of columns skipped when reading in the data with pandas
+        This is needed to give the excel reference correct
+
+    Returns
+    ---------
+    
+    good : Boolean
+        A boolean specifying if the data passed the checks (True)
+
+    errors: list of strings
+        A string per error, describing where the error was found
+        On the form: paramName: disp_name : row
+    """
+    good = True
+    errors = []
+    for row in range(metadata.shape[0]):
+        if is_nan(metadata[row,0]):
+            continue
+        # print(metadata[0,col])
+        try : 
+            checker = checker_list[metadata[row,0]] 
+        except KeyError:
+            good = False
+            errors.append("Column name not known, Row: " +str(row+1)+", value: "+ str(metadata[0,col]))
+            continue
+        if is_nan(metadata[row,1]):
+            good = False
+            errors.append("Content missing, Cell: "+ xl.utility.xl_rowcol_to_cell(row+1,1+skipcols))
 
     return good, errors
 
@@ -740,7 +788,21 @@ def run(input):
         data = clean(data)
     except XLRDError: 
         return False, ["Does not contain the 'Data' sheet. Is this the correct file?"]
-    return check_array(data, checker_list, skiprows)
+    # Check the dat array 
+    good, error = check_array(data, checker_list, skiprows) 
+
+    # Read in metadata and check it 
+    try:
+        metadata = xlsx_to_array(input,sheetname="Metadata",skiprows=None)
+        # print(metadata[:,1])
+    except XLRDError: 
+        return False, ["Does not contain the 'Metadata' sheet. Is this the correct file?"]
+    
+    g, e = check_meta(metadata[:,1:3],checker_list)
+    good = good and g 
+    error.append(e)
+
+    return good, error 
 
 def main(argv=None):  # IGNORE:C0111
     '''Main function

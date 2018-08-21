@@ -807,12 +807,12 @@ sex = {'name': 'sex',
                 'disp_name': 'Sex',
                 'dwcid': 'http://rs.tdwg.org/dwc/terms/sex',
                 'valid': {
-                    'validate': 'list',
-                    'source': ['Male', 'Female', 'Undetermined'],
+                    'validate': 'any',
+                    #'source': ['Male', 'Female', 'Undetermined'],
                     'input_title': 'Sex',
-                    'input_message': '''Male or female. Selected from a list''',
-                    'error_title': 'Error',
-                    'error_message': 'Not a valid sex '
+                    'input_message': '''Male (M), female (F), maybe male (M?), maybe female (F?) or unknown (?)''',
+                    # 'error_title': 'Error',
+                    # 'error_message': 'Not a valid sex '
                 }
                 }
 classify = make_string_dict('class')

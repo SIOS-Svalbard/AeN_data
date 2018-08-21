@@ -10,6 +10,7 @@
 '''
 import sys
 import uuid
+import io
 import pandas as pd
 import numpy as np
 import datetime as dt
@@ -623,11 +624,12 @@ def check_meta(metadata,checker_list,skipcols=1):
             checker = checker_list[metadata[row,0]] 
         except KeyError:
             good = False
-            errors.append("Column name not known, Row: " +str(row+1)+", value: "+ str(metadata[0,col]))
+            errors.append("Metadata sheet: Column name not known, Row: " +str(row+1)+", value: "+ str(metadata[0,col]))
             continue
-        if is_nan(metadata[row,1]):
+        if metadata.shape[1]<2 or is_nan(metadata[row,1]):
             good = False
-            errors.append("Content missing, Cell: "+ xl.utility.xl_rowcol_to_cell(row+1,1+skipcols))
+            errors.append("Metadata sheet: Content missing, Cell: "+ xl.utility.xl_rowcol_to_cell(row+1,1+skipcols))
+
 
     return good, errors
 
@@ -793,6 +795,8 @@ def run(input):
 
     # Read in metadata and check it 
     try:
+        if isinstance(input,io.BytesIO):
+            input.seek(0)
         metadata = xlsx_to_array(input,sheetname="Metadata",skiprows=None)
         # print(metadata[:,1])
     except XLRDError: 
@@ -800,7 +804,8 @@ def run(input):
     
     g, e = check_meta(metadata[:,1:3],checker_list)
     good = good and g 
-    error.append(e)
+    for it in e:
+        error.append(it)
 
     return good, error 
 

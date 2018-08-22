@@ -886,6 +886,80 @@ seaIceCoreType = {'name': 'seaIceCoreType',
                         'input_message': 'The analysis the sea ice core is intended for'
                     }
                     }
+
+seaIceCoreLengthInMeters = {'name': 'seaIceCoreLengthInMeters',
+                        'disp_name': 'Sea Ice Core Length (cm)',
+                        'units': 'cm',
+                        'valid': {
+                            'validate':'decimal',
+                            'criteria': '>',
+                            'value': 0,
+                             'input_title': 'Sea Ice Core length (cm)',
+                             'input_message': '''Sea ice core length in decimal centimeters.
+                             Float number larger than 0 ''',
+                             'error_title': 'Error',
+                             'error:message': 'Float > 0'
+                             }
+                        }
+seaIceThicknessInMeters = {'name': 'seaIceThicknessInMeters',
+                        'disp_name': 'Sea Ice Thickness (cm)',
+                        'units': 'cm',
+                        'valid': {
+                            'validate':'decimal',
+                            'criteria': '>',
+                            'value': 0,
+                             'input_title': 'Sea Ice Thickness (cm)',
+                             'input_message': '''Sea ice thickness in decimal centimeters.
+                             Float number larger than 0 ''',
+                             'error_title': 'Error',
+                             'error:message': 'Float > 0'
+                             }
+                        }
+seaIceFreeboardInMeters = {'name': 'seaIceFreeboardInMeters',
+                        'disp_name': 'Sea Ice Freeboard (cm)',
+                        'units': 'cm',
+                        'valid': {
+                            'validate':'decimal',
+                            'criteria': '>',
+                            'value': 0,
+                             'input_title': 'Sea Ice Freecoard (cm)',
+                             'input_message': '''Sea ice freeboard in decimal centimeters.
+                             Float number larger than 0 ''',
+                             'error_title': 'Error',
+                             'error:message': 'Float > 0'
+                             }
+                        }
+seaIceMeltpondTemperatureeInCelsius = {'name': 'seaIceMeltpondTemperatureInCelsius',
+                        'disp_name': 'Sea Ice Meltpond Temperature (C)',
+                        'units': 'Celsius',
+                        'valid': {
+                            'validate':'decimal',
+                            'criteria': '>',
+                            'value': -10,
+                             'input_title': 'Sea Ice Meltpond Temperature (C)',
+                             'input_message': '''Sea ice meltpond temperature in Celsius.
+                             Float number larger than -10 ''',
+                             'error_title': 'Error',
+                             'error:message': 'Float > -10'
+                             }
+                        }
+seaIceMeltpondSalinity = {'name': 'seaIceMeltpondSalinity',
+                        'disp_name': 'Sea Ice Meltpond Salinity (1e-3)',
+                        'units': '1e-3',
+                        'valid': {
+                            'validate':'decimal',
+                            'criteria': '>=',
+                            'value': 0,
+                             'input_title': 'Sea Ice Meltpond Saliniy Core length (cm)',
+                        'input_title': 'Sea Ice Meltpond Salinity',
+                        'input_message': '''Sea ice meltpond salinity in parts per thousand
+Often using the Practical Salinity Scale of 1978
+Float number larger than or equal to 0
+Example: 0.029''',
+                        'error_title': 'Error',
+                        'error_message': 'Float >= 0'
+                    }
+                    }
 # CF names
 
 seaWaterTemperatueInCelsius = {'name': 'seaWaterTemperatueInCelsius',

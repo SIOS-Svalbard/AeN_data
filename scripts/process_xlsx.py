@@ -554,6 +554,7 @@ def check_array(data,checker_list,skiprows):
             continue
         rows = []
         missing = []
+        mis = [] # For ones that can't be inherited
         req = checker.name in REQUIERED
         # Checking type
         for row in range(1,data.shape[0]):
@@ -562,14 +563,20 @@ def check_array(data,checker_list,skiprows):
                     errors.append("Content errors")
                 good = False
                 rows.append(row+skiprows+2)
-            if req and is_nan(data[row,col]):
+            if req and (is_nan(data[row,col]) or data[row,col]==''):
                 if not(is_nan(data[row,evID])):
                     if checker.inherit and is_nan(data[row,pID]):
                         missing.append(row+skiprows+2)
+                    elif checker.name!='parentEventID' and 'remarks' not in checker.name.lower():
+                        mis.append(row+skiprows+2)
         if rows !=[]:        
             errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(rows) + ' Error: Content in wrong format' )
         if missing !=[]:
+            good = False
             errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(missing) + ' Error: Required value missing (parent UUID missing?)' )
+        if mis !=[]:
+            good = False
+            errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(mis) + ' Error: Required value missing' )
 
     # Check that the uuids in eventID are unique
     if 'eventID' in data[0,:]:

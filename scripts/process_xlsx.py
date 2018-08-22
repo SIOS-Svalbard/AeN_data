@@ -252,9 +252,13 @@ class Evaluator(object):
         
         if self.eval==None:
             raise NameError("No evaluator, set it during initialisation or with the 'set_func' method")
-        res = self.eval(self,value)
+
+        try:
+            res = self.eval(self,value)
+        except TypeError:
+            res = False
         if not(isinstance(res,bool)):
-            raise ValueError("The evaluator function is not returing a boolean")
+            raise ValueError("The evaluator function is not returning a boolean")
         return res
 
 
@@ -668,16 +672,16 @@ def to_ranges_str(lis):
                 # longer step
                 if ii>2:
                     out = out+ ' - ' +str(prev)
-                else:
-                    out = out +', '+str(prev)
+                #else:
+                    #out = out +', '+str(prev)
                 prev = l
                 first = l
                 out = out + ', ' + str(first)
                 ii=0
         if ii>2:
             out = out+ ' - ' +str(prev)
-        else:
-            out = out +', '+str(prev)
+        #else:
+            #out = out +', '+str(prev)
         
 
     out = out + ']'
@@ -745,7 +749,7 @@ def clean(data):
     for col in range(data.shape[1]):
         name = data[0,col]
         for row in range(1,data.shape[0]):
-            if not(is_nan(data[row,col])) and 'eventid' in name.lower() :
+            if not(is_nan(data[row,col])) and 'eventid' in str(name).lower() :
                 cleaned_data[row,col] = data[row,col].replace('+','-').replace('/','-')
             else:
                 try:

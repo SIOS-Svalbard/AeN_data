@@ -23,7 +23,7 @@ cores:
           trawl_or_net: [middle_time, middleDecimalLatitude, middleDecimalLongitude, end_time, endDecimalLatitude, endDecimalLongitude, gonadWeightInGrams, liverWeightInGrams, somaticWeightInGrams, sex, maturationStage, ectoparasites, endoparasites]
           measurement: [individualCount, weightInGrams]
           water: [seaWaterAlkalinity, seaWaterChlorophyllA, seaWaterDeltaO18, seaWaterPH, seaWaterPOC, seaWaterPON, seaWaterPhaeopigment, seaWaterPressure, seaWaterSalinity, seaWaterTOC, seaWaterTemperatueInCelsius, seaWaterTotalDIC] 
-          ice: [seaIceChlorophyllA, seaIceDeltaO18, seaIcePhaeopigment, seaIceTotalDIC, seaIceCoreType]
+          ice: [seaIceChlorophyllA, seaIceDeltaO18, seaIcePhaeopigment, seaIceTotalDIC, seaIceCoreType, seaIceCoreLengthInMeters, seaIceThicknessInMeters, seaIceFreeboardInMeters, seaIceMeltpondTemperatureInCelsius, seaIceMeltpondSalinity ]
           sediment: [sedimentChlorophyllA, sedimentPhaeopigment]
           data: [dataFilename]
           sample_responsible: [sampleLocation, recordedBy, pi_name, pi_email, pi_institution, pi_address ]

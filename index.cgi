@@ -40,16 +40,18 @@ cookie = Cookie.SimpleCookie(os.environ.get("HTTP_COOKIE"))
 
 method = os.environ.get("REQUEST_METHOD", "GET")
 
+# method = "POST"
+# sys.stdout.buffer.write(b"Content-Type: text/html\n\n")
+
 form = cgi.FieldStorage()
 
 # For determining which layout
 
-if method == "GET":  # This is for getting the page
-
-    if 'setup' in form:
-        setup = form['setup'].value
-    else:
-        setup = SETUP_DEFAULT
+if 'setup' in form:
+    setup = form['setup'].value
+else:
+    setup = SETUP_DEFAULT
+# print(setup)
 
 
 class Term:
@@ -202,8 +204,6 @@ mofterms = [
 ]
 
 
-method = os.environ.get("REQUEST_METHOD", "GET")
-
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
@@ -213,11 +213,9 @@ templates = TemplateLookup(
 
 # method = 'POST'
 # method = 'Test'
-form = cgi.FieldStorage()
 
 
 if method == "GET":  # This is for getting the page
-
     # Using sys, as print doesn't work for cgi in python3
     fname = os.path.basename(setup)  # Stop any reference to other places
     template = templates.get_template(fname + ".html")
@@ -248,7 +246,7 @@ elif method == "POST":
         for term in config['terms'][group]:
             terms_config.append(term)
 
-
+#     print(terms)
 #     print(terms_config)
 #     print(terms)
     # Use the config terms to sort the terms from the form
@@ -256,7 +254,7 @@ elif method == "POST":
         if term in form and term not in reserved:
             terms.append(term)
 
-        # Add terms from darwin core not in the config
+    # Add terms from darwin core not in the config
 
     print("Content-Type: application/vnd.ms-excel")
     if setup == "aen":
@@ -268,7 +266,7 @@ elif method == "POST":
 
     path = "/tmp/" + next(tempfile._get_candidate_names()) + '.xlsx'
 
-    # Need to make the field_dict and append usefull info from dwc
+    # Need to make the field_dict and append useful info from dwc
     field_dict = mx.make_dict_of_fields()
 
     for t in Term.terms:
@@ -299,6 +297,7 @@ elif method == "POST":
             )
 
 #     print(depth.name, depth.disp_name, depth.validation)
+#     print(terms)
     mx.write_file(path, terms, field_dict)
 
     with open(path, "rb") as f:

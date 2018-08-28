@@ -7,7 +7,7 @@ templates:
 cores:
   - name: aen
     sheets:
-      - name: occurrence
+      - name: aen
         required: [eventID, cruiseNumber, stationName, eventTime, eventDate, decimalLatitude, decimalLongitude,bottomDepthInMeters]
         recommended: [eventRemarks,samplingProtocol,parentEventID, sampleLocation, pi_name, pi_email, pi_institution, recordedBy, sampleType]
         grouping: [required, event, storage,identification, description, measurement, trawl_or_net, ice, water, sediment, data, sample_responsible, comments ]
@@ -28,11 +28,9 @@ cores:
           data: [dataFilename]
           sample_responsible: [sampleLocation, recordedBy, pi_name, pi_email, pi_institution, pi_address ]
           comments: [occurrenceRemarks, fieldNotes, eventRemarks]
-  - name: event
+  - name: default
     sheets:
-      - name: event
-        required: [ eventID ]
-      - name: occurrence
+      - name: default
         required: [ occurrenceID, basisOfRecord, eventDate, scientificName ]
         recommended: [ occurrenceID, basisOfRecord, eventDate, kingdom, scientificName, taxonRank, decimalLatitude, decimalLongitude, geodeticDatum, coordinateUncertaintyInMeters, countryCode, individualCount, organismQuantity, organismQuantityType ]
         grouping: [ recordLevel, occurrence, event, location, identification, taxon, organism, other]

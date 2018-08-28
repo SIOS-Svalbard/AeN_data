@@ -29,13 +29,27 @@ import textwrap
 import AeN.scripts.config.fields as fields
 import AeN.scripts.make_xlsx as mx
 
-__updated__ = '2018-06-29'
+__updated__ = '2018-08-28'
 
 
 # cgitb.enable()
-
+SETUP_DEFAULT = 'default'
 
 cookie = Cookie.SimpleCookie(os.environ.get("HTTP_COOKIE"))
+
+
+method = os.environ.get("REQUEST_METHOD", "GET")
+
+form = cgi.FieldStorage()
+
+# For determining which layout
+
+if method == "GET":  # This is for getting the page
+
+    if 'setup' in form:
+        setup = form['setup'].value
+    else:
+        setup = SETUP_DEFAULT
 
 
 class Term:
@@ -84,8 +98,16 @@ class Term:
         return self.translate(self.validations, lang)
 
 
-config = yaml.load(
-    open(os.path.join("config", "config.yaml"), encoding='utf-8'))['cores'][0]['sheets'][0]
+cores = yaml.load(
+    open(os.path.join("config", "config.yaml"), encoding='utf-8'))['cores']
+
+names = []  # For holding a list over the possible setups
+for core in cores:
+    names.append(core['name'])
+    if core['name'] == setup:
+        config = core['sheets'][0]
+
+
 # Put the language in an ordered place
 config['languages'] = yaml.load(
     open(os.path.join("config", "config.yaml"), encoding='utf-8'))['languages']
@@ -179,8 +201,6 @@ mofterms = [
     "measurementMethod"
 ]
 
-# Is this used?
-
 
 method = os.environ.get("REQUEST_METHOD", "GET")
 
@@ -193,19 +213,21 @@ templates = TemplateLookup(
 
 # method = 'POST'
 # method = 'Test'
+form = cgi.FieldStorage()
+
 
 if method == "GET":  # This is for getting the page
 
     # Using sys, as print doesn't work for cgi in python3
-    template = templates.get_template("index.html")
+    fname = os.path.basename(setup)  # Stop any reference to other places
+    template = templates.get_template(fname + ".html")
 
     sys.stdout.flush()
     sys.stdout.buffer.write(b"Content-Type: text/html\n\n")
     sys.stdout.buffer.write(
-        template.render(config=config, Term=Term, lang=language))
+        template.render(config=config, Term=Term, lang=language, names=names))
 
 elif method == "POST":
-    form = cgi.FieldStorage()
     if 'language' in form:
         cookie['language'] = form['language'].value
         print(cookie.output())
@@ -237,11 +259,12 @@ elif method == "POST":
         # Add terms from darwin core not in the config
 
     print("Content-Type: application/vnd.ms-excel")
-    print("Content-Disposition: attachment; filename=AeN_cruisenumber_instr_name.xlsx\n")
-
-#     for term in Term.terms:
-#         print(term.name, term.definitions)
-#     print(terms)
+    if setup == "aen":
+        print(
+            "Content-Disposition: attachment; filename=AeN_cruisenumber_instr_name.xlsx\n")
+    else:
+        print(
+            "Content-Disposition: attachment; filename=Excel_template.xlsx\n")
 
     path = "/tmp/" + next(tempfile._get_candidate_names()) + '.xlsx'
 
@@ -277,60 +300,7 @@ elif method == "POST":
 
 #     print(depth.name, depth.disp_name, depth.validation)
     mx.write_file(path, terms, field_dict)
-#     workbook = xlsxwriter.Workbook(path)
-#     occurrences = workbook.add_worksheet("Occurrences")
-#
-#     overflow = workbook.add_format({'align': 'vjustify'})
-#     reqfmt = workbook.add_format({'bold': True, 'bg_color': '#aaffaa'})
-#     recfmt = workbook.add_format({'bold': True, 'bg_color': '#ffffaa'})
-#     reqfmt.set_shrink()
-#
-#     for n, name in enumerate(terms):
-#         term = Term.get(name)
-#         occurrences.write(
-#             0, n, term.name, reqfmt if term.name in config['required'] else recfmt)
-#         occurrences.write_comment(0, n,
-#                                   ("REQUIRED" if term.name in config[
-#                                    'required'] else "RECOMMENDED")
-#                                   + "\n\n"
-#                                   + ' '.join(term.definition(language).split())
-#                                   + "\n\n"
-#                                   + ' '.join(term.example(language).split()))
-#         width = len(term.name) + 6
-#         occurrences.set_column(0, n, width)
-#
-#         if (term.name == 'basisOfRecord'):
-#             occurrences.data_validation(1, n, 1000000, n, {
-#                 'validate': 'list',
-#                 'source': [
-#                     'PreservedSpecimen',
-#                     'HumanObservation',
-#                     'FossilSpecimen',
-#                     'LivingSpecimen',
-#                     'HumanObservation',
-#                     'MachineObservation'
-#                 ]
-#             })
-#
-#         if(uuid in form and term == 'occurrenceID'):
-#             for row in range(1, 5000):
-#                 occurrences.write(row, n,
-#                                   "urn:uuid:" + str(uuid.uuid4()), overflow)
-#     if 'measurementorfact' in form:
-#         mof = workbook.add_worksheet("MeasurementOrFact")
-#         for n, name in enumerate(mofterms):
-#             term = Term.get(name)
-#             mof.write(
-#                 0, n, term.name, reqfmt if term.name in config['required'] else recfmt)
-#             if term.example(language) and term.definition(language):
-#                 mof.write_comment(0, n,
-#                                   ("REQUIRED" if term.name in config[
-#                                    'required'] else "RECOMMENDED")
-#                                   + "\n\n"
-#                                   + term.definition(language) + "\n\n" + term.example(language))
-#             width = len(term.name) + 6
-#             mof.set_column(0, n, width)
-#     workbook.close()
+
     with open(path, "rb") as f:
         sys.stdout.flush()
         shutil.copyfileobj(f, sys.stdout.buffer)

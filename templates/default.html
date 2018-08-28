@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset='utf-8'>
-<title>Nansen Legacy Excel Template Generator</title>
+<title>Darwin core excel template generator</title>
 <style>
 body{ 
 	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
@@ -43,7 +43,8 @@ aside{
  	background: #fcfcfc; 
  }
 
-#select-language { float: right; }
+#select-language { float: left; }
+#select-setup { float: right; }
 </style>
 <script>
 function emptySidebar() {
@@ -95,8 +96,19 @@ document.addEventListener("DOMContentLoaded", function(e) {
 % endfor
 </aside>
 <main>
+<form id=select-setup method=get>
+    <select name=setup>
+      % for name in names:
+        <option 
+        % if config['name'] == name:
+          selected 
+        % endif
+        value='${name}'>${name}</option>
+      % endfor
+    </select>
+    <input type=submit value="Select setup">
+</form>
 <form id=select-language method=post>
-  <p>
     <select name=language>
       % for id, label in config['languages'].items():
         <option 
@@ -108,10 +120,10 @@ document.addEventListener("DOMContentLoaded", function(e) {
     </select>
     <input type=submit value="Set language">
 </form>
-<h1>Nansen Legacy Excel Template Generator</h1>
+</br>
+<h1>Excel Template Generator</h1>
 <p>Check the boxes next to the terms you want to include in your template and click the <b>Create template</b> button.
 <br><small><a href='http://rs.tdwg.org/dwc/terms/'>Darwin Core Terms: A quick reference guide</a></small><br>
-<a href="../../index.html">Back to index</a><br>
 <form method=post>
 <p><input type=submit value='Create template'>
 <div class="wrapper">

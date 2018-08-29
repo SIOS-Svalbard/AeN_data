@@ -84,7 +84,7 @@ def make_valid_dict():
     return field_dict
 
 
-def xlsx_to_array(url,sheetname='Data',skiprows=1):
+def xlsx_to_array(url,sheetname='Data',skiprows=1,**kwds):
     """
     Convert xlsx to numpy 2D array of objects 
     
@@ -102,6 +102,9 @@ def xlsx_to_array(url,sheetname='Data',skiprows=1):
         The numper of rows to skip 
         Default: 2
 
+    **kwds : dict
+        Keywords to be passed to pandas excel read
+
     Returns
     ---------
     
@@ -112,7 +115,7 @@ def xlsx_to_array(url,sheetname='Data',skiprows=1):
     if isinstance(url,str):
 
         url = os.path.abspath(url)
-    data = pd.read_excel(url,sheetname=sheetname, skiprows=skiprows).as_matrix()    
+    data = pd.read_excel(url,sheetname=sheetname, skiprows=skiprows,**kwds).as_matrix()    
         
         
     # Convert Timestamps to dates
@@ -565,10 +568,12 @@ def check_array(data,checker_list,skiprows):
                 rows.append(row+skiprows+2)
             if req and (is_nan(data[row,col]) or data[row,col]==''):
                 if not(is_nan(data[row,evID])):
-                    if checker.inherit and is_nan(data[row,pID]):
-                        missing.append(row+skiprows+2)
-                    elif checker.name!='parentEventID' and 'remarks' not in checker.name.lower():
-                        mis.append(row+skiprows+2)
+                    if checker.inherit:
+                        if is_nan(data[row,pID]):
+                            missing.append(row+skiprows+2)
+                    else:
+                        if checker.name!='parentEventID' and 'remarks' not in checker.name.lower():
+                            mis.append(row+skiprows+2)
         if rows !=[]:        
             errors.append(checker.disp_name + ' ('+checker.name +')'+", Rows: "+ to_ranges_str(rows) + ' Error: Content in wrong format' )
         if missing !=[]:
@@ -635,12 +640,11 @@ def check_meta(metadata,checker_list,skipcols=1):
             checker = checker_list[metadata[row,0]] 
         except KeyError:
             good = False
-            errors.append("Metadata sheet: Column name not known, Row: " +str(row+1)+", value: "+ str(metadata[0,col]))
+            errors.append("Metadata sheet: Column name not known, Row: " +str(row)+", value: "+ str(metadata[row,0]))
             continue
         if metadata.shape[1]<2 or is_nan(metadata[row,1]):
             good = False
-            errors.append("Metadata sheet: Content missing, Cell: "+ xl.utility.xl_rowcol_to_cell(row+1,1+skipcols))
-
+            errors.append("Metadata sheet: Content missing, Cell: "+ xl.utility.xl_rowcol_to_cell(row,1+skipcols))
 
     return good, errors
 
@@ -808,7 +812,7 @@ def run(input):
     try:
         if isinstance(input,io.BytesIO):
             input.seek(0)
-        metadata = xlsx_to_array(input,sheetname="Metadata",skiprows=None)
+        metadata = xlsx_to_array(input,sheetname="Metadata",skiprows=None,header=None)
         # print(metadata[:,1])
     except XLRDError: 
         return False, ["Does not contain the 'Metadata' sheet. Is this the correct file?"]

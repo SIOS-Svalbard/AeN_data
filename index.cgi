@@ -130,6 +130,18 @@ for s, p, o in g:
     elif str(p) == "http://purl.org/dc/terms/description":
         term.definitions["_"] = str(o)
 
+g.load("dcterms.rdf")
+# Populate the terms with the terms from dublin core
+for s, p, o in g:
+    
+    term = Term.get(s)
+    if str(p) == "http://www.w3.org/2000/01/rdf-schema#comment":
+        term.examples["_"] = str(o)
+    elif str(p) == "http://purl.org/dc/terms/description":
+        term.definitions["_"] = str(o)
+    elif str(p) == "http://www.w3.org/2000/01/rdf-schema#label":
+        term.labels[o.language] = str(o) 
+
 # Translate terms
 t = rdflib.Graph()
 t.load("dwctranslations.rdf")

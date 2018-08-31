@@ -1,0 +1,145 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>Nansen Legacy Excel Template Generator</title>
+<style>
+body{ 
+	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
+ 	width: 90%; 
+ 	margin: 0 auto; 
+ }
+fieldset{
+	float:left;
+	margin-top: 1em; 
+	width: 45%; 
+	box-sizing: border-box; 
+}
+fieldset label{ 
+	display: block;
+	float: left;
+	width: 24em;
+	margin-right: 1em;
+}
+fieldset legend{ 
+	font-weight: bold;
+	text-transform: uppercase;
+}
+main{ 
+	width: 60%;
+}
+.wrapper{
+    margin: auto;
+    width: 100%;
+    padding:10px;
+}
+aside{ 
+	height: 100%;
+ 	width: 35%;
+ 	position: fixed;
+ 	right: 0; 
+ 	top: 0; 
+ 	border-left: 2px solid #aaa; 
+ 	padding-left: 1em; 
+ 	padding-right: 2em; 
+ 	background: #fcfcfc; 
+ }
+
+#select-setup { float: right; }
+</style>
+<script>
+function emptySidebar() {
+  var terms = document.getElementsByClassName("term");
+  for(var i = 0; i < terms.length; i++) {
+    terms[i].style.display = 'none';
+  }
+}
+document.addEventListener("DOMContentLoaded", function(e) {
+  emptySidebar();
+  var inputs = document.getElementsByTagName('label');
+  for(var i = 0; i < inputs.length; i++) {
+    inputs[i].onmouseover = function(e) {
+      var t = document.getElementById(e.target.getAttribute('data-help'));
+      if(t) {
+        emptySidebar();
+        t.style.display = 'block';
+      }
+    }
+  }
+});
+</script>
+<aside>
+% for group in config['grouping']:
+  % for name in config['terms'][group]:
+    <% term = Term.get(name) %>
+    <article class=term id='${term.name}'>
+      % if term.label(lang):
+        <h1>${term.label(lang)} [${term.name}]</h1>
+      % else:
+        <h1>[${term.name}]</h1>
+      % endif
+      <hr>
+      % if term.validation(lang):
+      	<p><b>Validation info:</b>
+        <p>${term.validation(lang)}
+      % else:
+        <p><b>No validation</b>
+      % endif
+      % if term.definition(lang):
+        <p><b>Darwin core info (validation takes precedence for formatting):</b>
+        <p>${term.definition(lang)}
+      % endif
+      % if term.example(lang):
+        <p>${term.example(lang)}
+      % endif
+    </article>
+  % endfor
+% endfor
+</aside>
+<main>
+<form id=select-setup method=get>
+    <select name=setup>
+      % for name in names:
+        <option 
+        % if config['name'] == name:
+          selected 
+        % endif
+        value='${name}'>${name}</option>
+      % endfor
+    </select>
+    <input type=submit value="Select setup">
+</form>
+</br>
+<h1>Nansen Legacy Excel Template Generator</h1>
+<p>Check the boxes next to the terms you want to include in your template and click the <b>Create template</b> button.
+<br><small><a href='http://rs.tdwg.org/dwc/terms/'>Darwin Core Terms: A quick reference guide</a></small><br>
+<a href="../../index.html">Back to index</a><br>
+<form method=post>
+<p><input type=submit value='Create template'>
+<div class="wrapper">
+% for group in config['grouping']:
+  <% terms = config['terms'][group] %>
+  <fieldset  >
+    <legend>${group.replace('_',' ')}</legend>
+    % for name in sorted(terms, key=lambda s: s.casefold()):
+      <% term = Term.get(name) %>
+      <label data-help='${term.name}'>
+      <input type=checkbox value=y name='${term.name}'
+      % if name in config['required'] or term.name in config['recommended']:
+        checked='true'
+      % endif
+      >
+      % if term.label(lang):
+        ${term.label(lang)}
+      % else :
+        ${term.name}
+      % endif
+      </label>
+    % endfor
+  </fieldset>
+% endfor
+</div>
+</form>
+</main>
+
+<footer>
+
+</footer>

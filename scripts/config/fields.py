@@ -50,9 +50,9 @@ __date__ = '2018-05-22'
 __updated__ = '2018-07-05'
 
 
-#==============================================================================
+# ==============================================================================
 # ID fields
-#==============================================================================
+# ==============================================================================
 
 
 uuid = {'name': 'eventID',
@@ -95,7 +95,7 @@ cruiseNumber = {'name': 'cruiseNumber',
                 'inherit': True,
                 'valid': {
                     'validate': 'list',
-                    'source': ['2018616','2018791', '2018707', '2018709', '2018710'],
+                    'source': ['2018616', '2018791', '2018707', '2018709', '2018710'],
                     'input_title': 'Cruise Number',
                     'input_message': '''This is the same for one cruise''',
                     'error_title': 'Error',
@@ -129,9 +129,9 @@ This is recorded as SS(superstation) in the cruise logger.'''
                }
 
 
-#==============================================================================
+# ==============================================================================
 # Time and date
-#==============================================================================
+# ==============================================================================
 
 
 eventDate = {'name': 'eventDate',
@@ -202,7 +202,8 @@ middle_time['name'] = 'middle_time'
 middle_time['disp_name'] = 'Middle time'
 middle_time['inherit'] = True
 middle_time['valid']['input_title'] = 'Middle time'
-middle_time['valid']['input_message'] = 'Middle time for event, for instance for noting the deepest point of a trawl or net haul'+ eventTime['valid']['input_message']
+middle_time['valid']['input_message'] = 'Middle time for event, for instance for noting the deepest point of a trawl or net haul' + \
+    eventTime['valid']['input_message']
 middle_time.pop('dwcid')
 
 end_time = copy.deepcopy(eventTime)
@@ -210,13 +211,14 @@ end_time['name'] = 'end_time'
 end_time['disp_name'] = 'End time'
 end_time['inherit'] = True
 end_time['valid']['input_title'] = 'End time'
-end_time['valid']['input_message'] = 'End time for event, for instance for use with a trawl or net haul'+ eventTime['valid']['input_message']
+end_time['valid']['input_message'] = 'End time for event, for instance for use with a trawl or net haul' + \
+    eventTime['valid']['input_message']
 end_time.pop('dwcid')
 
 
-#==============================================================================
+# ==============================================================================
 # Position
-#==============================================================================
+# ==============================================================================
 
 decimalLatitude = {'name': 'decimalLatitude',
                    'disp_name': 'Latitude',
@@ -265,96 +267,96 @@ Example: 15.0012''',
                     }
 
 endDecimalLatitude = {'name': 'endDecimalLatitude',
-                   'disp_name': 'End Latitude',
-                   'inherit': True,
-                   'units': 'degrees_north',
-                   'valid': {
-                       'validate': 'decimal',
-                       'criteria': 'between',
-                       'minimum': -90,
-                       'maximum': 90,
-                       'input_title': 'End Decimal Latitude',
-                       'input_message': '''Latitude in decimal degrees.
+                      'disp_name': 'End Latitude',
+                      'inherit': True,
+                      'units': 'degrees_north',
+                      'valid': {
+                          'validate': 'decimal',
+                          'criteria': 'between',
+                          'minimum': -90,
+                          'maximum': 90,
+                          'input_title': 'End Decimal Latitude',
+                          'input_message': '''Latitude in decimal degrees.
 This is for use with for instance trawls and nets.
 Northern hemisphere is positive.
 Example: 78.1500''',
-                       'error_title': 'Error',
-                       'error_message': 'Not in range [-90, 90]'
-                   },
-                   'cell_format': {
-                       'num_format': '0.0000'
-                   }
-                   }
+                          'error_title': 'Error',
+                          'error_message': 'Not in range [-90, 90]'
+                      },
+                      'cell_format': {
+                          'num_format': '0.0000'
+                      }
+                      }
 
 endDecimalLongitude = {'name': 'endDecimalLongitude',
-                    'disp_name': 'End Longitude',
-                    'inherit': True,
-                    'units': 'degree_east',
-                    'valid': {
-                        'validate': 'decimal',
-                        'criteria': 'between',
-                        'minimum': -180,
-                        'maximum': 180,
-                        'input_title': 'End Decimal Longitude',
-                        'input_message': '''Longitude in decimal degrees.
+                       'disp_name': 'End Longitude',
+                       'inherit': True,
+                       'units': 'degree_east',
+                       'valid': {
+                           'validate': 'decimal',
+                           'criteria': 'between',
+                           'minimum': -180,
+                           'maximum': 180,
+                           'input_title': 'End Decimal Longitude',
+                           'input_message': '''Longitude in decimal degrees.
 This is for use with for instance trawls and nets.
 East of Greenwich (0) is positive.
 Example: 15.0012''',
-                        'error_title': 'Error',
-                        'error_message': 'Not in range [-180, 180]'
-                    },
-                    'cell_format': {
-                        'num_format': '0.0000'
-                    }
-                    }
+                           'error_title': 'Error',
+                           'error_message': 'Not in range [-180, 180]'
+                       },
+                       'cell_format': {
+                           'num_format': '0.0000'
+                       }
+                       }
 
 
 middleDecimalLatitude = {'name': 'middleDecimalLatitude',
-                   'disp_name': 'Middle Latitude',
-                   'inherit': True,
-                   'units': 'degrees_north',
-                   'valid': {
-                       'validate': 'decimal',
-                       'criteria': 'between',
-                       'minimum': -90,
-                       'maximum': 90,
-                       'input_title': 'Middle Decimal Latitude',
-                       'input_message': '''Latitude in decimal degrees.
+                         'disp_name': 'Middle Latitude',
+                         'inherit': True,
+                         'units': 'degrees_north',
+                         'valid': {
+                             'validate': 'decimal',
+                             'criteria': 'between',
+                             'minimum': -90,
+                             'maximum': 90,
+                             'input_title': 'Middle Decimal Latitude',
+                             'input_message': '''Latitude in decimal degrees.
 This is for use with for instance trawls and nets and denotes the depest point.
 Northern hemisphere is positive.
 Example: 78.1500''',
-                       'error_title': 'Error',
-                       'error_message': 'Not in range [-90, 90]'
-                   },
-                   'cell_format': {
-                       'num_format': '0.0000'
-                   }
-                   }
+                             'error_title': 'Error',
+                             'error_message': 'Not in range [-90, 90]'
+                         },
+                         'cell_format': {
+                             'num_format': '0.0000'
+                         }
+                         }
 
 middleDecimalLongitude = {'name': 'middleDecimalLongitude',
-                    'disp_name': 'Middle Longitude',
-                    'inherit': True,
-                    'units': 'degree_east',
-                    'valid': {
-                        'validate': 'decimal',
-                        'criteria': 'between',
-                        'minimum': -180,
-                        'maximum': 180,
-                        'input_title': 'Middle Decimal Longitude',
-                        'input_message': '''Longitude in decimal degrees.
+                          'disp_name': 'Middle Longitude',
+                          'inherit': True,
+                          'units': 'degree_east',
+                          'valid': {
+                              'validate': 'decimal',
+                              'criteria': 'between',
+                              'minimum': -180,
+                              'maximum': 180,
+                              'input_title': 'Middle Decimal Longitude',
+                              'input_message': '''Longitude in decimal degrees.
 This is for use with for instance trawls and nets and denotes the depest point.
 East of Greenwich (0) is positive.
 Example: 15.0012''',
-                        'error_title': 'Error',
-                        'error_message': 'Not in range [-180, 180]'
-                    },
-                    'cell_format': {
-                        'num_format': '0.0000'
-                    }
-                    }
-#==============================================================================
+                              'error_title': 'Error',
+                              'error_message': 'Not in range [-180, 180]'
+                          },
+                          'cell_format': {
+                              'num_format': '0.0000'
+                          }
+                          }
+# ==============================================================================
 # Depths
-#==============================================================================
+# ==============================================================================
 
 bottomDepthInMeters = {'name': 'bottomDepthInMeters',
                        'disp_name': 'Bottom Depth (m)',
@@ -422,8 +424,8 @@ minimumDepthInMeters = {'name': 'minimumDepthInMeters',
                             'criteria': 'between',
                             'minimum': 0,
                             'maximum': 9999,
-                            #'criteria': '<',
-                            #'value': '=INDIRECT(ADDRESS(ROW(),COLUMN()-1))',
+                            # 'criteria': '<',
+                            # 'value': '=INDIRECT(ADDRESS(ROW(),COLUMN()-1))',
                             'input_title': 'Minimum depth in (m)',
                             'input_message': '''The minimum depth in decimal meters.
 0 m is the surface.
@@ -434,10 +436,10 @@ Needs to be smaller than the maximum depth''',
                         }
 
 
-#==============================================================================
+# ==============================================================================
 # String parameters
 # LABEL: Strings
-#==============================================================================
+# ==============================================================================
 
 # Method for making a new string property
 def make_string_dict(name):
@@ -501,15 +503,15 @@ Example: John Doe; Ola Nordmann'''
               }
 
 recordNumber = {'name': 'recordNumber',
-              'disp_name': 'Record Number',
-              'dwcid': 'http://rs.tdwg.org/dwc/terms/recordNumber',
-              'valid': {
-                  'validate': 'any',
-                  'input_title': 'Recorded Number',
-                  'input_message': '''This is an additional number used to identify the sample. 
+                'disp_name': 'Record Number',
+                'dwcid': 'http://rs.tdwg.org/dwc/terms/recordNumber',
+                'valid': {
+                    'validate': 'any',
+                    'input_title': 'Recorded Number',
+                    'input_message': '''This is an additional number used to identify the sample. 
 This is in addition to the sample ID (event ID)'''
-              }
-              }
+                }
+                }
 # number = {'name': 'number',
 #           'disp_name': 'Number',
 #           'width': 10,
@@ -592,56 +594,56 @@ water_measurement = {'name': 'water_measurement',
                      }
 
 storageTemp = {'name': 'storageTemp',
-                'disp_name': 'Storage temp',
-                'width': 15,
-                'valid': {
-                    'validate': 'list',
-                    'source': [
-                        'neg 196 C (LN)',
-                        'neg 80 C',
-                        'neg 20 C',
-                        'Cool room',
-                        'Room temp'],
-                    'input_title': 'Storage temperature',
-                    'input_message': '''Choose the necessary storage temperature''',
-                    'error_title': 'Error',
-                    'error_message': 'Not a valid storage temperature'
-                }
-                }
+               'disp_name': 'Storage temp',
+               'width': 15,
+               'valid': {
+                   'validate': 'list',
+                   'source': [
+                       'neg 196 C (LN)',
+                       'neg 80 C',
+                       'neg 20 C',
+                       'Cool room',
+                       'Room temp'],
+                   'input_title': 'Storage temperature',
+                   'input_message': '''Choose the necessary storage temperature''',
+                   'error_title': 'Error',
+                   'error_message': 'Not a valid storage temperature'
+               }
+               }
 
 fixative = {'name': 'fixative',
-              'disp_name': 'Fixative',
-              'valid': {
-                  'validate': 'any',
-                  'input_title': 'Fixative',
-                  'input_message': '''Fixative used for sample '''
-              }
-              }
+            'disp_name': 'Fixative',
+            'valid': {
+                'validate': 'any',
+                'input_title': 'Fixative',
+                'input_message': '''Fixative used for sample '''
+            }
+            }
 
 bottleNumber = {'name': 'bottleNumber',
-                   'disp_name': 'Bottle Number',
-                   'valid': {
-                       'validate': 'integer',
-                       'criteria': '>',
-                       'value': 0,
-                       'input_title': 'Bottle Number',
-                       'input_message': '''The bottle number 
+                'disp_name': 'Bottle Number',
+                'valid': {
+                    'validate': 'integer',
+                    'criteria': '>',
+                    'value': 0,
+                    'input_title': 'Bottle Number',
+                    'input_message': '''The bottle number 
 Could be for instance the niskin bottle number.
 Positive integer''',
-                       'error_title': 'Error',
-                       'error_message': 'Integer > 0'
-                   }
-                   }
+                    'error_title': 'Error',
+                    'error_message': 'Integer > 0'
+                }
+                }
 
 sampleLocation = {'name': 'sampleLocation',
-              'disp_name': 'Sample Location',
-              'valid': {
-                  'validate': 'any',
-                  'input_title': 'Sample Location',
-                  'input_message': '''The storage location on shore.
+                  'disp_name': 'Sample Location',
+                  'valid': {
+                      'validate': 'any',
+                      'input_title': 'Sample Location',
+                      'input_message': '''The storage location on shore.
 This could for instance be an institution or something more specific'''
-              }
-              }
+                  }
+                  }
 dilution_factor = {'name': 'dilution_factor',
                    'disp_name': 'Dilution factor',
                    'width': 20,
@@ -672,17 +674,17 @@ If no filtering is being done choose None''',
           }
 
 filteredVolumeInMilliliters = {'name': 'filteredVolumeInMilliliters',
-              'disp_name': 'Filtered volume (mL)',
-              'valid': {
-                  'validate': 'decimal',
-                  'criteria': '>',
-                  'value': 0,
-                  'input_title': 'Filtered volume (mL)',
-                  'input_message': '''Filtered volume in decimal millilitres''',
-                  'error_title': 'Error',
-                  'error_message': 'Decimal > 0'
-              }
-              }
+                               'disp_name': 'Filtered volume (mL)',
+                               'valid': {
+                                   'validate': 'decimal',
+                                   'criteria': '>',
+                                   'value': 0,
+                                   'input_title': 'Filtered volume (mL)',
+                                   'input_message': '''Filtered volume in decimal millilitres''',
+                                   'error_title': 'Error',
+                                   'error_message': 'Decimal > 0'
+                               }
+                               }
 
 methanol_vol = {'name': 'methanol_vol',
                 'disp_name': 'Methanol volume (mL)',
@@ -699,18 +701,18 @@ methanol_vol = {'name': 'methanol_vol',
                 }
 
 sampleVolumeInMilliliters = {'name': 'sampleVolumeInMilliliters',
-              'disp_name': 'Sample volume (mL)',
-              'units': 'mL',
-              'valid': {
-                  'validate': 'decimal',
-                  'criteria': '>',
-                  'value': 0,
-                  'input_title': 'Sample volume (mL)',
-                  'input_message': '''Sample volume in decimal millilitres''',
-                  'error_title': 'Error',
-                  'error_message': 'Decimal > 0'
-              }
-              }
+                             'disp_name': 'Sample volume (mL)',
+                             'units': 'mL',
+                             'valid': {
+                                 'validate': 'decimal',
+                                 'criteria': '>',
+                                 'value': 0,
+                                 'input_title': 'Sample volume (mL)',
+                                 'input_message': '''Sample volume in decimal millilitres''',
+                                 'error_title': 'Error',
+                                 'error_message': 'Decimal > 0'
+                             }
+                             }
 
 
 subsample_vol = {'name': 'subsample_vol',
@@ -744,9 +746,9 @@ subsample_number = {'name': 'subsample_number',
 sample_owner = make_string_dict('sample_owner')
 
 
-#==============================================================================
+# ==============================================================================
 # For metadata fields
-#==============================================================================
+# ==============================================================================
 
 title = make_string_dict('title')
 title['valid']['input_message'] = 'A short descriptive title of the dataset'
@@ -792,9 +794,9 @@ The Nansen Legacy (RCN # 276730)'''
              }
              }
 
-#==============================================================================
+# ==============================================================================
 # Species names
-#==============================================================================
+# ==============================================================================
 
 taxon = make_string_dict('Taxon')
 taxon['dwcid'] = 'http://rs.tdwg.org/dwc/terms/Taxon'
@@ -804,17 +806,17 @@ phylum['dwcid'] = 'http://rs.tdwg.org/dwc/terms/phylum'
 
 # can't call it class as that is a python word
 sex = {'name': 'sex',
-                'disp_name': 'Sex',
-                'dwcid': 'http://rs.tdwg.org/dwc/terms/sex',
+       'disp_name': 'Sex',
+       'dwcid': 'http://rs.tdwg.org/dwc/terms/sex',
                 'valid': {
                     'validate': 'any',
-                    #'source': ['Male', 'Female', 'Undetermined'],
+                    # 'source': ['Male', 'Female', 'Undetermined'],
                     'input_title': 'Sex',
                     'input_message': '''Male (M), female (F), maybe male (M?), maybe female (F?) or unknown (?)''',
                     # 'error_title': 'Error',
                     # 'error_message': 'Not a valid sex '
                 }
-                }
+       }
 classify = make_string_dict('class')
 classify['dwcid'] = 'http://rs.tdwg.org/dwc/terms/class'
 
@@ -861,105 +863,106 @@ For exampel: Nansen Legacy sampling protocols version XX section YY.'''
 
 gearType = {'name': 'gearType',
                     'disp_name': 'Gear Type',
+                    'inherit': True,
                     'valid': {
                         'validate': 'any',
                         'input_title': 'Gear Type',
                         'input_message': 'The type of gear used to retrive the sample'
                     }
-                    }
+            }
 
 
 sampleType = {'name': 'sampleType',
-                    'disp_name': 'Sample Type',
-                    'valid': {
-                        'validate': 'any',
-                        'input_title': 'Sample Type',
-                        'input_message': 'The type of sample taken'
-                    }
-                    }
+              'disp_name': 'Sample Type',
+              'valid': {
+                  'validate': 'any',
+                  'input_title': 'Sample Type',
+                  'input_message': 'The type of sample taken'
+              }
+              }
 
 seaIceCoreType = {'name': 'seaIceCoreType',
-                    'disp_name': 'Sea Ice Core Type',
-                    'valid': {
-                        'validate': 'any',
-                        'input_title': 'Sea Ice Core Type',
-                        'input_message': 'The analysis the sea ice core is intended for'
-                    }
-                    }
+                  'disp_name': 'Sea Ice Core Type',
+                  'valid': {
+                      'validate': 'any',
+                      'input_title': 'Sea Ice Core Type',
+                      'input_message': 'The analysis the sea ice core is intended for'
+                  }
+                  }
 
 seaIceCoreLengthInMeters = {'name': 'seaIceCoreLengthInMeters',
-                        'disp_name': 'Sea Ice Core Length (cm)',
-                        'units': 'cm',
-                        'valid': {
-                            'validate':'decimal',
-                            'criteria': '>',
-                            'value': 0,
-                             'input_title': 'Sea Ice Core length (cm)',
-                             'input_message': '''Sea ice core length in decimal centimeters.
+                            'disp_name': 'Sea Ice Core Length (cm)',
+                            'units': 'cm',
+                            'valid': {
+                                'validate': 'decimal',
+                                'criteria': '>',
+                                'value': 0,
+                                'input_title': 'Sea Ice Core length (cm)',
+                                'input_message': '''Sea ice core length in decimal centimeters.
                              Float number larger than 0 ''',
-                             'error_title': 'Error',
-                             'error:message': 'Float > 0'
-                             }
-                        }
+                                'error_title': 'Error',
+                                'error:message': 'Float > 0'
+                            }
+                            }
 seaIceThicknessInMeters = {'name': 'seaIceThicknessInMeters',
-                        'disp_name': 'Sea Ice Thickness (cm)',
-                        'units': 'cm',
-                        'valid': {
-                            'validate':'decimal',
-                            'criteria': '>',
-                            'value': 0,
-                             'input_title': 'Sea Ice Thickness (cm)',
-                             'input_message': '''Sea ice thickness in decimal centimeters.
+                           'disp_name': 'Sea Ice Thickness (cm)',
+                           'units': 'cm',
+                           'valid': {
+                               'validate': 'decimal',
+                               'criteria': '>',
+                               'value': 0,
+                               'input_title': 'Sea Ice Thickness (cm)',
+                               'input_message': '''Sea ice thickness in decimal centimeters.
                              Float number larger than 0 ''',
-                             'error_title': 'Error',
-                             'error:message': 'Float > 0'
-                             }
-                        }
+                               'error_title': 'Error',
+                               'error:message': 'Float > 0'
+                           }
+                           }
 seaIceFreeboardInMeters = {'name': 'seaIceFreeboardInMeters',
-                        'disp_name': 'Sea Ice Freeboard (cm)',
-                        'units': 'cm',
-                        'valid': {
-                            'validate':'decimal',
-                            'criteria': '>',
-                            'value': 0,
-                             'input_title': 'Sea Ice Freecoard (cm)',
-                             'input_message': '''Sea ice freeboard in decimal centimeters.
+                           'disp_name': 'Sea Ice Freeboard (cm)',
+                           'units': 'cm',
+                           'valid': {
+                               'validate': 'decimal',
+                               'criteria': '>',
+                               'value': 0,
+                               'input_title': 'Sea Ice Freecoard (cm)',
+                               'input_message': '''Sea ice freeboard in decimal centimeters.
                              Float number larger than 0 ''',
-                             'error_title': 'Error',
-                             'error:message': 'Float > 0'
-                             }
-                        }
+                               'error_title': 'Error',
+                               'error:message': 'Float > 0'
+                           }
+                           }
 seaIceMeltpondTemperatureeInCelsius = {'name': 'seaIceMeltpondTemperatureInCelsius',
-                        'disp_name': 'Sea Ice Meltpond Temperature (C)',
-                        'units': 'Celsius',
-                        'valid': {
-                            'validate':'decimal',
-                            'criteria': '>',
-                            'value': -10,
-                             'input_title': 'Sea Ice Meltpond Temperature (C)',
-                             'input_message': '''Sea ice meltpond temperature in Celsius.
+                                       'disp_name': 'Sea Ice Meltpond Temperature (C)',
+                                       'units': 'Celsius',
+                                       'valid': {
+                                           'validate': 'decimal',
+                                           'criteria': '>',
+                                           'value': -10,
+                                           'input_title': 'Sea Ice Meltpond Temperature (C)',
+                                           'input_message': '''Sea ice meltpond temperature in Celsius.
                              Float number larger than -10 ''',
-                             'error_title': 'Error',
-                             'error:message': 'Float > -10'
-                             }
-                        }
+                                           'error_title': 'Error',
+                                           'error:message': 'Float > -10'
+                                       }
+                                       }
 seaIceMeltpondSalinity = {'name': 'seaIceMeltpondSalinity',
-                        'disp_name': 'Sea Ice Meltpond Salinity (1e-3)',
-                        'units': '1e-3',
-                        'valid': {
-                            'validate':'decimal',
-                            'criteria': '>=',
-                            'value': 0,
-                             'input_title': 'Sea Ice Meltpond Saliniy Core length (cm)',
-                        'input_title': 'Sea Ice Meltpond Salinity',
-                        'input_message': '''Sea ice meltpond salinity in parts per thousand
+                          'disp_name': 'Sea Ice Meltpond Salinity (1e-3)',
+                          'units': '1e-3',
+                          'valid': {
+                              'validate': 'decimal',
+                              'criteria': '>=',
+                              'value': 0,
+                              'input_title': 'Sea Ice Meltpond Saliniy Core length (cm)',
+                              'input_title': 'Sea Ice Meltpond Salinity',
+                              'input_message': '''Sea ice meltpond salinity in parts per thousand
 Often using the Practical Salinity Scale of 1978
 Float number larger than or equal to 0
 Example: 0.029''',
-                        'error_title': 'Error',
-                        'error_message': 'Float >= 0'
-                    }
-                    }
+                              'error_title': 'Error',
+                              'error_message': 'Float >= 0'
+                          }
+                          }
 # CF names
 
 seaWaterTemperatueInCelsius = {'name': 'seaWaterTemperatueInCelsius',
@@ -1278,79 +1281,79 @@ weightInGrams = {'name': 'weightInGrams',
                  }
                  }
 gonadWeightInGrams = {'name': 'gonadWeightInGrams',
-                 'disp_name': 'Gonad Weight (g)',
-                 'units': 'g',
-                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
-                 'valid': {
-                     'validate': 'decimal',
-                     'criteria': '>',
-                     'value': 0,
-                     'input_title': 'Gonad Weight in grams (g)',
-                     'input_message': '''Wet weight of the gonad in in grams''',
-                     'error_title': 'Error',
-                     'error_message': 'Float > 0'
-                 }
-                 }
+                      'disp_name': 'Gonad Weight (g)',
+                      'units': 'g',
+                      #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                      'valid': {
+                          'validate': 'decimal',
+                          'criteria': '>',
+                          'value': 0,
+                          'input_title': 'Gonad Weight in grams (g)',
+                          'input_message': '''Wet weight of the gonad in in grams''',
+                          'error_title': 'Error',
+                          'error_message': 'Float > 0'
+                      }
+                      }
 
 liverWeightInGrams = {'name': 'liverWeightInGrams',
-                 'disp_name': 'Liver Weight (g)',
-                 'units': 'g',
-                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
-                 'valid': {
-                     'validate': 'decimal',
-                     'criteria': '>',
-                     'value': 0,
-                     'input_title': 'Liver Weight in grams (g)',
-                     'input_message': '''Wet weight of the liver in in grams''',
-                     'error_title': 'Error',
-                     'error_message': 'Float > 0'
-                 }
-                 }
+                      'disp_name': 'Liver Weight (g)',
+                      'units': 'g',
+                      #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                      'valid': {
+                          'validate': 'decimal',
+                          'criteria': '>',
+                          'value': 0,
+                          'input_title': 'Liver Weight in grams (g)',
+                          'input_message': '''Wet weight of the liver in in grams''',
+                          'error_title': 'Error',
+                          'error_message': 'Float > 0'
+                      }
+                      }
 somaticWeightInGrams = {'name': 'somaticWeightInGrams',
-                 'disp_name': 'Somatic Weight (g)',
-                 'units': 'g',
-                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
-                 'valid': {
-                     'validate': 'decimal',
-                     'criteria': '>',
-                     'value': 0,
-                     'input_title': 'Somatic Weight in grams (g)',
-                     'input_message': '''Wet weight of the fish when all inner organs are removed from the fish gonad in in grams''',
-                     'error_title': 'Error',
-                     'error_message': 'Float > 0'
-                 }
-                 }
+                        'disp_name': 'Somatic Weight (g)',
+                        'units': 'g',
+                        #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                        'valid': {
+                            'validate': 'decimal',
+                            'criteria': '>',
+                            'value': 0,
+                            'input_title': 'Somatic Weight in grams (g)',
+                            'input_message': '''Wet weight of the fish when all inner organs are removed from the fish gonad in in grams''',
+                            'error_title': 'Error',
+                            'error_message': 'Float > 0'
+                        }
+                        }
 
 forkLengthInMeters = {'name': 'forkLengthInMeters',
-                 'disp_name': 'Fork lenght (cm)',
-                 'units': 'cm',
-                 #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
-                 'valid': {
-                     'validate': 'decimal',
-                     'criteria': '>',
-                     'value': 0,
-                     'input_title': 'Fork lenght (cm)',
-                     'input_message': '''The length of a fish measured from the most anterior part of the head to the deepest point of the notch in the tail fin in cm.
+                      'disp_name': 'Fork lenght (cm)',
+                      'units': 'cm',
+                      #                  'dwcid': 'http://rs.tdwg.org/dwc/terms/dynamicProperties',
+                      'valid': {
+                          'validate': 'decimal',
+                          'criteria': '>',
+                          'value': 0,
+                          'input_title': 'Fork lenght (cm)',
+                          'input_message': '''The length of a fish measured from the most anterior part of the head to the deepest point of the notch in the tail fin in cm.
 Positive decimal number''',
-                     'error_title': 'Error',
-                     'error_message': 'Float > 0'
-                 }
-                 }
+                          'error_title': 'Error',
+                          'error_message': 'Float > 0'
+                      }
+                      }
 maturationStage = {'name': 'maturationStage',
-                 'disp_name': 'Maturation Stage',
-                 'units': '1',
-                 'valid': {
-                     'validate': 'integer',
-                     'criteria': 'between',
-                     'minimum': 0,
-                     'maximum': 7,
-                     'input_title': 'Maturation Stage',
-                     'input_message': '''On the basis of shape, size, color of the gonads and other morphological featuers, at least six maturity stages can be recongnized 
+                   'disp_name': 'Maturation Stage',
+                   'units': '1',
+                   'valid': {
+                       'validate': 'integer',
+                       'criteria': 'between',
+                       'minimum': 0,
+                       'maximum': 7,
+                       'input_title': 'Maturation Stage',
+                       'input_message': '''On the basis of shape, size, color of the gonads and other morphological featuers, at least six maturity stages can be recongnized 
 Value in range [0, 7]''',
-                     'error_title': 'Error',
-                     'error_message': 'Int range [0, 7]'
-                 }
-                 }
+                       'error_title': 'Error',
+                       'error_message': 'Int range [0, 7]'
+                   }
+                   }
 
 ectoparasites = {'name': 'ectoparasites',
                  'disp_name': 'Ectoparasites',

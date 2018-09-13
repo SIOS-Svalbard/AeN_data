@@ -10,7 +10,7 @@ cores:
       - name: aen
         required: [eventID, cruiseNumber, stationName, eventTime, eventDate, decimalLatitude, decimalLongitude,bottomDepthInMeters]
         recommended: [eventRemarks,samplingProtocol,parentEventID, sampleLocation, pi_name, pi_email, pi_institution, recordedBy, sampleType]
-        grouping: [required, event, storage,identification, description, measurement, trawl_or_net, ice, water, sediment, data, sample_responsible, comments ]
+        grouping: [required, event, storage,identification, description, measurement, trawl_or_net, ice, water, sediment, instrumentation, sample_responsible, comments ]
         terms:
           required: [eventID,parentEventID, cruiseNumber, stationName,eventDate, eventTime, decimalLatitude, decimalLongitude, bottomDepthInMeters]
           event: [ start_date, end_date,
@@ -25,7 +25,7 @@ cores:
           water: [seaWaterAlkalinity, seaWaterChlorophyllA, seaWaterDeltaO18, seaWaterPH, seaWaterPOC, seaWaterPON, seaWaterPhaeopigment, seaWaterPressure, seaWaterSalinity, seaWaterTOC, seaWaterTemperatueInCelsius, seaWaterTotalDIC] 
           ice: [seaIceChlorophyllA, seaIceDeltaO18, seaIcePhaeopigment, seaIceTotalDIC, seaIceCoreType, seaIceCoreLengthInMeters, seaIceThicknessInMeters, seaIceFreeboardInMeters, seaIceMeltpondTemperatureInCelsius, seaIceMeltpondSalinity ]
           sediment: [sedimentChlorophyllA, sedimentPhaeopigment]
-          data: [dataFilename]
+          instrumentation: [dataFilename, serialNumber]
           sample_responsible: [sampleLocation, recordedBy, pi_name, pi_email, pi_institution, pi_address ]
           comments: [occurrenceRemarks, fieldNotes, eventRemarks]
   - name: default

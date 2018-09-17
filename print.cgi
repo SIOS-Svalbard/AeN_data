@@ -24,12 +24,7 @@ __updated__ = '2018-07-25'
 
 cgitb.enable()
 
-
-
-
-
-
-
+SETUP_DEFAULT = "L"
 
 method = os.environ.get("REQUEST_METHOD", "GET")
 
@@ -89,29 +84,87 @@ CT~~CD,~CC^~CT~
         text2,
         text3,
         text4,
-        # text1.encode(encoding='utf-8'), 
-        # text2.encode(encoding='utf-8'),
-        # text3.encode(encoding='utf-8'),
-        # text4.encode(encoding='utf-8'),
         uuid[:8])
 
 #    print(zpl)
     return zpl
 
+def create_large(uuid, text1, text2, text3, text4,text5):
+    """
+    Creates the ZPL code for the large (25x51 mm) label.
+    Adds a text with the 8 first characters from the uuid for ease of reading
 
-# method = 'POST'
-# method = 'Test'
+    Parameters
+    ----------
+    uuid : str
+        The 32 characters hex uuid
 
-#if method == "GET":  # This is for getting the page
+    text1 : str
+        First line of text, limited to 20 characters
 
+    text2 : str
+        Second line of text, limited to 20 characters
+
+    text3 : str
+        Third line of text, limited to 20 characters
+
+    text4 : str
+        Fourth line of text, limited to 26 characters    
+
+    text5 : str
+        Fifth line of text, limited to 26 characters    
+
+    Returns
+    ----------
+    zpl : str
+        The formatted ZPL code string that should be sent to the Zebra printer 
+    """
+
+    zpl= '''
+CT~~CD,~CC^~CT~
+^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD25^JUS^LRN^CI28^XZ
+^XA
+^MMT
+^PW602
+^LL0295
+^LS0
+^BY110,110^FT465,143^BXN,5,200,22,22,1,~
+^FH\^FD{0}^FS
+^FT491,171^A0N,21,21^FH\^FD{6}^FS
+^FT20,57^A0N,42,40^FH\^FD{1}^FS
+^FT20,109^A0N,42,40^FH\^FD{2}^FS
+^FT20,161^A0N,42,40^FH\^FD{3}^FS
+^FT20,216^A0N,42,40^FH\^FD{4}^FS
+^FT20,268^A0N,42,40^FH\^FD{5}^FS
+^PQ1,0,1,Y^XZ'''.format(uuid,
+        text1, 
+        text2,
+        text3,
+        text4,
+        text5,
+        uuid[:8])
+
+    return zpl
+
+
+
+form = cgi.FieldStorage()
+
+if 'setup' in form:
+    setup = form['setup'].value
+else:
+    setup = SETUP_DEFAULT
 
 # Using sys, as print doesn't work for cgi in python3
-template = templates.get_template("print.html")
+if setup == 'L':
+    template = templates.get_template("print_large.html")
+elif setup =='M':
+    template = templates.get_template("print_medium.html")
 
 sys.stdout.flush()
 sys.stdout.buffer.write(b"Content-Type: text/html\n\n")
 
-texts = {"text1":str(dt.date.today())+" AeN","text2":"","text3":"","text4":""}
+texts = {"text1":str(dt.date.today())+" AeN","text2":"","text3":"","text4":"","text5":""}
 incr = False
 
 def write_page(texts,incr):
@@ -126,7 +179,6 @@ def warn(message):
 
 if method == "POST":
     
-    form = cgi.FieldStorage()
     # Check if the label is generated now and not a refresh
     # sys.stdout.buffer.write(bytes(str(dt.datetime.now().timestamp()-5)+"<br>","utf-8"))
     # if float(form['print'].value)<dt.datetime.now().timestamp()-75:
@@ -152,6 +204,7 @@ if method == "POST":
     text2 = get_value('text2')
     text3 = get_value('text3')
     text4 = get_value('text4')
+    text5 = get_value('text5')
     if "increment" in form:
         incr = form['increment'].value=="y"
     else:
@@ -168,12 +221,19 @@ if method == "POST":
             sys.exit()
     for n in range(int(form['n'].value)):
         if incr:
-            zpl = create_label(str(uuid.uuid1()),text1, text2, format(text3,"0"+n_zero+"d"), text4)
+            if setup == 'L':
+                zpl = create_large(str(uuid.uuid1()),text1, text2, format(text3,"0"+n_zero+"d"), text4,text5)
+            elif setup=='M':
+                zpl = create_label(str(uuid.uuid1()),text1, text2, format(text3,"0"+n_zero+"d"), text4)
         else:
-            zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
+            if setup == 'L':
+                zpl = create_large(str(uuid.uuid1()),text1, text2, text3, text4,text5)
+            elif setup =='M':
+                zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
+                
         pSocket.send(bytes(zpl,"utf-8"))
-        # warn("Down for maintainance")
-        # sys.stdout.buffer.write(bytes(zpl,"utf-8"))
+        #warn("Down for maintainance")
+        #sys.stdout.buffer.write(bytes(zpl,"utf-8"))
         if incr:
             text3=text3+1
 
@@ -183,13 +243,15 @@ if method == "POST":
             "text1":text1,
             "text2":text2,
             "text3":format(text3,"0"+n_zero+"d"),
-            "text4":text4}
+            "text4":text4,
+            "text5":text5}
     else:
         texts = {
             "text1":text1,
             "text2":text2,
             "text3":text3,
-            "text4":text4}
+            "text4":text4,
+            "text5":text5}
     pSocket.close()
 
 write_page(texts,incr)

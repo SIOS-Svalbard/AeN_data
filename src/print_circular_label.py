@@ -57,16 +57,15 @@ CT~~CD,~CC^~CT~
 ^PW650
 ^LL0100
 ^LS0
-^BY88,88^FT65,119^BXN,3,200,22,22,1,~
+^BY88,88^FT60,119^BXN,3,200,22,22,1,~
 ^FH\^FD{0}^FS
-^BY88,88^FT219,119^BXN,3,200,22,22,1,~
+^BY88,88^FT214,119^BXN,3,200,22,22,1,~
 ^FH\^FD{1}^FS
-^BY88,88^FT373,119^BXN,3,200,22,22,1,~
+^BY88,88^FT368,119^BXN,3,200,22,22,1,~
 ^FH\^FD{2}^FS
-^BY88,88^FT526,119^BXN,3,200,22,22,1,~
+^BY88,88^FT521,119^BXN,3,200,22,22,1,~
 ^FH\^FD{3}^FS
 ^PQ1,0,1,Y^XZ'''.format(uuids[0], uuids[1], uuids[2], uuids[3])
-
 
     del uuids
 
@@ -130,7 +129,7 @@ def parse_options():
     parser.add_argument('-V', '--version', action='version',
                         version=program_version_message)
     parser.add_argument('N', type=int, help='''Set the number of labels to be printed,
-if not a multiple of 4 will be rounded up to a multiple of ''' )
+if not a multiple of 4 will be rounded up to a multiple of ''')
     parser.add_argument('ip',  type=str,
                         help="Set the IP of the printer, format is '192.168.1.1'")
 
@@ -143,6 +142,7 @@ if not a multiple of 4 will be rounded up to a multiple of ''' )
         print("Verbose mode on")
 
     return args
+
 
 if __name__ == "__main__":
     if DEBUG:

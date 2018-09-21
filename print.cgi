@@ -181,20 +181,22 @@ if method == "POST":
     
     # Check if the label is generated now and not a refresh
     # sys.stdout.buffer.write(bytes(str(dt.datetime.now().timestamp()-5)+"<br>","utf-8"))
-    # if float(form['print'].value)<dt.datetime.now().timestamp()-75:
-    #     warn("Not printing. Was this a refresh? If not your computer might be out of sync with the time server (limit 75s)<br> Difference to server in seconds:" +str(float(form['print'].value)-dt.datetime.now().timestamp()))
-    #     write_page(texts,incr)
-    #     sys.exit()
+    if float(form['print'].value)<dt.datetime.now().timestamp()-15:
+        warn("Not printing. Was this a refresh? If not your computer might be out of sync with the time server (limit 75s)<br> Difference to server in seconds:" +str(float(form['print'].value)-dt.datetime.now().timestamp()))
+        write_page(texts,incr)
+        sys.exit()
     # sys.stdout.buffer.write(bytes(form["print"].value+"<br>",'utf-8')) 
     PORT = 9100
     BUFFER_SIZE = 1024
-    try: 
-        pSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        pSocket.connect((form['ip'].value, PORT))
-    except (ConnectionRefusedError,OSError):
-        warn("Error, wrong IP")
-        write_page(texts,incr)
-        sys.exit() 
+    for i in range(3):
+        try: 
+            pSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            pSocket.connect((form['ip'].value, PORT))
+            break
+        except (ConnectionRefusedError,OSError):
+            warn("Error, wrong IP")
+            write_page(texts,incr)
+            sys.exit() 
     def get_value(field):
         if field in form:
             return form[field].value
@@ -232,8 +234,8 @@ if method == "POST":
                 zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
                 
         pSocket.send(bytes(zpl,"utf-8"))
-        #warn("Down for maintainance")
-        #sys.stdout.buffer.write(bytes(zpl,"utf-8"))
+        # warn("Down for maintainance")
+        # sys.stdout.buffer.write(bytes(zpl,"utf-8"))
         if incr:
             text3=text3+1
 

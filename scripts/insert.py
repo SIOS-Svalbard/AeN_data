@@ -167,24 +167,26 @@ def insert_db(cur, data, metadata):
 
     #    sheet = workbook.add_worksheet('Metadata')
 
+
     #    metadata_fields = ['title', 'abstract', 'pi_name', 'pi_email', 'pi_institution',
     #                       'pi_address', 'recordedBy', 'projectID']
 urls = glob.glob(
     "/home/pal/Documents/AeN/Cruise/2018707/SAMPLE LOGS/Corrected/*.xlsx")
-urls = glob.glob(
-    "/export/work/Testing/*.xlsx")
 
 for url in urls:
     print(url)
 
     good, error, data, metadata = px.run(url, return_data=True)
 
-    if good:
-        insert_db(cur, data, metadata)
-    else:
+    if not(good):
         print("Errors found")
         for line in error:
             print(line)
+        print("Should we continue? [y/n]")
+        answer = input().lower()
+        if answer != 'y':
+            continue
+    insert_db(cur, data, metadata)
 
 
 conn.commit()

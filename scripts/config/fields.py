@@ -872,6 +872,7 @@ For exampel: Nansen Legacy sampling protocols version XX section YY.'''
 
 gearType = {'name': 'gearType',
                     'disp_name': 'Gear Type',
+                    'inherit': True,
                     'valid': {
                         'validate': 'any',
                         'input_title': 'Gear Type',

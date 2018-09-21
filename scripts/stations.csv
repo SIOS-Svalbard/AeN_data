@@ -1,0 +1,26 @@
+eventID,stationName,decimalLongitude,decimalLatitude,sampleType
+aee00b64-b5a7-11e8-bb1c-a0481c9e7d26,P7 (NLEG25),30,82,Station
+aee00b65-b5a7-11e8-bb1c-a0481c9e7d26,NLEG24,30.5258,81.6828,Station
+aee00b66-b5a7-11e8-bb1c-a0481c9e7d26,NLEG23,30.6647,81.6165,Station
+aee00b67-b5a7-11e8-bb1c-a0481c9e7d26,NLEG22,30.7667,81.5895,Station
+aee00b68-b5a7-11e8-bb1c-a0481c9e7d26,P6 (NLEG21),30.8548,81.5463,Station
+aee00b69-b5a7-11e8-bb1c-a0481c9e7d26,NLEG20,30.9618,81.5025,Station
+aee00b6a-b5a7-11e8-bb1c-a0481c9e7d26,NLEG19,31.0775,81.458,Station
+aee00b6b-b5a7-11e8-bb1c-a0481c9e7d26,NLEG18,31.1448,81.4318,Station
+aee00b6c-b5a7-11e8-bb1c-a0481c9e7d26,NLEG17,31.2468,81.4107,Station
+aee00b6d-b5a7-11e8-bb1c-a0481c9e7d26,NLEG16,31.2933,81.3822,Station
+aee00b6e-b5a7-11e8-bb1c-a0481c9e7d26,NLEG15,31.3487,81.3098,Station
+aee00b6f-b5a7-11e8-bb1c-a0481c9e7d26,NLEG14,34,81,Station
+aee00b70-b5a7-11e8-bb1c-a0481c9e7d26,P5 (NLEG13),34,80.5,Station
+aee00b71-b5a7-11e8-bb1c-a0481c9e7d26,NLEG12,34,80,Station
+aee00b72-b5a7-11e8-bb1c-a0481c9e7d26,P4 (NLEG11),34,79.75,Station
+aee00b73-b5a7-11e8-bb1c-a0481c9e7d26,NLEG10,34,79.5,Station
+aee00b74-b5a7-11e8-bb1c-a0481c9e7d26,NLEG09,34,79.25,Station
+aee00b75-b5a7-11e8-bb1c-a0481c9e7d26,NLEG08,34,79,Station
+aee00b76-b5a7-11e8-bb1c-a0481c9e7d26,P3 (NLEG07),34,78.75,Station
+aee00b77-b5a7-11e8-bb1c-a0481c9e7d26,NLEG06,34,78.5,Station
+aee00b78-b5a7-11e8-bb1c-a0481c9e7d26,NLEG05,34,78,Station
+aee00b79-b5a7-11e8-bb1c-a0481c9e7d26,P2 (NLEG04),34,77.5,Station
+aee00b7a-b5a7-11e8-bb1c-a0481c9e7d26,NLEG03,34,77,Station
+aee00b7b-b5a7-11e8-bb1c-a0481c9e7d26,NLEG02,31.22,76.5,Station
+aee00b7c-b5a7-11e8-bb1c-a0481c9e7d26,P1 (NLEG01),31.22,76,Station

@@ -806,11 +806,12 @@ def clean(data):
     return cleaned_data
 
 
-def run(input):
+def run(input, return_data=False):
     """
     Method for running the checker on the given input.
     If importing in another program, this should be called instead of the main 
     function
+    Can be used to return the data as well
 
     Parameters
     ---------
@@ -818,6 +819,10 @@ def run(input):
     input: string or file like object
         The file to be checked. Can be anything the pandas read_excel method 
         excepts (string url, file like object,...)
+
+    return_data: Boolean
+        Should the data and metadata be returned
+        Default: False
 
     Returns
     ---------
@@ -829,6 +834,17 @@ def run(input):
 
     errors: string
         String specifying where the errors were found
+
+    data: pandas array
+        Optional, only when return_data is True
+        The data in array form.
+        First row contains the column names
+
+    metadata: pandas array
+        Optional, only when return_data is True
+        The metadata in array form
+        The first column contains the names
+        The second the values
     """
 
     checker_list = make_valid_dict()
@@ -856,60 +872,10 @@ def run(input):
     good = good and g
     for it in e:
         error.append(it)
-
-    return good, error
-
-
-def main(argv=None):  # IGNORE:C0111
-    '''Main function
-    Reads in the Command line options.
-    and runs the run function'''
-    try:
-        args = parse_options()
-        input = args.input
-        print(run(input))
-        return 0
-    except KeyboardInterrupt:
-        ### handle keyboard interrupt ###
-        return 0
-
-
-def parse_options():
-    """
-    Parse the command line options and return these. Also performs some basic
-    sanity checks, like checking number of arguments.
-    """
-    program_version = "v%s" % __version__
-    program_build_date = str(__updated__)
-    program_version_message = '%%(prog)s %s (%s)' % (
-        program_version, program_build_date)
-    program_shortdesc = __import__('__main__').__doc__.split("\n")[1]
-    program_license = '''%s
-
-    Created by Pål Ellingsen on %s.
-
-    Distributed on an "AS IS" basis without warranties
-    or conditions of any kind, either express or implied.
-
-    USAGE
-''' % (program_shortdesc, str(__date__))
-
-    # Setup argument parser
-    parser = ArgumentParser(description=program_license,
-                            formatter_class=RawDescriptionHelpFormatter)
-
-    parser.add_argument("-v", "--verbose", dest="verbose", action="count", default=0,
-                        help="set verbosity level [default: %(default)s]")
-    parser.add_argument('-V', '--version', action='version',
-                        version=program_version_message)
-    parser.add_argument(
-        'input',  type=str, help="The input file to be processed")
-
-    # Process arguments
-    args = parser.parse_args()
-
-    if args.verbose > 0:
-        print("Verbose mode on")
+    if return_data:
+        return good, error, data, metadata[:, 1:3]
+    else:
+        return good, error
 
     return args
 

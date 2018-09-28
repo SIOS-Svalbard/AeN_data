@@ -434,8 +434,58 @@ Needs to be smaller than the maximum depth''',
                             'error_message': 'Decimal [0, 9999]'
                         }
                         }
+############## PALEO
+sedimentCoreLengthInMeters = {'name': 'sedimentCoreLengthInMeters',
+                       'disp_name': 'Sediment Core Length (m)',
+                       'units': 'm',
+                       'valid': {
+                           'validate': 'decimal',
+                           'criteria': '>=',
+                           'value': 0,
+                           'input_title': 'Sediment Core Length (m)',
+                           'input_message': '''The total sediment core length decimal in meters.''',
+                           'error_title': 'Error',
+                           'error_message': 'Float >= 0'
+                       }
+                       }
 
 
+sedimentCoreMaximumDepthInCentiMeters = {'name': 'sedimentCoreMaximumDepthInCentiMeters',
+                        'disp_name': 'Sediment Core Maximum Depth (cm)',
+                        'inherit': True,
+                        'units': 'cm',
+                        'valid': {
+                            'validate': 'decimal',
+                            'criteria': 'between',
+                            'minimum': 0,
+                            'maximum': 3000,
+                            'input_title': 'Sediment Core Maximum Depth (m)',
+                            'input_message': '''The sediment core maximum depth in centimeters.
+This is measured from the top of the core.
+Maximum for multicores is 60 cm 
+Maximum for gravity and piston cores is 3 000 cm.''',
+                            'error_title': 'Error',
+                            'error_message': 'Float[0, 3 000]'
+                        }
+                        }
+
+
+sedimentCoreMinimumDepthInCentiMeters = {'name': 'sedimentCoreMinimumDepthInCentiMeters',
+                        'disp_name': 'Sediment Core Minimum Depth (cm)',
+                        'inherit': True,
+                        'units': 'cm',
+                        'valid': {
+                            'validate': 'decimal',
+                            'criteria': 'between',
+                            'minimum': 0,
+                            'maximum': 3000,
+                            'input_title': 'Sediment Core Minimum Depth (m)',
+                            'input_message': '''The sediment core minimum depth in centimeters.
+This is measured from the top of the core.''',
+                            'error_title': 'Error',
+                            'error_message': 'Float[0, 3 000]'
+                        }
+                        }
 # ==============================================================================
 # String parameters
 # LABEL: Strings

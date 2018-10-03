@@ -31,7 +31,7 @@ from make_xlsx import Field
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-08-11'
-__updated__ = '2018-08-16'
+__updated__ = '2018-09-27'
 
 DEBUG = 1
 
@@ -184,7 +184,7 @@ def is_nan(value):
 class Evaluator(object):
     """ An object for holding a function for evaluating a type of data.
     The function should take two arguments, self and a value. By referencing and
-    setting values on the object with self, it is possible to evaludate on
+    setting values on the object with self, it is possible to evaluate on
     multiple conditions."""
 
     def __init__(self, validation, func=None):
@@ -196,7 +196,7 @@ class Evaluator(object):
 
         validation: dict
             A dict containing the validation information.
-            Can be used in evaluator function by referencingthe property 
+            Can be used in evaluator function by referencing the property 
             self.validation 
 
         func: lambda function, optional
@@ -534,9 +534,23 @@ def check_array(data, checker_list, skiprows):
     errors = []
 
     # Check that all the required columns are there
+    can_miss=True
+    try:
+        evID = np.where(data[0, :] == 'eventID')[0][0]
+        pID = np.where(data[0, :] == 'parentEventID')[0][0]
+        # If there are no samples without parent IDs we allow inhrited values to be missing
+        for row in range (1,data.shape[0]):
+            if not(is_nan(data[row, evID])) and is_nan(data[row, pID]):
+                # We have a line with ID but not a parent, we stop here
+                can_miss = False 
+                break
+    except IndexError:
+        # Either eventID or parentEventID is missing
+        # We are continuing as we know that there are missing columns
+        good=False
 
     for req in REQUIERED:
-        if not(req in data[0, :]):
+        if not(req in data[0, :]) and not(can_miss and checker_list[req].inherit) :
             # print("Missing "+req)
             good = False
             errors.append("Missing required column: " + req)
@@ -547,8 +561,6 @@ def check_array(data, checker_list, skiprows):
         return good, errors
 
     # Check that every cell is correct
-    evID = np.where(data[0, :] == 'eventID')[0][0]
-    pID = np.where(data[0, :] == 'parentEventID')[0][0]
     try:
         gear = np.where(data[0, :] == 'gearType')[0][0]
     except IndexError:
@@ -879,8 +891,59 @@ def run(input, return_data=False):
 
     return args
 
+def main(argv=None):  # IGNORE:C0111
+    '''Command line options.'''
+    try:
+        args = parse_options()
+        infile = args.input
+    #         save_pages(output, N=args.n)
+        good,error = run(infile)
+        if good:
+            print ("File OK:)")
+        else:
+            print("Errors found. They were:")
+            for line in error:
+                print(line)
+
+        return 0
+    except KeyboardInterrupt:
+        ### handle keyboard interrupt ###
+        return 0
+
+
+def parse_options():
+    """
+    Parse the command line options and return these. Also performs some basic
+    sanity checks, like checking number of arguments.
+    """
+    program_version = "v%s" % __version__
+    program_build_date = str(__updated__)
+    program_version_message = '%%(prog)s %s (%s)' % (
+        program_version, program_build_date)
+    program_shortdesc = __import__('__main__').__doc__.split("\n")[1]
+    program_license = '''%s
+
+    Created by Pål Ellingsen on %s.
+    
+    Distributed on an "AS IS" basis without warranties
+    or conditions of any kind, either express or implied.
+    
+    USAGE
+''' % (program_shortdesc, str(__date__))
+
+    # Setup argument parser
+    parser = ArgumentParser(description=program_license,
+                            formatter_class=RawDescriptionHelpFormatter)
+
+    parser.add_argument("input", type=str,
+                        help="The input xlsx file to check")
+    parser.add_argument('-V', '--version', action='version',
+                        version=program_version_message)
+
+    # Process arguments
+    args = parser.parse_args()
+
+    return args
 
 if __name__ == "__main__":
-    if DEBUG:
-        sys.argv.append("-v")
     sys.exit(main())

@@ -196,9 +196,7 @@ def main(argv=None):  # IGNORE:C0111
             psycopg2.extras.register_hstore(conn)
 
         conn.commit()
-        print(files)
         if os.path.isfile(files):
-            print("isfile")
             urls = []
             urls.append(files)
         else:

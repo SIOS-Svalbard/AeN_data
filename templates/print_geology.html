@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset='utf-8'>
-<title>Nansen Legacy Label printing</title>
+<title>Nansen Legacy Label printing for geology</title>
 <style>
 body{ 
 	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
@@ -40,9 +40,8 @@ function getTime() {
 </script>
 <main>
 <h1>Nansen Legacy Label printing</h1>
+<h1><font color="red">This is for specialised use. Only for those who have been told to use it</font></h1>
 <h2>This is for the large labels (25x51mm)</h2>
-<a href="../../index.html">Back to index</a><br>
-<a href="print.cgi?setup=M">Print medium labels</a><br>
 <p>Input the text in the fields.</p>
 <form method=post>
     <p><button onclick="getTime()" type="submit" name="print" id="print" value='1'>Print Label</button>
@@ -51,39 +50,22 @@ function getTime() {
     <table>
         <tr>
             <th>Line 1:</th>
-            <th><input type="text" name="text1" value="${texts['text1']}" maxlength="20"></th>
+            <th><input type="text" name="text1" value="${texts['text1']}" maxlength="8"></th>
         </tr>
         <tr>
             <th>Line 2:</th>
-            <th><input type="text" name="text2" value="${texts['text2']}" maxlength="20"></th>
-        </tr>
-        <tr>
+            <th><input type="text" name="text2" value="${texts['text2']}" maxlength="8"></th>
+        </tr> <tr>
             <th>Line 3:</th>
-            <th><input type="text" name="text3" value="${texts['text3']}" maxlength="20"></th>
-            <th><input type=checkbox value=y name="increment3" 
-            % if incr3:
-                checked
-             %endif
-             ></th>
-            <th>Increment all numbers in the text by one (also decimal numbers with '.')</th>
-        </tr>
-        <tr>
-            <th>Line 4:</th>
-            <th><input type="text" name="text4" value="${texts['text4']}" maxlength="20"></th>
-            <th><input type=checkbox value=y name="increment4" 
-            % if incr4:
-                checked
-             %endif
-             ></th>
-            <th>Increment all numbers in the text by one (also decimal numbers with '.')</th>
-        </tr>
-        <tr>
-            <th>Line 5 (Name):</th>
-            <th><input type="text" name="text5" value="${texts['text5']}" maxlength="36"></th>
+            <th><input type="text" name="text3" value="${texts['text3']}" maxlength="8"></th>
         </tr>
     </table>
     <br>
     <table>
+        <tr>
+            <th>Number of copies:</th>
+	    <th><input type="text" name="text4" value="${texts['text4']}"></th>
+        </tr>
         <tr>
             <th>Number of labels:</th>
             <th><input type="text" name="n" value="1"></th>

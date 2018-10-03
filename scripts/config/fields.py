@@ -1172,6 +1172,27 @@ Positive float number''',
                         }
                         }
 
+sedimentPH = {'name': 'sedimentPH',
+              'disp_name': 'Sediment pH  (total scale)',
+              'units': '1',
+              'valid': {
+                  'validate': 'decimal',
+                  'criteria': 'between',
+                  'minimum': -2,
+                  'maximum': 16,
+                  'input_title': 'Sediment  pH  (total scale)',
+                  'input_message': '''
+Is the measure of acidity of seawater, defined as the negative logarithm of 
+the concentration of dissolved hydrogen ions plus bisulfate ions in a sea water
+medium; it can be measured or calculated; when measured the scale is defined 
+according to a series of buffers prepared in artificial seawater containing 
+bisulfate.
+Float in range [-2, 16]''',
+                  'error_title': 'Error',
+                  'error_message': 'Not in range [-2, 16]'
+              }
+              }
+
 
 seaWaterTotalDIC = {'name': 'seaWaterTotalDIC',
                     'disp_name': 'Sea DIC (umol/kg)',

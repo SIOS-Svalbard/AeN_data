@@ -136,7 +136,10 @@ def replace_nan(lis):
 
 
 def insert_db(cur, data, metadata, update=False):
-    meta = to_dict(metadata[:, 0], metadata[:, 1])
+    try:
+        meta = to_dict(metadata[:, 0], metadata[:, 1])
+    except IndexError:
+        meta = {}
     # print(meta)
     stat = ""
     fields = ""
@@ -187,13 +190,14 @@ def main(argv=None):  # IGNORE:C0111
         args = parse_options()
         files = args.input
         conn = psycopg2.connect("dbname=test user=pal")
+        psycopg2.extras.register_uuid()
+        psycopg2.extras.register_hstore(conn)
+
         cur = conn.cursor()
 
         if args.init:
             cur.execute("CREATE EXTENSION hstore;")
             cur.execute(exe_str)
-            psycopg2.extras.register_uuid()
-            psycopg2.extras.register_hstore(conn)
 
         conn.commit()
         if os.path.isfile(files):

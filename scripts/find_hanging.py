@@ -24,7 +24,7 @@ import glob
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-10-03'
-__updated__ = '2018-10-03'
+__updated__ = '2018-10-09'
 
 
 COLUMNS = ["cruiseNumber",
@@ -57,17 +57,23 @@ def find_missing(cur):
 
     """
 
-    cur.execute('''SELECT DISTINCT parenteventid 
+    cur.execute('''SELECT distinct parenteventid
             FROM aen
             WHERE parenteventid IS NOT NULL 
             AND 
-            parenteventid NOT IN (SELECT DISTINCT eventid FROM aen)''')
+            parenteventid NOT IN (SELECT DISTINCT eventid FROM aen)
+            ORDER BY parenteventid ASC''')
 
     res = cur.fetchall()
-    print("Not registered parents:")
-    for r in res:
-        print(r[0])
+    if res ==[]:
+        return
 
+    print("Not registered parents:")
+    print("Parent, One of the children")
+    for r in res:
+        cur.execute('''SELECT eventid,sampletype from aen where parenteventid=%s limit 1''',r)
+        c=cur.fetchone()
+        print(r[0],c[0],c[1])
 
 def main():
     conn = psycopg2.connect("dbname=test user=pal")

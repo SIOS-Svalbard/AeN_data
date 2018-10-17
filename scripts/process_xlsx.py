@@ -553,7 +553,7 @@ def check_array(data, checker_list, skiprows):
         if not(req in data[0, :]) and not(can_miss and checker_list[req].inherit) :
             # print("Missing "+req)
             good = False
-            errors.append("Missing required column: " + req)
+            errors.append("Missing required column (parent UUIDs missing?): " + req)
 
     if not(good):
         errors.append(
@@ -616,6 +616,7 @@ def check_array(data, checker_list, skiprows):
                         if checker.name != 'parentEventID' and 'remarks' not in checker.name.lower():
                             mis.append(row+skiprows+2)
         if rows != []:
+            print("Testing",rows)
             errors.append(checker.disp_name + ' ('+checker.name + ')'+", Rows: " +
                           to_ranges_str(rows) + ' Error: Content in wrong format')
         if missing != []:

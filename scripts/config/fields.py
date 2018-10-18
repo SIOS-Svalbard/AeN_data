@@ -355,6 +355,26 @@ Example: 15.0012''',
                           }
                           }
 # ==============================================================================
+# Ship
+# ==============================================================================
+
+shipSpeedInMetersPerSecond = {'name': 'shipSpeedInMetersPerSecond',
+                       'disp_name': 'Ship Speed (m/s)',
+                       'inherit': True,
+                       'units': 'm/s',
+                       'valid': {
+                           'validate': 'decimal',
+                           'criteria': '>=',
+                           'value': 0,
+                           'input_title': 'Ship Speed (m/s)',
+                           'input_message': '''The speed of the ship in meters per second.
+Decimal number >=0.''',
+                           'error_title': 'Error',
+                           'error_message': 'Float >= 0'
+                       }
+                       }
+
+# ==============================================================================
 # Depths
 # ==============================================================================
 

@@ -1,17 +1,32 @@
 #! /usr/bin/env python3
+# encoding: utf-8
+'''
+ -- Insertes data from xlsx sheets into database
+
+
+@author:     Pål Ellingsen
+@contact:    pale@unis.no
+@deffield    updated: Updated
+'''
+
+__all__ = []
+__version__ = 0.2
+__date__ = '2018-09-12'
+__updated__ = '2018-10-03'
+
 import psycopg2
 import psycopg2.extras
 import uuid
 import process_xlsx as px
 import datetime as dt
 import glob
+import sys
+import os
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import numpy as np
 from collections import OrderedDict
+from psycopg2 import sql
 
-conn = psycopg2.connect("dbname=test user=pal")
-cur = conn.cursor()
-
-# cur.execute("CREATE EXTENSION hstore;")
 
 columns = {"parentEventID": "uuid",
            "cruiseNumber": "int",
@@ -93,10 +108,6 @@ CREATE TABLE aen (eventID uuid PRIMARY KEY,
                               eventRemarks text,
                               other hstore,
                               metadata hstore) '''
-# cur.execute(exe_str)
-psycopg2.extras.register_uuid()
-psycopg2.extras.register_hstore(conn)
-conn.commit()
 
 
 def to_dict(keys, values):
@@ -124,9 +135,12 @@ def replace_nan(lis):
     return new
 
 
-def insert_db(cur, data, metadata):
-    meta = to_dict(metadata[:, 0], metadata[:, 1])
-    print(meta)
+def insert_db(cur, data, metadata, update=False):
+    try:
+        meta = to_dict(metadata[:, 0], metadata[:, 1])
+    except IndexError:
+        meta = {}
+    # print(meta)
     stat = ""
     fields = ""
     indxs = []
@@ -158,37 +172,106 @@ def insert_db(cur, data, metadata):
             continue
         cur.execute(exists_query, (cols[0],))
         exists = cur.fetchone()[0]
+        query2 = sql.SQL("DELETE from aen where eventid = %s")
         if not(exists):
+            cur.execute(
+                "INSERT INTO aen (" + fields + ") VALUES(" + stat + ")", cols)
+        elif update:
+            cur.execute(query2,(cols[0],))
             cur.execute(
                 "INSERT INTO aen (" + fields + ") VALUES(" + stat + ")", cols)
         else:
             print("Skipping due to duplicate id " + cols[0])
             continue
 
-    #    sheet = workbook.add_worksheet('Metadata')
+def main(argv=None):  # IGNORE:C0111
+    '''Command line options.'''
+    try:
+        args = parse_options()
+        files = args.input
+        conn = psycopg2.connect("dbname=test user=pal")
+        psycopg2.extras.register_uuid()
+        psycopg2.extras.register_hstore(conn)
+
+        cur = conn.cursor()
+
+        if args.init:
+            cur.execute("CREATE EXTENSION hstore;")
+            cur.execute(exe_str)
+
+        conn.commit()
+        if os.path.isfile(files):
+            urls = []
+            urls.append(files)
+        else:
+            urls = glob.glob(os.path.join(files,'*.xlsx'))
+
+        for url in urls:
+            print("Url",url)
+
+            good, error, data, metadata = px.run(url, return_data=True)
+
+            if not(good):
+                print("Errors found")
+                for line in error:
+                    print(line)
+                print("Should we continue? [y/n]")
+                answer = input().lower()
+                if answer != 'y':
+                    continue
+            insert_db(cur, data, metadata, args.update)
 
 
-    #    metadata_fields = ['title', 'abstract', 'pi_name', 'pi_email', 'pi_institution',
-    #                       'pi_address', 'recordedBy', 'projectID']
-urls = glob.glob(
-    "/home/pal/Documents/AeN/Cruise/2018707/SAMPLE LOGS/Corrected/*.xlsx")
-
-for url in urls:
-    print(url)
-
-    good, error, data, metadata = px.run(url, return_data=True)
-
-    if not(good):
-        print("Errors found")
-        for line in error:
-            print(line)
-        print("Should we continue? [y/n]")
-        answer = input().lower()
-        if answer != 'y':
-            continue
-    insert_db(cur, data, metadata)
+        conn.commit()
+        cur.close()
+        conn.close()
+        return 0
+    except KeyboardInterrupt:
+        ### handle keyboard interrupt ###
+        return 0
 
 
-conn.commit()
-cur.close()
-conn.close()
+def parse_options():
+    """
+    Parse the command line options and return these. Also performs some basic
+    sanity checks, like checking number of arguments.
+    """
+    program_version = "v%s" % __version__
+    program_build_date = str(__updated__)
+    program_version_message = '%%(prog)s %s (%s)' % (
+        program_version, program_build_date)
+    program_shortdesc = __import__('__main__').__doc__.split("\n")[1]
+    program_license = '''%s
+
+    Created by Pål Ellingsen on %s.
+    
+    Distributed on an "AS IS" basis without warranties
+    or conditions of any kind, either express or implied.
+    
+    USAGE
+''' % (program_shortdesc, str(__date__))
+
+    # Setup argument parser
+    parser = ArgumentParser(description=program_license,
+                            formatter_class=RawDescriptionHelpFormatter)
+
+    parser.add_argument('input',type=str, help='''The input file or folder with the xlsx files''')
+    # parser.add_argument("-v", "--verbose", dest="verbose", action="count", default=0,
+    #                     help="set verbosity level [default: %(default)s]")
+    parser.add_argument('-V', '--version', action='version',
+                        version=program_version_message)
+    parser.add_argument('-u', dest='update', default=False, action="store_true", help="Update entries. If enabled existing entries will be updated, [default: %(default)s]")
+    parser.add_argument('-i', dest='init', default=False, action="store_true", help="Initialise the database. [Default: %(default)s]")
+
+
+    # Process arguments
+    args = parser.parse_args()
+
+    # if args.verbose > 0:
+    #     print("Verbose mode on")
+
+    return args
+
+
+if __name__ == "__main__":
+    sys.exit(main())

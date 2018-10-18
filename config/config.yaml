@@ -16,7 +16,7 @@ cores:
           event: [ start_date, end_date,
             statID, recordNumber,
             sampleDepthInMeters, maximumDepthInMeters, minimumDepthInMeters,
-            samplingProtocol, gearType, bottleNumber, sampleType]
+            samplingProtocol, gearType, bottleNumber, sampleType, shipSpeedInMetersPerSecond]
           identification: [Taxon, phylum, class, order, family]
           description: [colour, smell, description, sampleVolumeInMilliliters, filteredVolumeInMilliliters]
           storage: [storageTemp,fixative]

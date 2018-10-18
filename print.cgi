@@ -18,6 +18,7 @@ import cgitb
 import uuid
 import datetime as dt
 import socket 
+import re
 
 __updated__ = '2018-07-25'
 
@@ -181,7 +182,7 @@ if method == "POST":
     
     # Check if the label is generated now and not a refresh
     # sys.stdout.buffer.write(bytes(str(dt.datetime.now().timestamp()-5)+"<br>","utf-8"))
-    if float(form['print'].value)<dt.datetime.now().timestamp()-15:
+    if 'print' in form and float(form['print'].value)<dt.datetime.now().timestamp()-15:
         warn("Not printing. Was this a refresh? If not your computer might be out of sync with the time server (limit 75s)<br> Difference to server in seconds:" +str(float(form['print'].value)-dt.datetime.now().timestamp()))
         write_page(texts,incr)
         sys.exit()
@@ -197,6 +198,17 @@ if method == "POST":
             warn("Error, wrong IP")
             write_page(texts,incr)
             sys.exit() 
+    
+    if "cancel" in form:
+        zpl = '''~JA'''
+        # pSocket.send(bytes(zpl,"utf-8"))
+        warn("Down for maintainance")
+        sys.stdout.buffer.write(bytes(zpl,"utf-8")) 
+        pSocket.close()
+        write_page(texts,incr)
+        sys.exit() 
+
+
     def get_value(field):
         if field in form:
             return form[field].value
@@ -213,42 +225,42 @@ if method == "POST":
         incr = False
 
     org_text3=text3
-    if incr:
-        try:
-            n_zero = str(len(text3))
-            text3 = int(text3)
-        except ValueError:
-            warn('Text3 is not a number and increment is ticked.')
-            write_page(texts,incr)
-            sys.exit()
+    #if incr:
+        #try:
+            #n_zero = str(len(text3))
+            #text3 = int(text3)
+        #except ValueError:
+            #warn('Text3 is not a number and increment is ticked.')
+            #write_page(texts,incr)
+            #sys.exit()
+    def inc_nums(text):
+        def increment(text,inc):
+            if text.isdigit():
+                return str(int(text)+inc)
+            else:
+                return str(float(text)+inc)
+
+        return re.sub('(\d+(?:\.\d+)?)',lambda m: increment(m.group(0),1), text)
+
     for n in range(int(form['n'].value)):
         if incr:
+            text3 = inc_nums(text3)
             if setup == 'L':
-                zpl = create_large(str(uuid.uuid1()),text1, text2, format(text3,"0"+n_zero+"d"), text4,text5)
+                zpl = create_large(str(uuid.uuid1()),text1, text2, text3, text4,text5)
             elif setup=='M':
-                zpl = create_label(str(uuid.uuid1()),text1, text2, format(text3,"0"+n_zero+"d"), text4)
+                zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
         else:
             if setup == 'L':
                 zpl = create_large(str(uuid.uuid1()),text1, text2, text3, text4,text5)
             elif setup =='M':
                 zpl = create_label(str(uuid.uuid1()),text1, text2, text3, text4)
                 
-        pSocket.send(bytes(zpl,"utf-8"))
-        # warn("Down for maintainance")
-        # sys.stdout.buffer.write(bytes(zpl,"utf-8"))
-        if incr:
-            text3=text3+1
+        # pSocket.send(bytes(zpl,"utf-8"))
+        warn("Down for maintainance")
+        sys.stdout.buffer.write(bytes(zpl,"utf-8"))
 
     warn("Label printed<br>") 
-    if incr:
-        texts = {
-            "text1":text1,
-            "text2":text2,
-            "text3":format(text3,"0"+n_zero+"d"),
-            "text4":text4,
-            "text5":text5}
-    else:
-        texts = {
+    texts = {
             "text1":text1,
             "text2":text2,
             "text3":text3,

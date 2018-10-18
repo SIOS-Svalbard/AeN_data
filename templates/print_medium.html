@@ -45,7 +45,8 @@ function getTime() {
 <a href="print.cgi?setup=L">Print large labels</a><br>
 <p>Input the text in the fields.</p>
 <form method=post>
-    <p><button onclick="getTime()" type="submit" name="print" id="print" value='1'>Print Label</button><br>
+    <p><button onclick="getTime()" type="submit" name="print" id="print" value='1'>Print Label</button>
+       <button onclick="getTime()" type="submit" name="cancel" id="cancel" value='1'>Cancel print</button><br>
     <br>
     <table>
         <tr>
@@ -54,21 +55,27 @@ function getTime() {
         </tr>
         <tr>
             <th>Line 2:</th>
-            <th><input type="text" name="text2" value="${texts['text2']} " maxlength="18"></th>
+            <th><input type="text" name="text2" value="${texts['text2']}" maxlength="18"></th>
         </tr>
         <tr>
             <th>Line 3:</th>
-            <th><input type="text" name="text3" value="${texts['text3']}" maxlength="18"></th>
-            <th><input type=checkbox value=y name="increment" 
-            % if incr:
+            <th><input type="text" name="text3" value="${texts['text3']}" maxlength="20"></th>
+            <th><input type=checkbox value=y name="increment3" 
+            % if incr3:
                 checked
              %endif
              ></th>
-            <th>Increment (needs to be only a number, can have leading zeros e.g. 0001)</th>
+            <th>Increment all numbers in the text by one (also decimal numbers with '.')</th>
         </tr>
         <tr>
             <th>Line 4 (Name):</th>
-            <th><input type="text" name="text4" value="${texts['text4']}" maxlength="18"></th>
+            <th><input type="text" name="text4" value="${texts['text4']}" maxlength="20"></th>
+            <th><input type=checkbox value=y name="increment4" 
+            % if incr4:
+                checked
+             %endif
+             ></th>
+            <th>Increment all numbers in the text by one (also decimal numbers with '.')</th>
         </tr>
     </table>
     <br>
@@ -81,8 +88,9 @@ function getTime() {
             <th>Printer IP:</th>
             <!--
             <th> <input type="text" name="ip" value="10.3.64.127" ></th>
-            -->
             <th> <input type="text" name="ip" value="158.39.47.36" ></th>
+            -->
+            <th> <input type="text" name="ip" value="10.3.64.127" ></th>
         </tr>
     </table>
 </form>

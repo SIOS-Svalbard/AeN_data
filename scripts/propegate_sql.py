@@ -129,7 +129,7 @@ def write_fields(cur, parent, children):
 
     # Loop over all the possible fields.
 
-    inheritable = ["metadata"]
+    inheritable = []# ["metadata"]
     for f in fields.fields:
         if f['name'] in COLUMNS:
             if "inherit" in f and f["inherit"]:

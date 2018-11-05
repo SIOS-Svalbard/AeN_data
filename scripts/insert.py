@@ -24,6 +24,7 @@ import sys
 import os
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import numpy as np
+import datetime as dt
 from collections import OrderedDict
 from psycopg2 import sql
 
@@ -45,7 +46,11 @@ columns = {"parentEventID": "uuid",
            "recordedBy": "text",
            "sampleType": "text",
            "other": "hstore",
-           "metadata": "hstore"}
+           "metadata": "hstore",
+           "created": "timestamp with time zone",
+           "modified": "timestamp with time zone",
+           "history": "text",
+           "source": "text"}
 
 REQUIERED = ["eventID",
              "parentEventID",
@@ -107,7 +112,11 @@ CREATE TABLE aen (eventID uuid PRIMARY KEY,
                               recordedBy text,
                               eventRemarks text,
                               other hstore,
-                              metadata hstore) '''
+                              metadata hstore,
+                              created timestamp with time zone,
+                              modified timestamp with time zone,
+                              history text,
+                              source text) '''
 
 
 def to_dict(keys, values):
@@ -135,7 +144,45 @@ def replace_nan(lis):
     return new
 
 
-def insert_db(cur, data, metadata, update=False):
+def get_time_now():
+    '''
+    Returns the time now in iso8601 format
+
+    Returns
+    ----------
+    time_now : str
+        The time now in iso8601 format
+    '''
+    return dt.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def insert_db(cur, data, metadata, filename, update=False, reason=''):
+    '''
+    This inserts the data into the database, alternatively updates the fields
+
+    Parameters
+    ----------
+    cur : psycopg2 cursor
+        Database cursor
+
+    data : data array
+        the data to be inserted with header for every column
+
+    metadata : array
+        The metadata to be inserted
+
+    filename : str
+        The source filename
+
+    update : Boolean, optional
+        Determines if fields are updated.
+        Default: False
+
+    reason : str, optional
+        Reason for update
+        Default: ''
+
+    '''
     try:
         meta = to_dict(metadata[:, 0], metadata[:, 1])
     except IndexError:
@@ -143,6 +190,7 @@ def insert_db(cur, data, metadata, update=False):
     # print(meta)
     stat = ""
     fields = ""
+    fields_up = ""  # For update statement
     indxs = []
     exists_query = '''
     select exists(
@@ -155,12 +203,16 @@ def insert_db(cur, data, metadata, update=False):
         if any(data[0, :] == r):
             indxs.append(np.where(data[0, :] == r)[0][0])
             fields = fields + r + ", "
+            if r != COLUMNS[0]:  # Don't insert eventid in fields_up
+                fields_up = fields_up + r + "=%s, "
             stat = stat + "%s,"
 
     o_indxs = find_missing(indxs, data.shape[1])
 
-    stat = stat + "%s,%s"  # For the other and metadata
-    fields = fields + "other, metadata"
+    stat = stat + "%s,%s,%s,%s,%s,%s"  # For the other and metadata
+    fields = fields + "other, metadata, created, modified, history, source"
+    fields_up = fields_up + \
+        "other = other || %s , metadata = metadata || %s, modified = %s, history = %s, source = %s"
 
     for r in range(1, data.shape[0]):
         row = []
@@ -172,17 +224,45 @@ def insert_db(cur, data, metadata, update=False):
             continue
         cur.execute(exists_query, (cols[0],))
         exists = cur.fetchone()[0]
-        query2 = sql.SQL("DELETE from aen where eventid = %s")
+        query3 = sql.SQL("SELECT history from aen where eventid = %s")
         if not(exists):
+            created = get_time_now()
+            cols.append(created)  # Created
+            cols.append(created)  # Modified
+            # History
+            cols.append(created + ": Initial read in of the log files.")
+            cols.append(filename)  # Source file
+
             cur.execute(
                 "INSERT INTO aen (" + fields + ") VALUES(" + stat + ")", cols)
         elif update:
-            cur.execute(query2,(cols[0],))
+
+            # Need to extract created and history
+            modified = get_time_now()
+            cur.execute(query3, (cols[0],))
+            history = cur.fetchone()[0]
+            if reason == '':
+                print("What is the reason for the update (is appended to the history):")
+                mod_message = input()
+                print("Should this be kept for the file? [y/n]")
+                answer = input().lower()
+                if answer == 'y':
+                    reason = mod_message
+            else:
+                mod_message = reason
+            history = history+"\n" + modified+": " + mod_message
+            cols.append(modified)  # Modified
+            cols.append(history)  # History
+            cols.append(filename)  # Source file
+            # update everything except eventid
+            temp = cols.copy()
+            temp.append(temp[0])
             cur.execute(
-                "INSERT INTO aen (" + fields + ") VALUES(" + stat + ")", cols)
+                "UPDATE aen set " + fields_up + " where eventid = %s", temp[1:])
         else:
             print("Skipping due to duplicate id " + cols[0])
             continue
+
 
 def main(argv=None):  # IGNORE:C0111
     '''Command line options.'''
@@ -196,7 +276,7 @@ def main(argv=None):  # IGNORE:C0111
         cur = conn.cursor()
 
         if args.init:
-            cur.execute("CREATE EXTENSION hstore;")
+            cur.execute("CREATE EXTENSION IF NOT EXISTS hstore;")
             cur.execute(exe_str)
 
         conn.commit()
@@ -204,10 +284,10 @@ def main(argv=None):  # IGNORE:C0111
             urls = []
             urls.append(files)
         else:
-            urls = glob.glob(os.path.join(files,'*.xlsx'))
+            urls = glob.glob(os.path.join(files, '*.xlsx'))
 
         for url in urls:
-            print("Url",url)
+            print("Url", url)
 
             good, error, data, metadata = px.run(url, return_data=True)
 
@@ -219,8 +299,8 @@ def main(argv=None):  # IGNORE:C0111
                 answer = input().lower()
                 if answer != 'y':
                     continue
-            insert_db(cur, data, metadata, args.update)
-
+            filename = os.path.basename(url)
+            insert_db(cur, data, metadata, filename, args.update, args.mod)
 
         conn.commit()
         cur.close()
@@ -244,10 +324,10 @@ def parse_options():
     program_license = '''%s
 
     Created by Pål Ellingsen on %s.
-    
+
     Distributed on an "AS IS" basis without warranties
     or conditions of any kind, either express or implied.
-    
+
     USAGE
 ''' % (program_shortdesc, str(__date__))
 
@@ -255,14 +335,18 @@ def parse_options():
     parser = ArgumentParser(description=program_license,
                             formatter_class=RawDescriptionHelpFormatter)
 
-    parser.add_argument('input',type=str, help='''The input file or folder with the xlsx files''')
+    parser.add_argument(
+        'input', type=str, help='''The input file or folder with the xlsx files''')
     # parser.add_argument("-v", "--verbose", dest="verbose", action="count", default=0,
     #                     help="set verbosity level [default: %(default)s]")
     parser.add_argument('-V', '--version', action='version',
                         version=program_version_message)
-    parser.add_argument('-u', dest='update', default=False, action="store_true", help="Update entries. If enabled existing entries will be updated, [default: %(default)s]")
-    parser.add_argument('-i', dest='init', default=False, action="store_true", help="Initialise the database. [Default: %(default)s]")
-
+    parser.add_argument('-u', dest='update', default=False, action="store_true",
+                        help="Update entries. If enabled existing entries will be updated, [default: %(default)s]")
+    parser.add_argument('-i', dest='init', default=False, action="store_true",
+                        help="Initialise the database. [Default: %(default)s]")
+    parser.add_argument('-m', dest='mod', default='', type=str,
+                        help="Set the modification message if updating. [Default: %(default)s]")
 
     # Process arguments
     args = parser.parse_args()

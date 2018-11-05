@@ -47,6 +47,7 @@ COLUMNS = ["cruiseNumber",
            "eventRemarks",
            "metadata"]
 
+
 def find_missing(cur):
     """
     Goes though database table and finds missing parents
@@ -65,15 +66,17 @@ def find_missing(cur):
             ORDER BY parenteventid ASC''')
 
     res = cur.fetchall()
-    if res ==[]:
+    if res == []:
         return
 
     print("Not registered parents:")
-    print("Parent, One of the children")
+    print("Parent, One of the children, sample type, source")
     for r in res:
-        cur.execute('''SELECT eventid,sampletype from aen where parenteventid=%s limit 1''',r)
-        c=cur.fetchone()
-        print(r[0],c[0],c[1])
+        cur.execute(
+            '''SELECT eventid,sampletype,source from aen where parenteventid=%s limit 1''', r)
+        c = cur.fetchone()
+        print(r[0], c[0], c[1], c[2])
+
 
 def main():
     conn = psycopg2.connect("dbname=test user=pal")
@@ -83,6 +86,7 @@ def main():
     conn.commit()
     cur.close()
     conn.close()
+
 
 if __name__ == "__main__":
     sys.exit(main())

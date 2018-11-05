@@ -359,20 +359,20 @@ Example: 15.0012''',
 # ==============================================================================
 
 shipSpeedInMetersPerSecond = {'name': 'shipSpeedInMetersPerSecond',
-                       'disp_name': 'Ship Speed (m/s)',
-                       'inherit': True,
-                       'units': 'm/s',
-                       'valid': {
-                           'validate': 'decimal',
-                           'criteria': '>=',
-                           'value': 0,
-                           'input_title': 'Ship Speed (m/s)',
-                           'input_message': '''The speed of the ship in meters per second.
+                              'disp_name': 'Ship Speed (m/s)',
+                              'inherit': True,
+                              'units': 'm/s',
+                              'valid': {
+                                  'validate': 'decimal',
+                                  'criteria': '>=',
+                                  'value': 0,
+                                  'input_title': 'Ship Speed (m/s)',
+                                  'input_message': '''The speed of the ship in meters per second.
 Decimal number >=0.''',
-                           'error_title': 'Error',
-                           'error_message': 'Float >= 0'
-                       }
-                       }
+                                  'error_title': 'Error',
+                                  'error_message': 'Float >= 0'
+                              }
+                              }
 
 # ==============================================================================
 # Depths
@@ -454,64 +454,64 @@ Needs to be smaller than the maximum depth''',
                             'error_message': 'Decimal [0, 9999]'
                         }
                         }
-############## PALEO
+# PALEO
 sedimentCoreLengthInMeters = {'name': 'sedimentCoreLengthInMeters',
-                       'disp_name': 'Sediment Core Length (m)',
-                       'units': 'm',
-                       'valid': {
-                           'validate': 'decimal',
-                           'criteria': '>=',
-                           'value': 0,
-                           'input_title': 'Sediment Core Length (m)',
-                           'input_message': '''The total sediment core length decimal in meters.''',
-                           'error_title': 'Error',
-                           'error_message': 'Float >= 0'
-                       }
-                       }
+                              'disp_name': 'Sediment Core Length (m)',
+                              'units': 'm',
+                              'valid': {
+                                  'validate': 'decimal',
+                                  'criteria': '>=',
+                                  'value': 0,
+                                  'input_title': 'Sediment Core Length (m)',
+                                  'input_message': '''The total sediment core length decimal in meters.''',
+                                  'error_title': 'Error',
+                                  'error_message': 'Float >= 0'
+                              }
+                              }
 
 
 sedimentCoreMaximumDepthInCentiMeters = {'name': 'sedimentCoreMaximumDepthInCentiMeters',
-                        'disp_name': 'Sediment Core Maximum Depth (cm)',
-                        'inherit': True,
-                        'units': 'cm',
-                        'valid': {
-                            'validate': 'decimal',
-                            'criteria': 'between',
-                            'minimum': 0,
-                            'maximum': 3000,
-                            'input_title': 'Sediment Core Maximum Depth (m)',
-                            'input_message': '''The sediment core maximum depth in centimeters.
+                                         'disp_name': 'Sediment Core Maximum Depth (cm)',
+                                         'units': 'cm',
+                                         'valid': {
+                                             'validate': 'decimal',
+                                             'criteria': 'between',
+                                             'minimum': 0,
+                                             'maximum': 3000,
+                                             'input_title': 'Sediment Core Maximum Depth (m)',
+                                             'input_message': '''The sediment core maximum depth in centimeters.
 This is measured from the top of the core.
 Maximum for multicores is 60 cm 
 Maximum for gravity and piston cores is 3 000 cm.''',
-                            'error_title': 'Error',
-                            'error_message': 'Float[0, 3 000]'
-                        }
-                        }
+                                             'error_title': 'Error',
+                                             'error_message': 'Float[0, 3 000]'
+                                         }
+                                         }
 
 
 sedimentCoreMinimumDepthInCentiMeters = {'name': 'sedimentCoreMinimumDepthInCentiMeters',
-                        'disp_name': 'Sediment Core Minimum Depth (cm)',
-                        'inherit': True,
-                        'units': 'cm',
-                        'valid': {
-                            'validate': 'decimal',
-                            'criteria': 'between',
-                            'minimum': 0,
-                            'maximum': 3000,
-                            'input_title': 'Sediment Core Minimum Depth (m)',
-                            'input_message': '''The sediment core minimum depth in centimeters.
+                                         'disp_name': 'Sediment Core Minimum Depth (cm)',
+                                         'units': 'cm',
+                                         'valid': {
+                                             'validate': 'decimal',
+                                             'criteria': 'between',
+                                             'minimum': 0,
+                                             'maximum': 3000,
+                                             'input_title': 'Sediment Core Minimum Depth (m)',
+                                             'input_message': '''The sediment core minimum depth in centimeters.
 This is measured from the top of the core.''',
-                            'error_title': 'Error',
-                            'error_message': 'Float[0, 3 000]'
-                        }
-                        }
+                                             'error_title': 'Error',
+                                             'error_message': 'Float[0, 3 000]'
+                                         }
+                                         }
 # ==============================================================================
 # String parameters
 # LABEL: Strings
 # ==============================================================================
 
 # Method for making a new string property
+
+
 def make_string_dict(name):
     return {'name': name,
             'disp_name': name.title().replace('_', ' '),
@@ -692,6 +692,7 @@ fixative = {'name': 'fixative',
 
 bottleNumber = {'name': 'bottleNumber',
                 'disp_name': 'Bottle Number',
+                'inherit': True,
                 'valid': {
                     'validate': 'integer',
                     'criteria': '>',
@@ -831,19 +832,15 @@ Here it is possible to refer to a published protocol'''
 
 pi_name = make_string_dict('pi_name')
 pi_name['disp_name'] = 'Principal investigator (PI)'
-pi_name['inherit'] = True
 
 pi_email = make_string_dict('pi_email')
 pi_email['disp_name'] = 'PI email'
-pi_email['inherit'] = True
 
 pi_institution = make_string_dict('pi_institution')
 pi_institution['disp_name'] = 'PI institution'
-pi_institution['inherit'] = True
 
 pi_address = make_string_dict('pi_address')
 pi_address['disp_name'] = 'PI address'
-pi_address['inherit'] = True
 
 project_long = make_string_dict('project_long')
 project_long['disp_name'] = 'Project long name'
@@ -1047,6 +1044,7 @@ Example: 0.029''',
 
 seaWaterTemperatueInCelsius = {'name': 'seaWaterTemperatueInCelsius',
                                'disp_name': 'Sea Water Temp (C)',
+                               'inherit': True,
                                'units': 'Celsius',
                                'cf_name': 'sea_water_temperature',
                                'valid': {
@@ -1063,6 +1061,7 @@ Float number larger than -10 degrees C''',
 
 seaWaterSalinity = {'name': 'seaWaterSalinity',
                     'disp_name': 'Sea Water Salinity (1e-3)',
+                    'inherit': True,
                     'units': '1e-3',
                     'cf_name': 'sea_water_salinity',
                     'valid': {
@@ -1081,6 +1080,7 @@ Example: 0.029''',
 
 seaWaterPressure = {'name': 'seaWaterPressure',
                     'disp_name': 'Sea Water Pressure (dbar)',
+                    'inherit': True,
                     'units': 'dbar',
                     'cf_name': 'sea_water_pressure',
                     'valid': {

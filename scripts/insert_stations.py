@@ -18,7 +18,8 @@ COLUMNS = {"eventID": "uuid",
            "decimalLongitude": "double precision",
            "sampleType": "text"}
 
-stations = pd.read_csv("stations.csv")
+file_name = "stations.csv"
+stations = pd.read_csv(file_name)
 
 
 def insert_db(cur, data):
@@ -28,15 +29,15 @@ def insert_db(cur, data):
         from aen
         where eventid= %s
     )'''
-    query = '''INSERT INTO aen (eventID, stationName, decimalLatitude, decimalLongitude, sampleType)
-            VALUES (%s, %s, %s, %s, %s)'''
+    query = '''INSERT INTO aen (eventID, stationName, decimalLatitude, decimalLongitude, sampleType, created, modified, history, source)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'''
     for index, row in data.iterrows():
         cur.execute(exists_query, (row['eventID'],))
         exists = cur.fetchone()[0]
         if not(exists):
-
+            created = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
             cur.execute(query, (row['eventID'], row['stationName'],
-                                row['decimalLatitude'], row['decimalLongitude'], row['sampleType']))
+                                row['decimalLatitude'], row['decimalLongitude'], row['sampleType'], created, created, created + ": Initial read in of stations", file_name))
         else:
             print("Skipping due to duplicate id " + row['eventID'])
             continue

@@ -8,7 +8,6 @@
 @contact:    pale@unis.no
 @deffield    updated: Updated
 '''
-
 import psycopg2
 import sys
 from psycopg2 import sql
@@ -50,7 +49,6 @@ COLUMNS = ["cruiseNumber",
 def get_children(cur, eventID):
     """
     Returns a list of eventIDS for the children of the input eventID.
-    Recursivly finds all the children
 
     Parameters
     ----------
@@ -79,10 +77,10 @@ def get_children(cur, eventID):
         for r in res:
             cID = str(r[0])
             eventIDs.append(cID)
-            children = get_children(cur, cID)
-            if children:
-                for c in children:
-                    eventIDs.append(c)
+            #children = get_children(cur, cID)
+            # if children:
+            # for c in children:
+            # eventIDs.append(c)
         return eventIDs
 
 
@@ -110,7 +108,7 @@ def get_tops(cur):
     return eventIDs
 
 
-def write_fields(cur, parent, children):
+def write_fields(cur, parent, children, inheritable):
     """
     Writes all the inheritable fields of the parent to the children.
     Children can be grandchildren etc.
@@ -125,25 +123,29 @@ def write_fields(cur, parent, children):
     children: list of str
         The IDs of the children
 
+    inheritable: list of str
+        The fields that can be inherited to children
     """
-
-    # Loop over all the possible fields.
-
-    inheritable = []# ["metadata"]
-    for f in fields.fields:
-        if f['name'] in COLUMNS:
-            if "inherit" in f and f["inherit"]:
-                inheritable.append(f['name'])
 
     query = sql.SQL("SELECT {} from aen where eventid = %s")
     query2 = sql.SQL("UPDATE aen set {} = %s where eventid = %s")
+    query3 = sql.SQL("UPDATE aen set other = other || %s where eventid = %s")
     for col in inheritable:
-
-        cur.execute(query.format((sql.Identifier(col.lower()))), (parent,))
-        value = cur.fetchone()[0]
-        for child in children:
-            cur.execute(
-                query2.format((sql.Identifier(col.lower()))), (value, child,))
+        if col in COLUMNS:  # We are working with a name in the columns
+            cur.execute(query.format((sql.Identifier(col.lower()))), (parent,))
+            value = cur.fetchone()[0]
+            if value != None:  # Make sure we are not removing information
+                for child in children:
+                    cur.execute(
+                        query2.format((sql.Identifier(col.lower()))), (value, child,))
+        else:  # We are working with a name that could be in other
+            # Get contents of other
+            cur.execute(query.format((sql.Identifier('other'))), (parent,))
+            other = cur.fetchone()[0]
+            if other and col in other.keys() and other[col] != '':
+                value = {col: other[col]}
+                for child in children:
+                    cur.execute(query3, (value, child,))
 
 
 def inherit(cur):
@@ -159,19 +161,48 @@ def inherit(cur):
 
     tops = get_tops(cur)
 
+    # Loop over all the possible fields.
+    inheritable = []  # ["metadata"]
+    for f in fields.fields:
+        if "inherit" in f and f["inherit"]:
+            inheritable.append(f['name'])
+
+    traverse_three(cur, tops, inheritable)
+
+
+def traverse_three(cur, tops, inheritable):
+    '''
+    Recursive function for moving though all the parents and their children, 
+    grandchildren ...
+
+    Parameters
+    ----------
+
+    cur: psycopg2 cursor
+
+    tops: list of str
+        The parentEventIDs (parents) 
+
+    inheritable: list of str
+        The fields that can be inherited to children
+    '''
     for top in tops:
         children = get_children(cur, top)
-        write_fields(cur, top, children)
+        if children != []:
+            write_fields(cur, top, children, inheritable)
+            traverse_three(cur, children, inheritable)  # Take next level down
 
 
 def main():
     conn = psycopg2.connect("dbname=test user=pal")
+    psycopg2.extras.register_hstore(conn)  # Make sure that hstore goes to dict
     cur = conn.cursor()
     inherit(cur)
 
     conn.commit()
     cur.close()
     conn.close()
+
 
 if __name__ == "__main__":
     sys.exit(main())

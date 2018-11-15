@@ -42,9 +42,9 @@ from kivy.properties import NumericProperty
 from kivy.config import Config
 
 __all__ = []
-__version__ = 0.1
+__version__ = 0.2
 __date__ = '2018-05-25'
-__updated__ = '2018-07-05'
+__updated__ = '2018-11-15'
 
 DEBUG = 1
 TESTRUN = 0
@@ -101,37 +101,79 @@ CT~~CD,~CC^~CT~
 ^PW898
 ^LL0295
 ^LS0
-^BY110,110^FT506,141^BXN,4,200,22,22,1,~
+^BY110,110^FT506,111^BXN,4,200,22,22,1,~
 ^FH\^FD{0}^FS
-^FT463,181^A0N,21,21^FH\^FD{1}^FS
-^FT463,214^A0N,21,21^FH\^FD{2}^FS
-^FT462,247^A0N,21,21^FH\^FD{3}^FS
-^FT463,283^A0N,21,21^FH\^FD{4}^FS
+^FT445,151^A0N,21,21^FH\^FD{1}^FS
+^FT445,184^A0N,21,21^FH\^FD{2}^FS
+^FT445,217^A0N,21,21^FH\^FD{3}^FS
+^FT445,253^A0N,21,21^FH\^FD{4}^FS
 ^FT462,33^A0R,21,21^FH\^FD{5}^FS
-^PQ1,0,1,Y^XZ'''.format(uuid, 
-        text1, 
-        text2,
-        text3,
-        text4,
-        # text1.encode(encoding='utf-8'), 
-        # text2.encode(encoding='utf-8'),
-        # text3.encode(encoding='utf-8'),
-        # text4.encode(encoding='utf-8'),
-        uuid[:8])
-#     zpl = '''
-#     CT~~CD,~CC^~CT~
-#     ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD15^JUS^LRN^CI0^XZ
-#     ^XA
-#     ^MMT
-#     ^PW331
-#     ^LL1051
-#     ^LS0
-#     ^FT48,410^A0N,42,40^FH\^FD{1}^FS
-#     ^BY66,66^FT116,622^BXN,3,200,22,22,1,~
-#     ^FH\^FD{0}^FS
-#     ^PQ1,0,1,Y^XZ'''.format(uuid, text1)
+^PQ1,0,1,Y^XZ'''.format(uuid,
+                        text1,
+                        text2,
+                        text3,
+                        text4,
+                        uuid[:8])
 
-    print(zpl)
+#    print(zpl)
+    return zpl
+
+
+def create_large(uuid, text1, text2, text3, text4, text5):
+    """
+    Creates the ZPL code for the large (25x51 mm) label.
+    Adds a text with the 8 first characters from the uuid for ease of reading
+
+    Parameters
+    ----------
+    uuid : str
+        The 32 characters hex uuid
+
+    text1 : str
+        First line of text, limited to 20 characters
+
+    text2 : str
+        Second line of text, limited to 20 characters
+
+    text3 : str
+        Third line of text, limited to 20 characters
+
+    text4 : str
+        Fourth line of text, limited to 26 characters    
+
+    text5 : str
+        Fifth line of text, limited to 26 characters    
+
+    Returns
+    ----------
+    zpl : str
+        The formatted ZPL code string that should be sent to the Zebra printer 
+    """
+
+    zpl = '''
+CT~~CD,~CC^~CT~
+^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD25^JUS^LRN^CI28^XZ
+^XA
+^MMT
+^PW602
+^LL0295
+^LS0
+^BY110,110^FT465,143^BXN,5,200,22,22,1,~
+^FH\^FD{0}^FS
+^FT491,171^A0N,21,21^FH\^FD{6}^FS
+^FT20,67^A0N,42,40^FH\^FD{1}^FS
+^FT20,119^A0N,42,40^FH\^FD{2}^FS
+^FT20,171^A0N,42,40^FH\^FD{3}^FS
+^FT20,226^A0N,42,40^FH\^FD{4}^FS
+^FT20,278^A0N,42,40^FH\^FD{5}^FS
+^PQ1,0,1,Y^XZ'''.format(uuid,
+                        text1,
+                        text2,
+                        text3,
+                        text4,
+                        text5,
+                        uuid[:8])
+
     return zpl
 
 
@@ -197,7 +239,8 @@ class LabelApp(App):
         self.widget = widget
         self.socket = None
         self.first_print = True
-
+        self.size = 'Medium'
+        self.on_size_select(self.size)
         return widget
 
     def on_stop(self, *args):
@@ -213,9 +256,34 @@ class LabelApp(App):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.IP, self.PORT))
 
+    def on_size_select(self, size):
+        self.size = size
+        print("Setting size")
+        if size == 'Medium':
+            text1 = self.widget.ids.text1.max_characters = 18
+            text2 = self.widget.ids.text2.max_characters = 18
+            text3 = self.widget.ids.text3.max_characters = 18
+            text4 = self.widget.ids.text4.max_characters = 18
+            text5 = self.widget.ids.text5.max_characters = 0
+        elif size == 'Large':
+            text1 = self.widget.ids.text1.max_characters = 20
+            text2 = self.widget.ids.text2.max_characters = 20
+            text3 = self.widget.ids.text3.max_characters = 20
+            text4 = self.widget.ids.text4.max_characters = 20
+            text5 = self.widget.ids.text5.max_characters = 36
+
     def send_to_printer(self, zpl):
 
         self.socket.send(bytes(zpl, "utf-8"))
+
+    def inc_nums(text):
+        def increment(text, inc):
+            if text.isdigit():
+                return str(int(text)+inc)
+            else:
+                return str(float(text)+inc)
+
+        return re.sub('(\d+(?:\.\d+)?)', lambda m: increment(m.group(0), 1), text)
 
     def print_label(self, *args):
         print("Printing label")
@@ -235,23 +303,23 @@ class LabelApp(App):
         text2 = self.widget.ids.text2.text
         text3 = self.widget.ids.text3.text
         text4 = self.widget.ids.text4.text
+        text5 = self.widget.ids.text5.text
         for n in range(int(self.widget.ids.number.text)):
-
-            zpl = create_label(new_hex_uuid(), text1, text2, text3, text4)
             # Increase number on prints
             if self.widget.ids.text4.inc_num:
-                try:
-                    text4 = str(int(text4) + 1)
-                    self.widget.ids.text4.text = text4
-                except ValueError:
-                    warnings.warn(
-                        "WARNING: Text line 4 is not a number, can't increment", UserWarning)
-
-                    time.sleep(seconds / 1e6)  # Wait 1 us
-
+                text4 = inc_nums(text4)
+                self.widget.ids.text4.text = text4
+            if setup == 'L':
+                zpl = create_large(str(uuid.uuid1()),
+                                   text1, text2, text3, text4, text5)
+            elif setup == 'M':
+                zpl = create_label(str(uuid.uuid1()),
+                                   text1, text2, text3, text4)
             self.send_to_printer(zpl)
+            time.sleep(seconds / 1e6)  # Wait 1 us
         # Stop socket after each run
         self.on_stop()
+
 
 def main(argv=None):  # IGNORE:C0111
     '''Command line options.'''
@@ -304,6 +372,7 @@ def parse_options():
         print("Verbose mode on")
 
     return args
+
 
 if __name__ == "__main__":
     if DEBUG:

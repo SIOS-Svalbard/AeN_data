@@ -13,6 +13,7 @@
 <Button>:
     color: 1, 1, 1, 1
 
+
 <LabelWidget>:
     canvas.before:
         Color:
@@ -32,7 +33,7 @@
                 height: '70dp'
             
             GridLayout:
-                cols : 4
+                cols : 5 
                 size_hint: (1,0.2)
                 padding: [10, 10]
                 row_force_default: True
@@ -47,12 +48,18 @@
                     on_active: root.activate_checkbox(self, 'date')
                     
                 Label:
-                    text: 'Line 4: Increment'
+                    text: 'Line 4: Increment '
                 
                 CheckBox:
-                    id: date
+                    id: inc
                     color: 1,0,0,2
                     on_active: root.activate_checkbox(self, 'inc_num')
+
+                Spinner:
+                    text: "Medium"
+                    values: ["Medium","Large"]
+                    size_hint:(None,.1)
+                    on_text: root.on_size_select(self.text)
 
 
             GridLayout:
@@ -63,30 +70,36 @@
                 
                 
                 Label:
-                    text: 'Text line 1:'
+                    text: 'Line 1:'
                     
                 LimitText:
                     id: text1
                     text: ''
             
                 Label:
-                    text: 'Text line 2:'
+                    text: 'Line 2:'
                     
                 LimitText:
                     id: text2
                     text: ''
                        
                 Label:
-                    text: 'Text line 3:'
+                    text: 'Line 3:'
                     
                 LimitText:
                     id: text3
                     
                 Label:
-                    text: 'Text line 4:'
+                    text: 'Line 4:'
                     
                 LimitText:
                     id: text4
+
+                Label:
+                    text: 'Line 5 (only L):'
+                    
+                LimitText:
+                    id: text5
                     
             GridLayout:
                 cols : 1

@@ -8,32 +8,32 @@ Each field is defined as a dictionary which should contain:
     disp_name : The displayed name of the field
 
 Optional fields are:
-    
+
     width : int
             the width of the cell
-    
+
     dwcid : str
             The Darwin core identifier (an url), if this is used the rest of the names should
-            follow the Darwin core  
-    
+            follow the Darwin core
+
     units : str
             The measurement unit of the variable, using the standard in CF
            Examples: 'm', 'm s-1', '
-    
+
     cf_name : str
              The variable name in the CF standard
 
     inherit : Boolean
-             Is this a variable that can be inherited by childern? 
+             Is this a variable that can be inherited by childern?
              If it is not present its default is False
-    
+
     valid : dict
-            a dictionary with definitions of the validation for the cell, as 
-            per keywords used in Xlsxwriter 
-            
+            a dictionary with definitions of the validation for the cell, as
+            per keywords used in Xlsxwriter
+
     cell_format :  dict
                    a dictionary with definitions of the format for the cell, as
-                   per keywords in Xlsxwriter 
+                   per keywords in Xlsxwriter
 
 These dictionaries should then be added to the list called fields
 
@@ -182,7 +182,7 @@ eventTime = {'name': 'eventTime',
                  'input_title': 'Event Time (UTC)',
                  'input_message': '''
 The time in UTC
-Format is HH:MM 
+Format is HH:MM
 If MM > 59, HH will be HH + 1 ''',
                  'error_title': 'Error',
                  'error_message': 'Not a valid time'
@@ -481,7 +481,7 @@ sedimentCoreMaximumDepthInCentiMeters = {'name': 'sedimentCoreMaximumDepthInCent
                                              'input_title': 'Sediment Core Maximum Depth (m)',
                                              'input_message': '''The sediment core maximum depth in centimeters.
 This is measured from the top of the core.
-Maximum for multicores is 60 cm 
+Maximum for multicores is 60 cm
 Maximum for gravity and piston cores is 3 000 cm.''',
                                              'error_title': 'Error',
                                              'error_message': 'Float[0, 3 000]'
@@ -566,7 +566,7 @@ recordedBy = {'name': 'recordedBy',
               'valid': {
                   'validate': 'any',
                   'input_title': 'Recorded By',
-                  'input_message': '''Who has recorded/analysed the data. 
+                  'input_message': '''Who has recorded/analysed the data.
 Can be a concatenated list, separated by: ';'
 Example: John Doe; Ola Nordmann'''
               }
@@ -578,7 +578,7 @@ recordNumber = {'name': 'recordNumber',
                 'valid': {
                     'validate': 'any',
                     'input_title': 'Recorded Number',
-                    'input_message': '''This is an additional number used to identify the sample. 
+                    'input_message': '''This is an additional number used to identify the sample.
 This is in addition to the sample ID (event ID)'''
                 }
                 }
@@ -698,7 +698,7 @@ bottleNumber = {'name': 'bottleNumber',
                     'criteria': '>',
                     'value': 0,
                     'input_title': 'Bottle Number',
-                    'input_message': '''The bottle number 
+                    'input_message': '''The bottle number
 Could be for instance the niskin bottle number.
 Positive integer''',
                     'error_title': 'Error',
@@ -900,7 +900,7 @@ scientificName = {'name': 'scientificName',
                   'valid': {
                       'validate': 'any',
                       'input_title': 'Scientific Name',
-                      'input_message': '''The full scientific name, with authorship and date information if known. 
+                      'input_message': '''The full scientific name, with authorship and date information if known.
 When forming part of an Identification, this should be the name in lowest level taxonomic rank that can be determined'''
                   },
                   'cell_format': {
@@ -1059,24 +1059,59 @@ Float number larger than -10 degrees C''',
                                }
                                }
 
-seaWaterSalinity = {'name': 'seaWaterSalinity',
-                    'disp_name': 'Sea Water Salinity (1e-3)',
-                    'inherit': True,
-                    'units': '1e-3',
-                    'cf_name': 'sea_water_salinity',
-                    'valid': {
-                        'validate': 'decimal',
-                        'criteria': '>=',
-                        'value': 0,
-                        'input_title': 'Sea Water Salinity',
-                        'input_message': '''Sea water salinity in parts per thousand
-Often using the Practical Salinity Scale of 1978
+seaWaterPracticalSalinity = {'name': 'seaWaterPracticalSalinity',
+                             'disp_name': 'Sea Water Practical Salinity (1)',
+                             'inherit': True,
+                             'units': '1',
+                             'cf_name': 'sea_water_practical_salinity',
+                             'valid': {
+                                 'validate': 'decimal',
+                                 'criteria': '>=',
+                                 'value': 0,
+                                 'input_title': 'Sea Water Practical Salinity',
+                                 'input_message': '''Practical Salinity, S_P, is a determination of the salinity of sea water, based on its electrical conductance. The measured conductance, corrected for temperature and pressure, is compared to the conductance of a standard potassium chloride solution, producing a value on the Practical Salinity Scale of 1978 (PSS-78).
 Float number larger than or equal to 0
-Example: 0.029''',
-                        'error_title': 'Error',
-                        'error_message': 'Float >= 0'
-                    }
-                    }
+Example: 29.003''',
+                                 'error_title': 'Error',
+                                 'error_message': 'Float >= 0'
+                             }
+                             }
+
+seaWaterAbsoluteSalinity = {'name': 'seaWaterAbsoluteSalinity',
+                            'disp_name': 'Sea Water Absolute Salinity (g/kg)',
+                            'inherit': True,
+                            'units': 'g kg-1',
+                            'cf_name': 'sea_water_absolute_salinity',
+                            'valid': {
+                                'validate': 'decimal',
+                                'criteria': '>=',
+                                'value': 0,
+                                'input_title': 'Sea Water Absolute Salinity',
+                                'input_message': '''Absolute Salinity, S_A, is defined as part of the Thermodynamic Equation of Seawater 2010 (TEOS-10) which was adopted in 2010 by the Intergovernmental Oceanographic Commission (IOC). It is the mass fraction of dissolved material in sea water.
+Float number larger than or equal to 0
+Example: 3.5''',
+                                'error_title': 'Error',
+                                'error_message': 'Float >= 0'
+                            }
+                            }
+
+seaWaterElectricalConductivity = {'name': 'seaWaterElectricalConductivity',
+                                  'disp_name': 'Sea Water Conductivity (S/m)',
+                                  'inherit': True,
+                                  'units': 's m-1',
+                                  'cf_name': 'sea_water_electrical_conductivity',
+                                  'valid': {
+                                      'validate': 'decimal',
+                                      'criteria': '>=',
+                                      'value': 0,
+                                      'input_title': 'Sea Water Conductivity',
+                                      'input_message': '''Sea water electrical conductivity in siemens per meter
+Float number larger than or equal to 0
+Example: 3.0''',
+                                      'error_title': 'Error',
+                                      'error_message': 'Float >= 0'
+                                  }
+                                  }
 
 seaWaterPressure = {'name': 'seaWaterPressure',
                     'disp_name': 'Sea Water Pressure (dbar)',
@@ -1202,10 +1237,10 @@ sedimentPH = {'name': 'sedimentPH',
                   'maximum': 16,
                   'input_title': 'Sediment  pH  (total scale)',
                   'input_message': '''
-Is the measure of acidity of seawater, defined as the negative logarithm of 
+Is the measure of acidity of seawater, defined as the negative logarithm of
 the concentration of dissolved hydrogen ions plus bisulfate ions in a sea water
-medium; it can be measured or calculated; when measured the scale is defined 
-according to a series of buffers prepared in artificial seawater containing 
+medium; it can be measured or calculated; when measured the scale is defined
+according to a series of buffers prepared in artificial seawater containing
 bisulfate.
 Float in range [-2, 16]''',
                   'error_title': 'Error',
@@ -1256,7 +1291,7 @@ seaWaterDeltaO18 = {'name': 'seaWaterDeltaO18',
                         'value': 0,
                         'input_title': 'Sea Water delta-O-18 (1e-3)',
                         'input_message': '''
-Sea Water delta-O-18 in parts per thousand 
+Sea Water delta-O-18 in parts per thousand
 Positive float number''',
                         'error_title': 'Error',
                         'error_message': 'Float >= 0'
@@ -1272,7 +1307,7 @@ seaIceDeltaO18 = {'name': 'seaIceDeltaO18',
                       'value': 0,
                       'input_title': 'Sea Ice delta-O-18 (1e-3)',
                       'input_message': '''
-Sea Ice delta-O-18 in parts per thousand 
+Sea Ice delta-O-18 in parts per thousand
 Positive float number''',
                       'error_title': 'Error',
                       'error_message': 'Float >= 0'
@@ -1290,10 +1325,10 @@ seaWaterPH = {'name': 'seaWaterPH',
                   'maximum': 16,
                   'input_title': 'Sea Water pH  (total scale)',
                   'input_message': '''
-Is the measure of acidity of seawater, defined as the negative logarithm of 
+Is the measure of acidity of seawater, defined as the negative logarithm of
 the concentration of dissolved hydrogen ions plus bisulfate ions in a sea water
-medium; it can be measured or calculated; when measured the scale is defined 
-according to a series of buffers prepared in artificial seawater containing 
+medium; it can be measured or calculated; when measured the scale is defined
+according to a series of buffers prepared in artificial seawater containing
 bisulfate.
 Float in range [-2, 16]''',
                   'error_title': 'Error',
@@ -1310,7 +1345,7 @@ seaWaterAlkalinity = {'name': 'seaWaterAlkalinity',
                           'value': 0,
                           'input_title': 'Sea Water Total Alkalinity (umol/kg)',
                           'input_message': '''
-Sea Water Total Alkalinity in micromols per kilogram 
+Sea Water Total Alkalinity in micromols per kilogram
 Positive float number''',
                           'error_title': 'Error',
                           'error_message': 'Float >= 0'
@@ -1326,7 +1361,7 @@ seaWaterTOC = {'name': 'seaWaterTOC',
                    'value': 0,
                    'input_title': 'TOC (mg/L)',
                    'input_message': '''
-Sea Water Total Organic Carbon in milligrams per litre 
+Sea Water Total Organic Carbon in milligrams per litre
 Positive float number''',
                    'error_title': 'Error',
                    'error_message': 'Float >= 0'
@@ -1342,7 +1377,7 @@ seaWaterPON = {'name': 'seaWaterPON',
                    'value': 0,
                    'input_title': 'PON (ug/L)',
                    'input_message': '''
-Sea Water Quantification of particulate organic nitrogen in micrograms per litre 
+Sea Water Quantification of particulate organic nitrogen in micrograms per litre
 Positive float number''',
                    'error_title': 'Error',
                    'error_message': 'Float >= 0'
@@ -1359,7 +1394,7 @@ seaWaterPOC = {'name': 'seaWaterPOC',
                    'value': 0,
                    'input_title': 'POC (ug/L)',
                    'input_message': '''
-Sea Water Quantification of particulate organic carbon  in micrograms per litre 
+Sea Water Quantification of particulate organic carbon  in micrograms per litre
 Positive float number''',
                    'error_title': 'Error',
                    'error_message': 'Float >= 0'
@@ -1449,7 +1484,7 @@ maturationStage = {'name': 'maturationStage',
                        'minimum': 0,
                        'maximum': 7,
                        'input_title': 'Maturation Stage',
-                       'input_message': '''On the basis of shape, size, color of the gonads and other morphological featuers, at least six maturity stages can be recongnized 
+                       'input_message': '''On the basis of shape, size, color of the gonads and other morphological featuers, at least six maturity stages can be recongnized
 Value in range [0, 7]''',
                        'error_title': 'Error',
                        'error_message': 'Int range [0, 7]'

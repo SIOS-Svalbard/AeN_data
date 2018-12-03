@@ -1069,7 +1069,11 @@ seaWaterPracticalSalinity = {'name': 'seaWaterPracticalSalinity',
                                  'criteria': '>=',
                                  'value': 0,
                                  'input_title': 'Sea Water Practical Salinity',
-                                 'input_message': '''Practical Salinity, S_P, is a determination of the salinity of sea water, based on its electrical conductance. The measured conductance, corrected for temperature and pressure, is compared to the conductance of a standard potassium chloride solution, producing a value on the Practical Salinity Scale of 1978 (PSS-78).
+                                 'input_message': '''Practical Salinity, S_P, is a determination of 
+the salinity of sea water, based on its electrical conductance. 
+The measured conductance, corrected for temperature and pressure,
+is compared to the conductance of a standard potassium chloride 
+solution, producing a value on the Practical Salinity Scale of 1978 (PSS-78).
 Float number larger than or equal to 0
 Example: 29.003''',
                                  'error_title': 'Error',
@@ -1087,7 +1091,11 @@ seaWaterAbsoluteSalinity = {'name': 'seaWaterAbsoluteSalinity',
                                 'criteria': '>=',
                                 'value': 0,
                                 'input_title': 'Sea Water Absolute Salinity',
-                                'input_message': '''Absolute Salinity, S_A, is defined as part of the Thermodynamic Equation of Seawater 2010 (TEOS-10) which was adopted in 2010 by the Intergovernmental Oceanographic Commission (IOC). It is the mass fraction of dissolved material in sea water.
+                                'input_message': '''Absolute Salinity, S_A, is defined as part of 
+the Thermodynamic Equation of Seawater 2010 (TEOS-10) which was
+adopted in 2010 by the Intergovernmental Oceanographic 
+Commission (IOC). It is the mass fraction of dissolved material
+in sea water.
 Float number larger than or equal to 0
 Example: 3.5''',
                                 'error_title': 'Error',

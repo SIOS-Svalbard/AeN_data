@@ -110,7 +110,7 @@ class PDF(FPDF):
         return filename
 
 
-def make_page(pdf, dpi,gearText,sampleText,M):
+def make_page(pdf, dpi, gearText, sampleText, M):
     """
     Makes an A4 page and fills it with QR codes
 
@@ -129,22 +129,21 @@ def make_page(pdf, dpi,gearText,sampleText,M):
     top = 10
     side = 10
 
-
     # Spacing
     hpitch = 100
-    vpitch = 21 
+    vpitch = 21
 
     # number
     # print (M)
-    if M>12:
+    if M > 12:
         cols = 2
     else:
         cols = 1
-    
+
     rows = round(M/cols)+1
     # print(rows,cols)
-    if cols==2:
-        skiplast = M%2
+    if cols == 2:
+        skiplast = M % 2
     else:
         skiplast = False
 
@@ -155,16 +154,17 @@ def make_page(pdf, dpi,gearText,sampleText,M):
     # scale = cell_size / inch * dpi / 2 * 24 / 22
     # print("Scale", scale)
     # Make page
-    pdf.set_font('Courier','B',16)
+    pdf.set_font('Courier', 'B', 16)
     pdf.add_page()
 #     page = Image.new('L', (int(width), int(height)), 'white')
 #     font = ImageFont.truetype(
 #         "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf", 20)
 #     draw = ImageDraw.Draw(page)
-    def add_label(c,r,text,xshift,yshift):
+
+    def add_label(c, r, text, xshift, yshift):
         uuid = new_hex_uuid()
         fd, path = tempfile.mkstemp()
-        #print(fd,path)
+        # print(fd,path)
         try:
             with os.fdopen(fd, 'w') as tmp:
                 # do stuff with temp file
@@ -172,54 +172,53 @@ def make_page(pdf, dpi,gearText,sampleText,M):
                 img = qr.qr_image(uuid)
                 img.save(path, format='PNG', resolution=dpi)
                 pdf.image(
-                        path, x=int(side + xshift + len(text)*4 + pad), y=int(top + yshift + pad), w=img.size[0] / inch, h=img.size[1] / inch, type='PNG')
-                pdf.set_font('Courier','B',16)
+                    path, x=int(side + xshift + len(text)*4 + pad), y=int(top + yshift + pad), w=img.size[0] / inch, h=img.size[1] / inch, type='PNG')
+                pdf.set_font('Courier', 'B', 16)
                 pdf.text(
-                        txt=text, x=int(side + xshift +  pad), y=int(top + yshift + img.size[0]/2/inch + pad))
-                pdf.set_font('Courier','B',10)
+                    txt=text, x=int(side + xshift + pad), y=int(top + yshift + img.size[0]/2/inch + pad))
+                pdf.set_font('Courier', 'B', 10)
                 pdf.text(
-                        txt=uuid[:8], x=int(side + xshift +  len(text)*4), y=int(top + yshift + pad + img.size[0]/inch + 2))
+                    txt=uuid[:8], x=int(side + xshift + len(text)*4), y=int(top + yshift + pad + img.size[0]/inch + 2))
         finally:
             os.remove(path)
 
     xshift = 0
     yshift = 0
-    ii = 0 
+    ii = 0
     for r in range(rows):  # Loop over the rows
         # print(xshift,yshift)
-        if r!=0 and r%13 ==0:
+        if r != 0 and r % 13 == 0:
             pdf.add_page()
             xshift = 0
             yshift = 0
-            ii=ii+12
-        xshift=0
+            ii = ii+12
+        xshift = 0
         for c in range(cols):  # Loop over the columns
-            if skiplast and (c==cols-1 and r==rows-1):
-                print(c,r,"Breaking")
+            if skiplast and (c == cols-1 and r == rows-1):
+                print(c, r, "Breaking")
                 break
 
-            jj=ii+(c*12)
-            if jj>M:
+            jj = ii+(c*12)
+            if jj > M:
                 continue
 
-            if not(r==0 and c==1):
-                if r==0 and c==0:
+            if not(r == 0 and c == 1):
+                if r == 0 and c == 0:
                     text = gearText+" ______________ "
                     pdf.text(
-                        txt="Date _____________", x=int(side + xshift +  pad), y=int(top + yshift +  pad))
-                    pdf.text(txt=new_hex_uuid()[:8], x=int(side + xshift + 100 +  pad), y=int(top + yshift +  pad))
+                        txt="Date _____________", x=int(side + xshift + pad), y=int(top + yshift + pad))
+                    pdf.text(txt=new_hex_uuid()[:8], x=int(
+                        side + xshift + 100 + pad), y=int(top + yshift + pad))
                 else:
-                    text = sampleText+" #" + format(jj,"02d")
+                    text = sampleText+" #" + format(jj, "02d")
 
-                add_label(c,r,text,xshift,yshift)
+                add_label(c, r, text, xshift, yshift)
             xshift = xshift + hpitch
         yshift = yshift + vpitch
         ii = ii+1
 
-            
 
-
-def save_pages(url, gearText="CTD",sampleText="Niskin",M=24, N=1 ):
+def save_pages(url, gearText="CTD", sampleText="Niskin", M=24, N=1):
     """
     Saves multiple pages of QR codes to a pdf file
 
@@ -240,7 +239,7 @@ def save_pages(url, gearText="CTD",sampleText="Niskin",M=24, N=1 ):
 #     first = make_page(dpi)
 #     if N > 1:
     for ii in range(N):
-        make_page(pdf, dpi,gearText,sampleText,M)
+        make_page(pdf, dpi, gearText, sampleText, M)
 
     pdf.output(url, 'F')
 
@@ -251,7 +250,8 @@ def main(argv=None):  # IGNORE:C0111
     try:
         args = parse_options()
         output = args.output
-        save_pages(output+'.pdf', N=args.n,gearText=args.gear,sampleText=args.sample,M=args.m)
+        save_pages(output+'.pdf', N=args.n, gearText=args.gear,
+                   sampleText=args.sample, M=args.m)
         return 0
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
@@ -302,6 +302,7 @@ USAGE
         print("Verbose mode on")
 
     return args
+
 
 if __name__ == "__main__":
     if DEBUG:

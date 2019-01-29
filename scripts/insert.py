@@ -29,28 +29,28 @@ from collections import OrderedDict
 from psycopg2 import sql
 
 
-columns = {"parentEventID": "uuid",
-           "cruiseNumber": "int",
-           "stationName": "text",
-           "eventTime": "time",
-           "eventDate": "date",
-           "decimalLatitude": "double precision",
-           "decimalLongitude": "double precision",
-           "bottomDepthInMeters": "double precision",
-           "eventRemarks": "text",
-           "samplingProtocol": "text",
-           "sampleLocation": "text",
-           "pi_name": "text",
-           "pi_email": "text",
-           "pi_institution": "text",
-           "recordedBy": "text",
-           "sampleType": "text",
-           "other": "hstore",
-           "metadata": "hstore",
-           "created": "timestamp with time zone",
-           "modified": "timestamp with time zone",
-           "history": "text",
-           "source": "text"}
+# columns = {"parentEventID": "uuid",
+# "cruiseNumber": "int",
+# "stationName": "text",
+# "eventTime": "time",
+# "eventDate": "date",
+# "decimalLatitude": "double precision",
+# "decimalLongitude": "double precision",
+# "bottomDepthInMeters": "double precision",
+# "eventRemarks": "text",
+# "samplingProtocol": "text",
+# "sampleLocation": "text",
+# "pi_name": "text",
+# "pi_email": "text",
+# "pi_institution": "text",
+# "recordedBy": "text",
+# "sampleType": "text",
+# "other": "hstore",
+# "metadata": "hstore",
+# "created": "timestamp with time zone",
+# "modified": "timestamp with time zone",
+# "history": "text",
+# "source": "text"}
 
 REQUIERED = ["eventID",
              "parentEventID",
@@ -144,6 +144,16 @@ def replace_nan(lis):
     return new
 
 
+def trim_str(lis):
+    new = []
+    for l in lis:
+        if isinstance(l, str):
+            new.append(l.strip())
+        else:
+            new.append(l)
+    return new
+
+
 def get_time_now():
     '''
     Returns the time now in iso8601 format
@@ -218,6 +228,7 @@ def insert_db(cur, data, metadata, filename, update=False, reason=''):
         row = []
         cols = data[r, indxs].tolist()
         cols = replace_nan(cols)
+        cols = trim_str(cols)
         cols.append(to_dict(data[0, o_indxs], data[r, o_indxs]))
         cols.append(meta)
         if cols[0] == None:

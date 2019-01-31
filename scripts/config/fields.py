@@ -24,7 +24,14 @@ Optional fields are:
              The variable name in the CF standard
 
     inherit : Boolean
-             Is this a variable that can be inherited by childern?
+             Is this a variable that can be inherited by children?
+             If it is not present its default is False
+
+    inherit_weak : Boolean
+             Only used if inherit is true. If set to True values already 
+             entered in the children will be kept.
+             This is useful for instance in the case of multinets where the 
+             individual nets have different max and min depths.
              If it is not present its default is False
 
     valid : dict
@@ -416,6 +423,7 @@ sampleDepthInMeters = {'name': 'sampleDepthInMeters',
 maximumDepthInMeters = {'name': 'maximumDepthInMeters',
                         'disp_name': 'Maximum depth(m)',
                         'inherit': True,
+                        'inherit_weak': True,
                         'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/maximumDepthInMeters',
                         'valid': {
@@ -436,6 +444,7 @@ maximumDepthInMeters = {'name': 'maximumDepthInMeters',
 minimumDepthInMeters = {'name': 'minimumDepthInMeters',
                         'disp_name': 'Minimum depth (m)',
                         'inherit': True,
+                        'inherit_weak': True,
                         'width': 22,
                         'units': 'm',
                         'dwcid': 'http://rs.tdwg.org/dwc/terms/minimumDepthInMeters',

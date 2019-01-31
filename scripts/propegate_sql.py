@@ -20,9 +20,9 @@ import glob
 
 
 __all__ = []
-__version__ = 0.1
+__version__ = 0.2
 __date__ = '2018-09-10'
-__updated__ = '2018-09-10'
+__updated__ = '2019-01-31'
 
 
 COLUMNS = ["cruiseNumber",
@@ -108,7 +108,7 @@ def get_tops(cur):
     return eventIDs
 
 
-def write_fields(cur, parent, children, inheritable):
+def write_fields(cur, parent, children, inheritable, weak):
     """
     Writes all the inheritable fields of the parent to the children.
     Children can be grandchildren etc.
@@ -125,6 +125,10 @@ def write_fields(cur, parent, children, inheritable):
 
     inheritable: list of str
         The fields that can be inherited to children
+
+    weak: list of str
+        The fields that can be only be inherited to children if field is empty
+        Should also be in inheritable 
     """
 
     query = sql.SQL("SELECT {} from aen where eventid = %s")
@@ -136,6 +140,12 @@ def write_fields(cur, parent, children, inheritable):
             value = cur.fetchone()[0]
             if value != None:  # Make sure we are not removing information
                 for child in children:
+                    if col in weak:  # Only inherit if empty
+                        cur.execute(query.format(
+                            (sql.Identifier(col.lower()))), (child,))
+                        c_value = cur.fetchone()[0]
+                        if c_value != None:  # Something there, so we continue
+                            continue
                     cur.execute(
                         query2.format((sql.Identifier(col.lower()))), (value, child,))
         else:  # We are working with a name that could be in other
@@ -145,6 +155,12 @@ def write_fields(cur, parent, children, inheritable):
             if other and col in other.keys() and other[col] != '':
                 value = {col: other[col]}
                 for child in children:
+                    cur.execute(query.format(
+                        (sql.Identifier('other'))), (child,))
+                    c_other = cur.fetchone()[0]
+                    if c_other and col in c_other.keys() and c_other[col] != '':
+                        continue  # Something there, so we continue
+
                     cur.execute(query3, (value, child,))
 
 
@@ -163,14 +179,17 @@ def inherit(cur):
 
     # Loop over all the possible fields.
     inheritable = []  # ["metadata"]
+    weak = []  # For holding weak inheritance
     for f in fields.fields:
         if "inherit" in f and f["inherit"]:
             inheritable.append(f['name'])
+            if "inherit_weak" in f and f["inherit_weak"]:
+                weak.append(f['name'])
 
-    traverse_three(cur, tops, inheritable)
+    traverse_three(cur, tops, inheritable, weak)
 
 
-def traverse_three(cur, tops, inheritable):
+def traverse_three(cur, tops, inheritable, weak):
     '''
     Recursive function for moving though all the parents and their children, 
     grandchildren ...
@@ -185,12 +204,17 @@ def traverse_three(cur, tops, inheritable):
 
     inheritable: list of str
         The fields that can be inherited to children
+
+    weak: list of str
+        The fields that can be only be inherited to children if field is empty
+        Should also be in inheritable 
     '''
     for top in tops:
         children = get_children(cur, top)
         if children != []:
-            write_fields(cur, top, children, inheritable)
-            traverse_three(cur, children, inheritable)  # Take next level down
+            write_fields(cur, top, children, inheritable, weak)
+            traverse_three(cur, children, inheritable,
+                           weak)  # Take next level down
 
 
 def main():

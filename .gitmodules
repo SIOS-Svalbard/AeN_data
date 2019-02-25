@@ -1,0 +1,4 @@
+[submodule "scripts/darwinsheet"]
+	path = scripts/darwinsheet
+	url = https://github.com/SIOS-Svalbard/darwinsheet
+	branch = cleanup

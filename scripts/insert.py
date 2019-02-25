@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # encoding: utf-8
 '''
- -- Insertes data from xlsx sheets into database
+ -- Inserts data from xlsx sheets into database
 
 
 @author:     Pål Ellingsen
@@ -12,12 +12,12 @@
 __all__ = []
 __version__ = 0.2
 __date__ = '2018-09-12'
-__updated__ = '2018-10-03'
+__updated__ = '2019-02-25'
 
 import psycopg2
 import psycopg2.extras
 import uuid
-import process_xlsx as px
+import darwinsheet.scripts.process_xlsx as px
 import datetime as dt
 import glob
 import sys

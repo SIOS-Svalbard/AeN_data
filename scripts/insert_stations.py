@@ -2,7 +2,7 @@
 import psycopg2
 import psycopg2.extras
 import uuid
-import process_xlsx as px
+import darwinsheet.scripts.process_xlsx as px
 import datetime as dt
 import glob
 import pandas as pd

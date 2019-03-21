@@ -13,7 +13,7 @@ import sys
 from psycopg2 import sql
 import psycopg2.extras
 import uuid
-import config.fields as fields
+import darwinsheet.config.fields as fields
 import numpy as np
 import datetime as dt
 import glob

@@ -15,7 +15,7 @@ import sys
 from psycopg2 import sql
 import psycopg2.extras
 import uuid
-import config.fields as fields
+import darwinsheet.config.fields as fields
 import numpy as np
 import datetime as dt
 import glob
@@ -24,7 +24,7 @@ import glob
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-10-03'
-__updated__ = '2018-10-09'
+__updated__ = '2019-03-21'
 
 
 COLUMNS = ["cruiseNumber",

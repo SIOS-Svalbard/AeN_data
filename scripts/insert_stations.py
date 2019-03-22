@@ -1,4 +1,18 @@
 #! /usr/bin/env python3
+# encoding: utf-8
+'''
+ -- Insert specific Nansen Legacy stations into the database
+
+
+@author:     Pål Ellingsen
+@contact:    pale@unis.no
+@deffield    updated: Updated
+'''
+
+__version__ = 0.1
+__updated__ = '2019-03-22'
+
+import getpass
 import psycopg2
 import psycopg2.extras
 import uuid
@@ -8,7 +22,8 @@ import glob
 import pandas as pd
 from collections import OrderedDict
 
-conn = psycopg2.connect("dbname=test user=pal")
+# Connect to the database as the user running the script
+conn = psycopg2.connect('dbname=aen_db user=' + getpass.getuser())
 cur = conn.cursor()
 
 

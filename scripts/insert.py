@@ -12,7 +12,7 @@
 __all__ = []
 __version__ = 0.2
 __date__ = '2018-09-12'
-__updated__ = '2019-02-25'
+__updated__ = '2019-03-22'
 
 import psycopg2
 import psycopg2.extras
@@ -90,33 +90,6 @@ COLUMNS = ["eventID",
            "pi_institution",
            "recordedBy",
            "eventRemarks"]
-exe_str = '''
-CREATE TABLE aen (eventID uuid PRIMARY KEY,
-                              parentEventID uuid,
-                              cruiseNumber int,
-                              stationName text,
-                              eventTime time,
-                              eventDate date,
-                              decimalLatitude double precision,
-                              decimalLongitude double precision,
-                              sampleType text,
-                              gearType text,
-                              sampleDepthInMeters double precision,
-                              bottomDepthInMeters double precision,
-                              bottleNumber integer,
-                              samplingProtocol text,
-                              sampleLocation text,
-                              pi_name text,
-                              pi_email text,
-                              pi_institution text,
-                              recordedBy text,
-                              eventRemarks text,
-                              other hstore,
-                              metadata hstore,
-                              created timestamp with time zone,
-                              modified timestamp with time zone,
-                              history text,
-                              source text) '''
 
 
 def to_dict(keys, values):
@@ -280,17 +253,13 @@ def main(argv=None):  # IGNORE:C0111
     try:
         args = parse_options()
         files = args.input
-        conn = psycopg2.connect("dbname=test user=pal")
+        # Connect to the database as the user running the script
+        conn = psycopg2.connect('dbname=aen_db user=' + getpass.getuser())
         psycopg2.extras.register_uuid()
         psycopg2.extras.register_hstore(conn)
 
         cur = conn.cursor()
 
-        if args.init:
-            cur.execute("CREATE EXTENSION IF NOT EXISTS hstore;")
-            cur.execute(exe_str)
-
-        conn.commit()
         if os.path.isfile(files):
             urls = []
             urls.append(files)
@@ -354,8 +323,6 @@ def parse_options():
                         version=program_version_message)
     parser.add_argument('-u', dest='update', default=False, action="store_true",
                         help="Update entries. If enabled existing entries will be updated, [default: %(default)s]")
-    parser.add_argument('-i', dest='init', default=False, action="store_true",
-                        help="Initialise the database. [Default: %(default)s]")
     parser.add_argument('-m', dest='mod', default='', type=str,
                         help="Set the modification message if updating. [Default: %(default)s]")
 

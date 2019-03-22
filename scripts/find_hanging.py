@@ -19,12 +19,13 @@ import darwinsheet.config.fields as fields
 import numpy as np
 import datetime as dt
 import glob
+import getpass
 
 
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-10-03'
-__updated__ = '2019-03-21'
+__updated__ = '2019-03-22'
 
 
 COLUMNS = ["cruiseNumber",
@@ -79,7 +80,8 @@ def find_missing(cur):
 
 
 def main():
-    conn = psycopg2.connect("dbname=test user=pal")
+    # Connect to the database as the user running the script
+    conn = psycopg2.connect('dbname=aen_db user=' + getpass.getuser())
     cur = conn.cursor()
     find_missing(cur)
 

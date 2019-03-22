@@ -17,12 +17,13 @@ import darwinsheet.config.fields as fields
 import numpy as np
 import datetime as dt
 import glob
+import getpass
 
 
 __all__ = []
 __version__ = 0.2
 __date__ = '2018-09-10'
-__updated__ = '2019-01-31'
+__updated__ = '2019-03-22'
 
 
 COLUMNS = ["cruiseNumber",
@@ -218,7 +219,8 @@ def traverse_three(cur, tops, inheritable, weak):
 
 
 def main():
-    conn = psycopg2.connect("dbname=test user=pal")
+    # Connect to the database as the user running the script
+    conn = psycopg2.connect('dbname=aen_db user=' + getpass.getuser())
     psycopg2.extras.register_hstore(conn)  # Make sure that hstore goes to dict
     cur = conn.cursor()
     inherit(cur)

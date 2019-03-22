@@ -11,6 +11,7 @@
 
 import psycopg2
 import sys
+import getpass
 from psycopg2 import sql
 import psycopg2.extras
 
@@ -18,7 +19,7 @@ import psycopg2.extras
 __all__ = []
 __version__ = 0.1
 __date__ = '2018-09-25'
-__updated__ = '2018-09-25'
+__updated__ = '2019-03-22'
 
 
 COLUMNS = ["cruiseNumber",
@@ -84,7 +85,8 @@ def replace(cur, field, old, new):
 
 
 def main():
-    conn = psycopg2.connect("dbname=test user=pal")
+    # Connect to the database as the user running the script
+    conn = psycopg2.connect('dbname=aen_db user=' + getpass.getuser())
     cur = conn.cursor()
     for key, value in rep.items():
         replace(cur, "stationname", key, value)

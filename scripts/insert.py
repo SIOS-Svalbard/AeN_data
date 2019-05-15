@@ -12,7 +12,7 @@
 __all__ = []
 __version__ = 0.2
 __date__ = '2018-09-12'
-__updated__ = '2019-03-22'
+__updated__ = '2019-05-15'
 
 import psycopg2
 import psycopg2.extras
@@ -93,6 +93,22 @@ COLUMNS = ["eventID",
 
 
 def to_dict(keys, values):
+    '''
+    Create dictionary from keys and values
+
+    Parameters
+    ----------
+    keys: list of str
+        A list of the keys for the dictionary
+
+    values: list of str
+        A list of the values for the keys in the dictionary
+
+    Returns
+    ----------
+    met: dict
+        The resulting dictionary from the keys and values
+    '''
     met = {}
     for r in range(len(keys)):
         if px.is_nan(values[r]):
@@ -104,10 +120,39 @@ def to_dict(keys, values):
 
 
 def find_missing(seq, num):
+    '''
+    Find the values not present in a sequence 
+
+    Parameters
+    ----------
+    seq: list of int
+        The sequence of int 
+
+    num: int
+        The length of the wanted sequence from 0 to num
+
+    Returns
+    ----------
+    miss: list of int
+        The missing integers in "seq" from the range(0,num)
+    '''
     return sorted(set(range(0, num)).difference(sorted(seq)))
 
 
 def replace_nan(lis):
+    '''
+    Replace NaNs in a list with None
+
+    Parameters
+    ----------
+    lis: list
+        The list containing NaNs
+
+    Returns
+    ----------
+    new: list
+        The list with NaNs replaced by None
+    '''
     new = []
     for l in lis:
         if px.is_nan(l):
@@ -118,6 +163,19 @@ def replace_nan(lis):
 
 
 def trim_str(lis):
+    '''
+    Strip extra spaces from the members in the list 
+
+    Parameters
+    ----------
+    lis: list
+        The list to be stripped 
+
+    Returns
+    ----------
+    new: list
+        The new list with extra white spaces stripped
+    '''
     new = []
     for l in lis:
         if isinstance(l, str):

@@ -10,7 +10,7 @@
 '''
 
 __version__ = 0.1
-__updated__ = '2019-03-22'
+__updated__ = '2019-05-15'
 
 import getpass
 import psycopg2
@@ -38,6 +38,19 @@ stations = pd.read_csv(file_name)
 
 
 def insert_db(cur, data):
+    '''
+    Insert data into the database identified by the given cursor
+
+    Parameters
+    ----------
+    cur: psycopg2 cursor
+        Cursor for the database to insert into
+
+    data: pandas Dataframe 
+        The data to be inserted into the database.
+        Columns need to have the same names as the database fields
+
+    '''
     exists_query = '''
     select exists(
         select 1

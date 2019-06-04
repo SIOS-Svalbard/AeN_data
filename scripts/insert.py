@@ -12,13 +12,14 @@
 __all__ = []
 __version__ = 0.2
 __date__ = '2018-09-12'
-__updated__ = '2019-05-15'
+__updated__ = '2019-06-04'
 
 import psycopg2
 import psycopg2.extras
 import uuid
 import darwinsheet.scripts.process_xlsx as px
 import datetime as dt
+import getpass
 import glob
 import sys
 import os

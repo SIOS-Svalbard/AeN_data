@@ -114,9 +114,10 @@ def to_dict(keys, values):
     for r in range(len(keys)):
         if px.is_nan(values[r]):
             continue
+        elif px.is_nan(keys[r]):
+            continue
         else:
             met[keys[r]] = str(values[r])
-
     return OrderedDict(sorted(met.items(), key=lambda t: t[0]))
 
 

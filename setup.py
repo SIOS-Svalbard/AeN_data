@@ -13,7 +13,7 @@ setup(name='AeN_data',
       packages=[],
       install_requires=REQUIRES,
       url='https://github.com/SIOS-Svalbard/Aen_data',
-      long_description=open('README.txt').read(),
+      long_description=open('README.md').read(),
       scripts=[],)
 
 

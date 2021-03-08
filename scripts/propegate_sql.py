@@ -44,7 +44,8 @@ COLUMNS = ["cruiseNumber",
            "pi_institution",
            "recordedBy",
            "eventRemarks",
-           "metadata"]
+           "metadata",
+           "vesselName"]
 
 
 def get_children(cur, eventID):

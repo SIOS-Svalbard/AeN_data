@@ -12,11 +12,10 @@
 __all__ = []
 __version__ = 0.2
 __date__ = '2018-09-12'
-__updated__ = '2019-06-04'
+__updated__ = '2021-03-10'
 
 import psycopg2
 import psycopg2.extras
-import uuid
 import darwinsheet.scripts.process_xlsx as px
 import datetime as dt
 import getpass
@@ -25,7 +24,6 @@ import sys
 import os
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import numpy as np
-import datetime as dt
 from collections import OrderedDict
 from psycopg2 import sql
 
@@ -230,7 +228,8 @@ def insert_db(cur, data, metadata, filename, update=False, reason=''):
         meta = to_dict(metadata[:, 0], metadata[:, 1])
     except IndexError:
         meta = {}
-    # print(meta)
+    #print(meta)
+    
     stat = ""
     fields = ""
     fields_up = ""  # For update statement
@@ -241,7 +240,7 @@ def insert_db(cur, data, metadata, filename, update=False, reason=''):
         from aen
         where eventid= %s
     )'''
-
+    
     for r in COLUMNS:
         if any(data[0, :] == r):
             indxs.append(np.where(data[0, :] == r)[0][0])
@@ -249,6 +248,26 @@ def insert_db(cur, data, metadata, filename, update=False, reason=''):
             if r != COLUMNS[0]:  # Don't insert eventid in fields_up
                 fields_up = fields_up + r + "=%s, "
             stat = stat + "%s,"
+    
+    # Vessel name and cruise number are now (March 2021-) from the metadata sheet, only entered once
+    # However, they are included for each sample, in line with previous practice.
+    # They must therefore be removed from the meta dictionary and added as fields (cruiseNumber) or to other (vesselName)
+    try:
+        cruiseNumber = int(meta['cruiseNumber'])
+        stat = stat + '%s,'
+        fields = fields + 'cruiseNumber, '
+        fields_up = fields_up + 'cruiseNumber=%s, '
+    except:
+        cruiseNumber = ''
+    try:
+        meta.pop('cruiseNumber')
+    except:
+        pass
+    try:
+        vesselName = meta['vesselName']
+        meta.pop('vesselName')
+    except:
+        vesselName = ''
 
     o_indxs = find_missing(indxs, data.shape[1])
 
@@ -258,11 +277,16 @@ def insert_db(cur, data, metadata, filename, update=False, reason=''):
         "other = other || %s , metadata = metadata || %s, modified = %s, history = %s, source = %s"
 
     for r in range(1, data.shape[0]):
-        row = []
+        # row = []
         cols = data[r, indxs].tolist()
         cols = replace_nan(cols)
         cols = trim_str(cols)
-        cols.append(to_dict(data[0, o_indxs], data[r, o_indxs]))
+        if cruiseNumber != '':
+            cols.append(cruiseNumber)
+        other_dic = to_dict(data[0, o_indxs], data[r, o_indxs])
+        if vesselName != '':
+            other_dic.update({'vesselName': vesselName})
+        cols.append(other_dic)
         cols.append(meta)
         if cols[0] == None:
             continue
@@ -276,7 +300,6 @@ def insert_db(cur, data, metadata, filename, update=False, reason=''):
             # History
             cols.append(created + ": Initial read in of the log files.")
             cols.append(filename)  # Source file
-
             cur.execute(
                 "INSERT INTO aen (" + fields + ") VALUES(" + stat + ")", cols)
         elif update:
@@ -328,7 +351,6 @@ def main(argv=None):  # IGNORE:C0111
 
         for url in urls:
             print("Url", url)
-
             good, error, data, metadata = px.run(url, return_data=True)
 
             if not(good):

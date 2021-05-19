@@ -2,7 +2,8 @@
 INSERT INTO aen(
   eventid, 
   parenteventid, 
-  cruisenumber, 
+  cruisenumber,
+  cruisename, 
   stationname, 
   eventtime, 
   eventdate, 
@@ -30,7 +31,8 @@ INSERT INTO aen(
   SELECT 
   uuid_generate_v1(), 
   parenteventid, 
-  cruisenumber, 
+  cruisenumber,
+  cruisename 
   stationname, 
   eventtime, 
   eventdate, 
@@ -46,7 +48,7 @@ INSERT INTO aen(
   pi_name, 
   pi_email, 
   pi_institution, 
-  'Pål Ellingsen', 
+  'Luke Marsden', 
   eventremarks, 
   other, 
   metadata, 

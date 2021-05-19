@@ -28,27 +28,6 @@ __date__ = '2018-10-03'
 __updated__ = '2019-03-22'
 
 
-COLUMNS = ["cruiseNumber",
-           "stationName",
-           "eventTime",
-           "eventDate",
-           "decimalLatitude",
-           "decimalLongitude",
-           "sampleType",
-           "gearType",
-           "sampleDepthInMeters",
-           "bottomDepthInMeters",
-           "bottleNumber",
-           "samplingProtocol",
-           "sampleLocation",
-           "pi_name",
-           "pi_email",
-           "pi_institution",
-           "recordedBy",
-           "eventRemarks",
-           "metadata"]
-
-
 def find_missing(cur):
     """
     Goes though database table and finds missing parents

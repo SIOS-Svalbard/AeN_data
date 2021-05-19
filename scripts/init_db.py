@@ -22,6 +22,7 @@ exe_str = '''
 CREATE TABLE aen (eventID uuid PRIMARY KEY,
                               parentEventID uuid,
                               cruiseNumber int,
+                              cruiseName text,
                               stationName text,
                               eventTime time,
                               eventDate date,

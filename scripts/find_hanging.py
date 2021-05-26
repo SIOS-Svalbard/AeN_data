@@ -12,41 +12,14 @@
 
 import psycopg2
 import sys
-from psycopg2 import sql
 import psycopg2.extras
-import uuid
-import darwinsheet.config.fields as fields
-import numpy as np
-import datetime as dt
-import glob
 import getpass
 
 
 __all__ = []
-__version__ = 0.1
+__version__ = 0.2
 __date__ = '2018-10-03'
-__updated__ = '2019-03-22'
-
-
-COLUMNS = ["cruiseNumber",
-           "stationName",
-           "eventTime",
-           "eventDate",
-           "decimalLatitude",
-           "decimalLongitude",
-           "sampleType",
-           "gearType",
-           "sampleDepthInMeters",
-           "bottomDepthInMeters",
-           "bottleNumber",
-           "samplingProtocol",
-           "sampleLocation",
-           "pi_name",
-           "pi_email",
-           "pi_institution",
-           "recordedBy",
-           "eventRemarks",
-           "metadata"]
+__updated__ = '2021-05-25'
 
 
 def find_missing(cur):
@@ -71,12 +44,12 @@ def find_missing(cur):
         return
 
     print("Not registered parents:")
-    print("Parent, One of the children, sample type, source")
+    print("Parent, One of the children, sample type, cruise number, source")
     for r in res:
         cur.execute(
-            '''SELECT eventid,sampletype,source from aen where parenteventid=%s limit 1''', r)
+            '''SELECT eventid,sampletype,cruisenumber,source from aen where parenteventid=%s limit 1''', r)
         c = cur.fetchone()
-        print(r[0], c[0], c[1], c[2])
+        print(f'{r[0]}, {c[0]}, {c[1]}, {c[2]}, {c[3]}')
 
 
 def main():

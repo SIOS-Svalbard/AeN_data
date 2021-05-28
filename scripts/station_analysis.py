@@ -292,7 +292,7 @@ class Station:
             stations = None
             title = self.name
             
-            plotMap(op_filepath, latMinPlot, lonMinPlot, latMaxPlot, lonMaxPlot, samples=samples, stations=stations, title=title)
+            plotMap(op_filepath+title, latMinPlot, lonMinPlot, latMaxPlot, lonMaxPlot, samples=samples, stations=stations, title=title)
             
 def main():
 

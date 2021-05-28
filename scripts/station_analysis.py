@@ -172,8 +172,6 @@ def plotMap(op_filepath, latMinPlot, lonMinPlot, latMaxPlot, lonMaxPlot, samples
     
     ax.set_boundary(rect_in_target)
     
-    # Notice the ugly hack to stop any further clipping - this is
-    # the same problem as #363.
     ax.set_extent([xlim[0], xlim[1], ylim[0] - 2, ylim[1]])
     ax.stock_img()
     
@@ -197,8 +195,7 @@ class Station:
     
     def __init__(self,name,latitude,longitude):
         self.name = name
-        self.name = self.name.replace('/','_')
-        print(self.name)
+        print('Station name: '+self.name)
         self.latitude = latitude
         self.longitude = longitude
 
@@ -226,7 +223,6 @@ class Station:
         '''
 
         samples = self.samples.copy()
-        print(samples)
         samples['distance from station'] = samples.apply(lambda row : distanceCoordinates(self.latitude, self.longitude, row['decimallatitude'], row['decimallongitude']), axis = 1)
         
         if len(self.samples) > 5: # Only consider stations less than 10 km from each other
@@ -313,18 +309,20 @@ def main():
     folder = 'station_analysis_' + today
     try: 
         os.mkdir(folder)
-    except OSError as error: 
-        print(error)
+    except: 
+        pass
+    
+    print('Writing files to folder ' + folder)
     
     try: 
         os.mkdir(folder+'/distance_from_station/')
-    except OSError as error: 
-        print(error)
+    except: 
+        pass
         
     try: 
         os.mkdir(folder+'/map_samples_from_station/')
-    except OSError as error: 
-        print(error)
+    except: 
+        pass
         
     stations = stationsCSV('stations.csv', data)
     
@@ -336,15 +334,18 @@ def main():
         lon = row['decimalLongitude']
         station = Station(name, lat, lon)
         station.findSamples(data)
-        if len(station.samples) > 0:
-            station.plotDistanceSamplesStation(folder+'/distance_from_station/')
-            station.mapSamplesOneStation(folder+'/map_samples_from_station/')
+        station.name = station.name.replace('/','_')
+        station.plotDistanceSamplesStation(folder+'/distance_from_station/')
+        station.mapSamplesOneStation(folder+'/map_samples_from_station/')
     
-    print('Files written to ' + folder)
-        
+    
 if __name__ == "__main__":
     sys.exit(main())
 
-#%%
+conn = psycopg2.connect('dbname=aen_db user=' + getpass.getuser())
+data = pd.read_sql_query("SELECT eventid, parenteventid, cruisenumber, stationname FROM aen",con=conn)
+data = data[data['parenteventid'].isna()]
+samples = data.loc[data['stationname'] == 'P7 (NLEG25/NPAL16)_box core']
+print(samples['cruisenumber'])
 
-P7 (NLEG25_NPAL16)_box core
+

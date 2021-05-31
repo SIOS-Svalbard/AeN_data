@@ -72,7 +72,7 @@ REQUIERED = ["eventID",
 COLUMNS = ["eventID",
            "parentEventID",
            "cruiseNumber",
-           "cruiseName"
+           "cruiseName",
            "stationName",
            "eventTime",
            "eventDate",

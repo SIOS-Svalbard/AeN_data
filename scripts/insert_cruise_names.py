@@ -36,7 +36,7 @@ def add_new_column(cur, columnName):
     res = cur.fetchall()
     
     if (columnNameLower, 'text') in res:
-        print('Column "{columnName}" already exists, populating it now')
+        print(f'Column "{columnName}" already exists, populating it now')
     else:
         print(f'Column "{columnName}" will be created new')
         cur.execute(f'''

@@ -53,14 +53,14 @@ def add_new_column(cur, columnName):
             print(f'Column "{columnName}" has been added to the database')
     
 
-def populate_cruise_names(cur, df):
+def populate_cruise_names(cur, cruises):
     '''
     Populates the cruiseName column based on the content of the cruiseNumber column
 
     Parameters
     ----------
     cur : psycopg2 cursor
-    df : pandas.dataframe
+    cruises : pandas.dataframe
         Mapping between cruiseNumber and cruiseName
 
     Returns
@@ -69,7 +69,7 @@ def populate_cruise_names(cur, df):
     
     '''
 
-    for idx, row in df.iterrows():
+    for idx, row in cruises.iterrows():
         cruiseName = row['cruiseName']
         cruiseNumber = row['cruiseNumber']
 
@@ -79,16 +79,75 @@ def populate_cruise_names(cur, df):
                     WHERE cruiseNumber = {cruiseNumber}
                     ''')
 
+def populate_unique_stations(cur, definedStations, dbStations):
+    '''
+    Populates the uniqueStation column based on station coordinates
+    For stations with defined coordinates across multiple cruises (e.g. NLEG transect) column is only station name
+    For stations where distance between points is significant, appending cruise name to end.
+
+    Parameters
+    ----------
+    cur : psycopg2 cursor
+    definedStations : pandas.dataframe
+        Coordinates of stations defined in the project, consistent over numerous cruises.
+    dbStations : pandas.dataframe
+        Unique stations in database, coordinates averaged for all samples
+
+    Returns
+    -------
+    None.
+    
+    '''
+    
+    prevname = '' # Created so only executes PSQL query for predefined stations once, even though they appear multiple times in table
+    
+    for idx, row in dbStations.iterrows():
+        stationName = row['stationName']
+        cruiseName = row['cruiseName']
+        if stationName in list(definedStations['stationName']):
+            if stationName != prevname:
+                print(f'{stationName} to be added')
+                cur.execute(f'''
+                        UPDATE aen
+                        SET uniqueStation = '{stationName}'
+                        WHERE stationName = '{stationName}'
+                        ''')
+                prevname = stationName 
+        else:
+            uniqueStation = f'{stationName} ({cruiseName})'
+            print(f'{uniqueStation} to be added')
+            cur.execute(f'''
+                    UPDATE aen
+                    SET uniqueStation = '{uniqueStation}'
+                    WHERE stationName = '{stationName}' AND cruiseName = '{cruiseName}'
+                    ''')
+            
+
+
     
 def main():
+    
+    print('Executing script to add cruise names and unique station names')
     # Load pandas dataframe of cruise names and corresponding cruise numbers
-    df = pd.read_csv('cruises.csv')
+    cruises = pd.read_csv('cruises.csv')
+    
+    # Load pandas dataframe of station names with defined coordinates
+    definedStations = pd.read_csv('stations.csv')
+    del definedStations['eventID'], definedStations['sampleType'] # Removing columns not needed
+    
     # Connect to the database as the user running the script
     conn = psycopg2.connect('dbname=aen_db user=' + getpass.getuser())
+    
+    # Create dataframe of unique station names from the database with their average (mean) coordinates
+    query = "select concat_ws('; ', stationname, cruisename) as stationcruise, round(avg(decimallatitude)::numeric,4) as avglat, round(avg(decimallongitude)::numeric,4) as avglong from aen where stationName is not NULL and cruisename is not NULL group by stationcruise order by stationcruise;"
+    dbStations = pd.read_sql(query, conn)
+    dbStations[['stationName','cruiseName']] = dbStations['stationcruise'].str.split('; ',expand=True)
+    
     cur = conn.cursor()
-    columnName = 'cruiseName'
-    add_new_column(cur, columnName)
-    populate_cruise_names(cur, df)
+    add_new_column(cur,columnName='cruiseName')
+    populate_cruise_names(cur, cruises)
+    add_new_column(cur,columnName='uniqueStation')
+    populate_unique_stations(cur, definedStations, dbStations)
     conn.commit()
     cur.close()
     conn.close()
@@ -96,4 +155,3 @@ def main():
     
 if __name__ == "__main__":
     sys.exit(main())
-

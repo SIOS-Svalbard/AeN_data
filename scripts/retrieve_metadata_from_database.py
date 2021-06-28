@@ -23,7 +23,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 __all__ = []
 __version__ = 0.1
 __date__ = '2021-05-19'
-__updated__ = '2021-06-23'
+__updated__ = '2021-06-28'
 
 class InputFile:
     
@@ -110,8 +110,10 @@ class OutputFile:
              .replace('', np.nan)
              )
         
-        self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created'], axis = 1)
+        self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventdate'], axis = 1)
 
+        # Updating eventtime to UTC ISO 8601, ready to publish data. Event date removed in previous line.
+        self.metadataDF['eventtime'] = pd.to_datetime(self.metadataDF['eventtime'], utc=True).dt.strftime('%Y-%m-%dT%H:%M:%SZ')
     
     def mergeDataAndMetadata(self):
         '''
@@ -129,7 +131,7 @@ class OutputFile:
              "parentEventID",
              "stationName",
              "eventTime",
-             "eventDate",
+             #"eventDate",
              "decimalLatitude",
              "decimalLongitude",
              "bottomDepthInMeters",
@@ -155,17 +157,20 @@ class OutputFile:
         
         self.outputDF = pd.merge(self.outputDF, self.inputFile.data, on='eventID', how='right')
     
-    
-    def writeFile(self):
+    def writeREADMESheet(self, writer):
         '''
-        Write merged dataframe to an excel sheet that will be downloaded by the user
+        
+
+        Parameters
+        ----------
+        writer : Pandas excel writer object
 
         Returns
         -------
-        None.
+        writer : Pandas excel writer object
+        Updated version with README
 
         '''
-        writer = pd.ExcelWriter(self.filePath, engine='xlsxwriter')
         
         readme = pd.DataFrame({'Read Me': [
             'This file has been created by merging data from a provided input file with data extracted from the metadata catalogue',
@@ -188,6 +193,42 @@ class OutputFile:
         readmesheet = writer.sheets['README']
         
         readmesheet.set_column('B:B', 200)
+        
+        return writer
+    
+    def writeFile(self):
+        '''
+        Write merged dataframe to an excel sheet that will be downloaded by the user
+
+        Returns
+        -------
+        None.
+
+        '''
+        writer = pd.ExcelWriter(self.filePath, engine='xlsxwriter')
+        
+        # readme = pd.DataFrame({'Read Me': [
+        #     'This file has been created by merging data from a provided input file with data extracted from the metadata catalogue',
+        #     '',
+        #     'Data are merged based on the event IDs',
+        #     'Event IDs in the input file that are not registered in the metadata column are highlighted in red',
+        #     '',
+        #     'Column headers from the metadata catalogue are highlighted in green',
+        #     "Column headers from the user's input file are highlighted in yellow, and 'input_file' has been appended to the header name",
+        #     '',
+        #     'The metadata from the sample logs are cleaned before uploading to the metadata log',
+        #     '1. Some fields propagate from parents to children',
+        #     '2. Typos or errors are corrected',
+        #     '',
+        #     'If you notice mistakes, please contact data.nleg@unis.no so they can be corrected in the metadata log.'
+        #     ]})
+        
+        # readme.to_excel(writer, sheet_name='README', index=False, startrow=1, startcol=1)
+        
+        # readmesheet = writer.sheets['README']
+        
+        # readmesheet.set_column('B:B', 200)
+        writer = self.writeREADMESheet(writer)
         
         self.outputDF.to_excel(writer, sheet_name='Data', index=False, startrow=1)
                 
@@ -262,6 +303,9 @@ class OutputFile:
         worksheet.set_column('A:B', 36)
         
         writer.save()
+        
+    #def writeMetadataSheet(self, writer):
+        
      
 def main(argv=None):
     

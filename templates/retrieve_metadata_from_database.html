@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>Nansen Legacy Matadata Retrieval Tool</title>
+<style>
+body{
+	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
+ 	width: 90%;
+ 	margin: 0 auto;
+ }
+fieldset{
+	float:left;
+	margin-top: 1em;
+	width: 45%;
+	box-sizing: border-box;
+}
+fieldset label{
+	display: block;
+	float: left;
+	width: 24em;
+	margin-right: 1em;
+}
+fieldset legend{
+	font-weight: bold;
+	text-transform: uppercase;
+}
+main{
+	width: 60%;
+}
+.wrapper{
+    margin: auto;
+    width: 100%;
+    padding:10px;
+}
+
+</style>
+<main>
+  <h1>Nansen Legacy Matadata Retrieval Tool</h1>
+  <p>This is a tool that can be used to retrieve updated metadata from the
+  <a href="https://sios-svalbard.org/aen/tools">metadata catalogue</a></p>
+  <p>The metadata from the sample logs that you handed in have been cleaned and updated
+  to fix errors and ensure consistency across the project. However, if you spot anything that is incorrect,
+  please report them to <a href = "mailto: data.nleg@unis.no">data.nleg@unis.no</a>, so these errors can be corrected in the metadata
+  catalogue. Also please contact this email address if you encounter any problems using this tool.</p>
+  
+  <p>Event time has been converted to conform with the <a href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601 standard</a>, often required when publishing FAIR data.</p>
+  
+  <!--<p>Choose just one of the following options.</p>
+
+  <h2>Option 1:</h2>-->
+  <p>Select a file that includes an Event ID column, and one record
+  per row. The Event ID will be used to find the record in the metadata catalogue, and retrieve it.
+  They will be included in a new version of your data file that can be downloaded from this page.
+  It will include all the columns from the uploaded file as well as new columns from the metadata catalogue</p>
+  <form method = "post" enctype="multipart/form-data">
+	Select file (xls, xlsx, csv or tsv) <input id="fileupload" name="myfile" type="file" /><br><br>
+  	Sheet name (if applicable): <input type = "text" name = "sheet_name"><br><br>
+  	Row number of column headers: <input type = "text" name = "header_row_number"><br><br>
+  	Row number of first row that contains data: <input type = "text" name = "data_first_row_number">
+
+  <!--<h2>Option 2:</h2>
+  <p>Paste a list of Event IDs into the box below. A file will be created that includes metadata
+  for each Event ID, one row per event.</p>
+  <textarea name="eventids" placeholder="Enter Event IDs" style="max-height:100px;min-height:100px; resize: none"></textarea>-->
+  <h2>Submit:</h2>
+  <p>Select file type to generate:</p>
+  <input type = "submit" value = "CSV" name="CSV"/>
+  <input type = "submit" value = "TSV" name="TSV"/>
+  <input type = "submit" value = "XLSX" name="XLSX"/><br><br>
+
+  </form>
+
+</main>
+

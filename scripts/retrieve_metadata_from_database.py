@@ -19,6 +19,7 @@ import pandas as pd
 import sys
 import numpy as np
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from datetime import datetime as dt
 
 __all__ = []
 __version__ = 0.1
@@ -27,11 +28,11 @@ __updated__ = '2021-06-28'
 
 class InputFile:
     
-    def __init__(self, filePath, sheetName, headerRow, skipRows):
+    def __init__(self, filePath, sheetName, headerRow, dataFirstRow):
         self.filePath = filePath
         self.sheetName = sheetName
         self.headerRow = headerRow
-        self.skipRows = skipRows
+        self.dataFirstRow = dataFirstRow
     
     def loadData(self):
         '''
@@ -42,11 +43,19 @@ class InputFile:
         None.
 
         '''
-        if self.filePath.endswith('.xlsx') or self.filePath.endswith('.xls'):
-            self.headerRow -= 1
-            self.data = pd.read_excel(self.filePath, sheet_name=self.sheetName, header=self.headerRow, skiprows=self.skipRows, engine= 'openpyxl', keep_default_na=False)
-        # elif self.filePath.endswith('.csv') :
-        #     self.data = pd.read_csv(self.filePath)
+        filetype = self.filePath.split('.')[-1]
+        
+        self.headerRow -= 1
+        self.dataFirstRow -= 1
+        
+        if filetype == 'xlsx':
+            self.data = pd.read_excel(self.filePath, sheet_name=self.sheetName, header=self.headerRow, skiprows=range(self.headerRow+1,self.dataFirstRow), engine= 'openpyxl', keep_default_na=False)
+        elif filetype == 'xls':
+            self.data = pd.read_excel(self.filePath, sheet_name=self.sheetName, header=self.headerRow, skiprows=range(self.headerRow+1,self.dataFirstRow), keep_default_na=False)
+        elif filetype == 'csv':
+            self.data = pd.read_csv(self.filePath, header=self.headerRow, skiprows=range(self.headerRow+1,self.dataFirstRow), keep_default_na=False)
+        elif filetype == 'tsv':
+            self.data = pd.read_csv(self.filePath, header=self.headerRow, skiprows=range(self.headerRow+1,self.dataFirstRow), keep_default_na=False, sep='\t')
         
         self.data = self.data.replace(r'^\s*$', np.nan, regex=True)
         self.data = self.data.dropna(how='all', axis=1)
@@ -65,7 +74,6 @@ class InputFile:
         headers = [header.lower() for header in headers] # column headers in lower case
         headers = [header.replace(" ","") for header in headers] # column headers without spaces
         
-        
         if 'eventid' in headers:
             idx = headers.index('eventid')
             eventIDHeader = list(self.data.columns)[idx]
@@ -75,7 +83,7 @@ class InputFile:
                 if header != 'eventID':
                     self.data = self.data.rename(columns={header: header+"_input_file"})
         else:
-            print('No eventID column found. Please check that the column name used is "eventID" and is not misspelt')
+            print('No eventID column found. Please check that the column name used is "eventID" and is not misspelt, and that the correct row number was provided for the headers.')
             sys.exit()
         
         
@@ -110,17 +118,16 @@ class OutputFile:
              .replace('', np.nan)
              )
         
+        # Updating eventtime to UTC ISO 8601, ready to publish data. Event date removed on following line.
+        self.metadataDF['eventtime'] = self.metadataDF['eventdate']+'T'+self.metadataDF['eventtime']+'Z'
         self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventdate'], axis = 1)
 
-        # Updating eventtime to UTC ISO 8601, ready to publish data. Event date removed in previous line.
-        self.metadataDF['eventtime'] = pd.to_datetime(self.metadataDF['eventtime'], utc=True).dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-    
     def mergeDataAndMetadata(self):
         '''
         Merging dataframe from metadata catalogue with the dataframe from the input data sheet provided by the user
         Merging based on event ID
         EventIDs in the input file but not the metadata catalogue are still included in the merge, but the columns from the metadata catalogue remain blank
-        Unregistered event IDs will be highlighted in red in the final file (see writeFile function).
+        Unregistered event IDs will be highlighted in red in the final file (see writeXLSX function).
 
         Returns
         -------
@@ -131,7 +138,7 @@ class OutputFile:
              "parentEventID",
              "stationName",
              "eventTime",
-             #"eventDate",
+             #"eventDate", eventTime includes data in ISO 8601
              "decimalLatitude",
              "decimalLongitude",
              "bottomDepthInMeters",
@@ -150,16 +157,22 @@ class OutputFile:
         
         for col in requiredColumns:
             self.outputDF[col] = self.metadataDF[col.lower()]
-            
+        
         for col in self.metadataDF.columns:
             if col.lower() not in requiredColumnsLower:
                 self.outputDF[col] = self.metadataDF[col]
+        
+        # Deleting empty columns from metadata catalogue
+        self.outputDF.dropna(how='all', axis=1, inplace=True)
+        
+        if 'eventID' not in self.outputDF:
+            self.outputDF['eventID'] = '' 
         
         self.outputDF = pd.merge(self.outputDF, self.inputFile.data, on='eventID', how='right')
     
     def writeREADMESheet(self, writer):
         '''
-        
+        Write a README sheet to the xlsx file, for the readers aid.
 
         Parameters
         ----------
@@ -175,17 +188,28 @@ class OutputFile:
         readme = pd.DataFrame({'Read Me': [
             'This file has been created by merging data from a provided input file with data extracted from the metadata catalogue',
             '',
+            'The metadata was retrieved at the following time:',
+            dt.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            '',
             'Data are merged based on the event IDs',
-            'Event IDs in the input file that are not registered in the metadata column are highlighted in red',
+            'Event IDs in the input file that are not registered in the metadata catalogue are highlighted in red',
             '',
             'Column headers from the metadata catalogue are highlighted in green',
             "Column headers from the user's input file are highlighted in yellow, and 'input_file' has been appended to the header name",
+            '',
+            'eventTime and eventDate have been concatenated and converted to UTC ISO 8601 format, suitable for publishing. eventDate has therefore been removed.',
             '',
             'The metadata from the sample logs are cleaned before uploading to the metadata log',
             '1. Some fields propagate from parents to children',
             '2. Typos or errors are corrected',
             '',
-            'If you notice mistakes, please contact data.nleg@unis.no so they can be corrected in the metadata log.'
+            'The metadata sheet in the sample logs is stored in a single column for each row.',
+            'Some fields, for example the abstract and title, could be included in the data files to publish',
+            'Please ensure that the abstract is thorough and descriptive, analagous to an abstract in a scientific article',
+            'The title should also be descriptive.',
+            '',
+            'If you notice any mistakes, please report them to data.nleg@unis.no so they can be corrected in the metadata catalogue.',
+            'data.nleg@unis.no'
             ]})
         
         readme.to_excel(writer, sheet_name='README', index=False, startrow=1, startcol=1)
@@ -193,10 +217,51 @@ class OutputFile:
         readmesheet = writer.sheets['README']
         
         readmesheet.set_column('B:B', 200)
-        
+                
         return writer
     
     def writeFile(self):
+        '''
+        Output pandas dataframe object. Determine filetype and call relevant function.
+
+        Returns
+        -------
+        None.
+
+        '''
+        
+        filetype = self.filePath.split('.')[-1]
+        
+        if filetype == 'xlsx':
+            self.writeXLSX()
+        elif filetype == 'csv':
+            self.writeCSV()
+        elif filetype == 'tsv':
+            self.writeTSV()
+    
+    def writeCSV(self):
+        '''
+        Output pandas dataframe object to csv
+
+        Returns
+        -------
+        None.
+
+        '''
+        self.outputDF.to_csv(self.filePath,index=False)
+    
+    def writeTSV(self):
+        '''
+        Output pandas dataframe object to tsv
+
+        Returns
+        -------
+        None.
+
+        '''
+        self.outputDF.to_csv(self.filePath,sep='\t', index=False)
+    
+    def writeXLSX(self):
         '''
         Write merged dataframe to an excel sheet that will be downloaded by the user
 
@@ -207,27 +272,6 @@ class OutputFile:
         '''
         writer = pd.ExcelWriter(self.filePath, engine='xlsxwriter')
         
-        # readme = pd.DataFrame({'Read Me': [
-        #     'This file has been created by merging data from a provided input file with data extracted from the metadata catalogue',
-        #     '',
-        #     'Data are merged based on the event IDs',
-        #     'Event IDs in the input file that are not registered in the metadata column are highlighted in red',
-        #     '',
-        #     'Column headers from the metadata catalogue are highlighted in green',
-        #     "Column headers from the user's input file are highlighted in yellow, and 'input_file' has been appended to the header name",
-        #     '',
-        #     'The metadata from the sample logs are cleaned before uploading to the metadata log',
-        #     '1. Some fields propagate from parents to children',
-        #     '2. Typos or errors are corrected',
-        #     '',
-        #     'If you notice mistakes, please contact data.nleg@unis.no so they can be corrected in the metadata log.'
-        #     ]})
-        
-        # readme.to_excel(writer, sheet_name='README', index=False, startrow=1, startcol=1)
-        
-        # readmesheet = writer.sheets['README']
-        
-        # readmesheet.set_column('B:B', 200)
         writer = self.writeREADMESheet(writer)
         
         self.outputDF.to_excel(writer, sheet_name='Data', index=False, startrow=1)
@@ -269,8 +313,9 @@ class OutputFile:
         })
         
         unregistered_eventid_format = workbook.add_format({
-            'bold': True,
-            'bg_color': '#ec7d7d'
+            'bg_color': '#ec7d7d',
+            'font_name': DEFAULT_FONT,
+            'font_size': DEFAULT_SIZE,
         })
         
         n = 0
@@ -278,7 +323,7 @@ class OutputFile:
         for col_num, value in enumerate(self.outputDF.columns.values):
             if value in ['eventID']:
                 worksheet.write(1, col_num, value, eventID_header_format)
-                worksheet.write(0, col_num, 'Unregistered events in red', eventID_header_format)
+                worksheet.write(0, col_num, '', eventID_header_format)
             elif value in self.inputFile.data.columns:
                 worksheet.write(1, col_num, value, input_header_format)
                 if n == 0:
@@ -304,7 +349,7 @@ class OutputFile:
         
         writer.save()
         
-    #def writeMetadataSheet(self, writer):
+    #
         
      
 def main(argv=None):
@@ -314,10 +359,10 @@ def main(argv=None):
         inputFilePath = args.inputfp
         inputSheetName = args.inputsn
         headerRow = int(args.header)
-        skipRows = int(args.skiprows)
+        dataFirstRow = int(args.dataFirstRow)
         outputFilePath = args.outputfp
         
-        inputFile = InputFile(inputFilePath, inputSheetName, headerRow, skipRows)    
+        inputFile = InputFile(inputFilePath, inputSheetName, headerRow, dataFirstRow)    
         inputFile.loadData()
         inputFile.updateColumnNames()
         
@@ -360,8 +405,8 @@ def parse_options():
                         help="The sheet name that includes the data, including an eventID column with header")
     parser.add_argument("header", type=str,
                         help="Header row number in the input file")
-    parser.add_argument("skiprows", type=str,
-                        help="How many rows to skip after the header row before the data begins")
+    parser.add_argument("datafirstrow", type=str,
+                        help="The number of the first row that contains data")
     parser.add_argument("outputfp", type=str,
                         help="The location to write to, including file name (include .xlsx)")
     parser.add_argument('-V', '--version', action='version',
@@ -372,7 +417,7 @@ def parse_options():
 
     return args
 
-def run(inputFilePath,inputSheetName,headerRow,skipRows,outputFilePath):
+def run(inputFilePath,inputSheetName,headerRow,dataFirstRow,outputFilePath):
     '''
     Import and use this function to run in another script
     Main is for parsing when running in command line.
@@ -385,8 +430,8 @@ def run(inputFilePath,inputSheetName,headerRow,skipRows,outputFilePath):
         Sheetname that includes eventID column and data that you want to retrieve metadata for.
     headerRow : Integer
         Number of row that includes headers
-    skipRows : Integer
-        How many rows after header row to skip before data begins (0 if data in next row)
+    dataFirstRow : Integer
+        The number of the first row that contains data
     outputFilePath : String
         File path to write xlsx file to, with metadata retrieved from database.
 
@@ -396,7 +441,7 @@ def run(inputFilePath,inputSheetName,headerRow,skipRows,outputFilePath):
 
     '''
     
-    inputFile = InputFile(inputFilePath, inputSheetName, headerRow, skipRows)    
+    inputFile = InputFile(inputFilePath, inputSheetName, headerRow, dataFirstRow)    
     inputFile.loadData()
     inputFile.updateColumnNames()
     
@@ -408,4 +453,3 @@ def run(inputFilePath,inputSheetName,headerRow,skipRows,outputFilePath):
         
 if __name__ == "__main__":
     main(sys.argv[1:])
-    #sys.exit(main(sys.argv[1:]))

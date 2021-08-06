@@ -196,10 +196,3 @@ def parse_options():
 if __name__ == "__main__":
     sys.exit(main())
     
-#%%
-    
-fn = '/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_08_06_edits.csv'
-
-df = pd.read_csv(fn, sep='|', nrows=1000)
-
-df.to_csv('/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_08_06_edits_subset.csv', sep='|', index=False)

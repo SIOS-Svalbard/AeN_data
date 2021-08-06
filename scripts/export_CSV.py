@@ -12,11 +12,12 @@ import psycopg2.extras
 import getpass
 import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+import numpy as np
 
 __all__ = []
 __version__ = 0.1
 __date__ = '2021-06-16'
-__updated__ = '2021-06-16'
+__updated__ = '2021-08-06'
 
 class MetadataCatalogue:
     
@@ -118,14 +119,23 @@ class MetadataCatalogue:
         symbol = '$'
         self.df[colname] = symbol + self.df[colname] + symbol
     
+    def replace_strings(self):
+        '''
+        Replace strings to be compatible for Drupal for SIOS website
+
+        '''
+        for col in self.df.columns:
+            if self.df[col].dtype == object:
+                self.df[col] = self.df[col].str.replace(r"'","", regex=True)
+                self.df[col] = self.df[col].str.replace(r'"', '*', regex=True)
+                self.df[col] = self.df[col].str.replace(r'$', '', regex=True)
+        
     def write_updated_CSV(self):
         '''
         Open CSV as pandas dataframe
         '''
-        self.df.to_csv(self.filePath)
-        print(f'''The following file has been created, which includes updates required to feed metadata into Drupal.
-{self.filePath}
-              ''')
+        self.df.to_csv(self.filePath, sep='|', index=False)
+        print(f'The following file has been created, which includes updates required to feed metadata into Drupal.\n{self.filePath}')
         
         
 def main():
@@ -143,6 +153,7 @@ def main():
         metadataCatalogue.add_symbol_beginning_and_end('metadata')
         metadataCatalogue.add_symbol_beginning_and_end('other')
         metadataCatalogue.add_symbol_beginning_and_end('history')
+        metadataCatalogue.replace_strings()
         metadataCatalogue.write_updated_CSV()
         return 0
     except KeyboardInterrupt:
@@ -184,3 +195,11 @@ def parse_options():
     
 if __name__ == "__main__":
     sys.exit(main())
+    
+#%%
+    
+fn = '/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_08_06_edits.csv'
+
+df = pd.read_csv(fn, sep='|', nrows=1000)
+
+df.to_csv('/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_08_06_edits_subset.csv', sep='|', index=False)

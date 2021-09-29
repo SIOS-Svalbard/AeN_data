@@ -105,7 +105,7 @@ class OutputFile:
         None.
 
         '''
-        metadataCatalogue = pd.read_csv('/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_05_12.csv')
+        metadataCatalogue = pd.read_csv('/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_08_13_raw.csv')
         eventIDs = self.inputFile.data['eventID'].to_list()
         df = metadataCatalogue.loc[metadataCatalogue['eventid'].isin(eventIDs)]
         
@@ -118,8 +118,8 @@ class OutputFile:
              .replace('', np.nan)
              )
         
-        # Updating eventtime to UTC ISO 8601, ready to publish data. Event date removed on following line.
-        self.metadataDF['eventtime'] = self.metadataDF['eventdate']+'T'+self.metadataDF['eventtime']+'Z'
+        # Updating eventdate to UTC ISO 8601, ready to publish data. Event date removed on following line.
+        self.metadataDF['eventdate'] = self.metadataDF['eventdate']+'T'+self.metadataDF['eventtime']+'Z'
         self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventdate'], axis = 1)
 
     def mergeDataAndMetadata(self):
@@ -137,8 +137,7 @@ class OutputFile:
         requiredColumns = ["eventID",
              "parentEventID",
              "stationName",
-             "eventTime",
-             #"eventDate", eventTime includes data in ISO 8601
+             "eventDate",
              "decimalLatitude",
              "decimalLongitude",
              "bottomDepthInMeters",
@@ -197,7 +196,7 @@ class OutputFile:
             'Column headers from the metadata catalogue are highlighted in green',
             "Column headers from the user's input file are highlighted in yellow, and 'input_file' has been appended to the header name",
             '',
-            'eventTime and eventDate have been concatenated and converted to UTC ISO 8601 format, suitable for publishing. eventDate has therefore been removed.',
+            'eventTime and eventDate have been concatenated and converted to UTC ISO 8601 format, suitable for publishing. eventTime has therefore been removed.',
             '',
             'The metadata from the sample logs are cleaned before uploading to the metadata log',
             '1. Some fields propagate from parents to children',

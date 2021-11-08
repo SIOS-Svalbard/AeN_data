@@ -85,8 +85,6 @@ class InputFile:
         else:
             print('No eventID column found. Please check that the column name used is "eventID" and is not misspelt, and that the correct row number was provided for the headers.')
             sys.exit()
-        
-        
 
 class OutputFile:
     
@@ -105,8 +103,22 @@ class OutputFile:
         None.
 
         '''
-        metadataCatalogue = pd.read_csv('/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_08_13_raw.csv')
+        metadataCatalogue = pd.read_csv('/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_11_08_raw.csv')
+        
+        self.inputFile.data.dropna(subset = ['eventID'], inplace = True)
+        
+        self.inputFile.data['eventID'] = self.inputFile.data['eventID'].str.lower()
+        try:
+            self.inputFile.data['eventID'] = self.inputFile.data['eventID'].replace('/','-', regex=True)
+        except:
+            pass
+        try:
+            self.inputFile.data['eventID'] = self.inputFile.data['eventID'].replace('+','-', regex=True)
+        except:
+            pass
+        
         eventIDs = self.inputFile.data['eventID'].to_list()
+        
         df = metadataCatalogue.loc[metadataCatalogue['eventid'].isin(eventIDs)]
         
         # Creating new columns from the hstore key/value pairs in the 'other' column
@@ -120,7 +132,7 @@ class OutputFile:
         
         # Updating eventdate to UTC ISO 8601, ready to publish data. Event date removed on following line.
         self.metadataDF['eventdate'] = self.metadataDF['eventdate']+'T'+self.metadataDF['eventtime']+'Z'
-        self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventdate'], axis = 1)
+        self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventtime'], axis = 1)
 
     def mergeDataAndMetadata(self):
         '''

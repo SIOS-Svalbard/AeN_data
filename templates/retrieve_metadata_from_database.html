@@ -42,18 +42,17 @@ main{
   please report them to <a href = "mailto: data.nleg@unis.no">data.nleg@unis.no</a>, so these errors can be corrected in the metadata
   catalogue. Also please contact this email address if you encounter any problems using this tool.</p>
   
-  <p>Event time has been converted to conform with the <a href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601 standard</a>, often required when publishing FAIR data.</p>
+  <p>Event date has been converted to conform with the <a href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601 standard</a>, often required when publishing FAIR data. This is now a concatenation
+  of date and time.</p>
   
-  <!--<p>Choose just one of the following options.</p>
-
-  <h2>Option 1:</h2>-->
+  <h2>How it works:</h2>
   <p>Select a file that includes an Event ID column, and one record
   per row. The Event ID will be used to find the record in the metadata catalogue, and retrieve it.
-  They will be included in a new version of your data file that can be downloaded from this page.
-  It will include all the columns from the uploaded file as well as new columns from the metadata catalogue</p>
+  They will be included in a new file that can be downloaded from this page.
+  It will include both all the columns from the file you upload as well as new columns from the metadata catalogue</p>
   <form method = "post" enctype="multipart/form-data">
 	Select file (xls, xlsx, csv or tsv) <input id="fileupload" name="myfile" type="file" /><br><br>
-  	Sheet name (if applicable): <input type = "text" name = "sheet_name"><br><br>
+  	Sheet name (if applicable, or leave blank): <input type = "text" name = "sheet_name"><br><br>
   	Row number of column headers: <input type = "text" name = "header_row_number"><br><br>
   	Row number of first row that contains data: <input type = "text" name = "data_first_row_number">
 

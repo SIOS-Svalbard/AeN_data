@@ -24,7 +24,7 @@ from datetime import datetime as dt
 __all__ = []
 __version__ = 0.1
 __date__ = '2021-05-19'
-__updated__ = '2021-06-28'
+__updated__ = '2021-11-12'
 
 class InputFile:
     
@@ -103,7 +103,7 @@ class OutputFile:
         None.
 
         '''
-        metadataCatalogue = pd.read_csv('/home/lukem/Documents/CruiseMetadata/SIOS_database_files/export_aen_2021_11_08_raw.csv')
+        metadataCatalogue = pd.read_csv('../../drupal8multisite/web/export_aen_2021_11_08.csv')
         
         self.inputFile.data.dropna(subset = ['eventID'], inplace = True)
         

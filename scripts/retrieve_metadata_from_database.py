@@ -85,8 +85,6 @@ class InputFile:
         else:
             print('No eventID column found. Please check that the column name used is "eventID" and is not misspelt, and that the correct row number was provided for the headers.')
             sys.exit()
-        
-        
 
 class OutputFile:
     
@@ -106,7 +104,21 @@ class OutputFile:
 
         '''
         metadataCatalogue = pd.read_csv('../../drupal8multisite/web/export_aen_2021_11_08.csv')
+        
+        self.inputFile.data.dropna(subset = ['eventID'], inplace = True)
+        
+        self.inputFile.data['eventID'] = self.inputFile.data['eventID'].str.lower()
+        try:
+            self.inputFile.data['eventID'] = self.inputFile.data['eventID'].replace('/','-', regex=True)
+        except:
+            pass
+        try:
+            self.inputFile.data['eventID'] = self.inputFile.data['eventID'].replace('+','-', regex=True)
+        except:
+            pass
+        
         eventIDs = self.inputFile.data['eventID'].to_list()
+        
         df = metadataCatalogue.loc[metadataCatalogue['eventid'].isin(eventIDs)]
         
         # Creating new columns from the hstore key/value pairs in the 'other' column
@@ -118,9 +130,9 @@ class OutputFile:
              .replace('', np.nan)
              )
         
-        # Updating eventtime to UTC ISO 8601, ready to publish data. Event date removed on following line.
-        self.metadataDF['eventtime'] = self.metadataDF['eventdate']+'T'+self.metadataDF['eventtime']+'Z'
-        self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventdate'], axis = 1)
+        # Updating eventdate to UTC ISO 8601, ready to publish data. Event date removed on following line.
+        self.metadataDF['eventdate'] = self.metadataDF['eventdate']+'T'+self.metadataDF['eventtime']+'Z'
+        self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventtime'], axis = 1)
 
     def mergeDataAndMetadata(self):
         '''
@@ -137,8 +149,7 @@ class OutputFile:
         requiredColumns = ["eventID",
              "parentEventID",
              "stationName",
-             "eventTime",
-             #"eventDate", eventTime includes data in ISO 8601
+             "eventDate",
              "decimalLatitude",
              "decimalLongitude",
              "bottomDepthInMeters",
@@ -197,7 +208,7 @@ class OutputFile:
             'Column headers from the metadata catalogue are highlighted in green',
             "Column headers from the user's input file are highlighted in yellow, and 'input_file' has been appended to the header name",
             '',
-            'eventTime and eventDate have been concatenated and converted to UTC ISO 8601 format, suitable for publishing. eventDate has therefore been removed.',
+            'eventTime and eventDate have been concatenated and converted to UTC ISO 8601 format, suitable for publishing. eventTime has therefore been removed.',
             '',
             'The metadata from the sample logs are cleaned before uploading to the metadata log',
             '1. Some fields propagate from parents to children',

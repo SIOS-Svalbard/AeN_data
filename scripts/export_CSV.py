@@ -137,6 +137,37 @@ class MetadataCatalogue:
         self.df.to_csv(self.filePath, sep='|', index=False)
         print(f'The following file has been created, which includes updates required to feed metadata into Drupal.\n{self.filePath}')
         
+
+    def output_stations_CSV(self):
+        '''
+        Outputting a CSV of all the stations with their coordinates
+        '''
+        
+        stations = pd.read_csv('stations.csv') # Defined stations
+    
+        del stations['eventID'], stations['sampleType'] # Removing columns not needed
+        
+        otherStations = set(self.df['uniquestation'])  
+        
+        n = 0
+        for station in otherStations:
+            if station not in list(stations['stationName']) and type(station) == str: # Stations not already defined
+                # Calculating average coordinates for each station
+                n += 1
+                samplesdf = self.df.loc[self.df['uniquestation'] == station]
+                lat = samplesdf['decimallatitude'].median()
+                lon = samplesdf['decimallongitude'].median()
+                newRow = {'stationName': station, 'decimalLongitude': lon, 'decimalLatitude': lat}
+                stations = stations.append(newRow, ignore_index=True)
+            else:
+                pass
+        
+        output_fp = self.filePath.split('.')[0] + '_stations.csv'
+        
+        stations.rename(columns = {'stationname': 'uniquestation'}, inplace = True)
+        
+        stations.to_csv(output_fp, index=False)
+        print(f'The following CSV file has been created that includes the coordinates of each station: \n{output_fp}')
         
 def main():
     '''Command line options.'''
@@ -155,6 +186,7 @@ def main():
         metadataCatalogue.add_symbol_beginning_and_end('history')
         metadataCatalogue.replace_strings()
         metadataCatalogue.write_updated_CSV()
+        metadataCatalogue.output_stations_CSV()
         return 0
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###

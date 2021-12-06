@@ -103,7 +103,7 @@ class OutputFile:
         None.
 
         '''
-        metadataCatalogue = pd.read_csv('../../drupal8multisite/web/export_aen_2021_11_08.csv')
+        metadataCatalogue = pd.read_csv('../../drupal8multisite/web/export_aen_2021_11_08.csv', delimiter = '|')
         
         self.inputFile.data.dropna(subset = ['eventID'], inplace = True)
         

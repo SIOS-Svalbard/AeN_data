@@ -1,20 +1,20 @@
-cruiseNumber,cruiseName,vesselName
-2018616,'2018 Ocean Mixing Process Study','Kristine Bonnevie'
-2018707,'2018 Joint Cruise 1-2','Kronprins Haakon'
-2018709,'2018 Physical Process Cruise','Kronprins Haakon'
-2018710,'2018 Paleo Cruise','Kronprins Haakon'
-2019616,'2019 Technology Test Cruise','Kristine Bonnevie'
-2019706,'2019 Seasonal Study Q3','Kronprins Haakon'
-2019710,'2019 Mooring Service/A-Twain','Kronprins Haakon'
-2019711,'2019 Seasonal Study Q4','Kronprins Haakon'
-2020113,'2020 Mooring Service Cruise','G.O.Sars'
-2021702,'2021 Winter Process Cruise','Kronprins Haakon'
-2021703,'2021 Seasonal Study Q1','Kronprins Haakon'
-2021704,'2021 Seasonal Study Q2','Kronprins Haakon'
-2021708,'2021 Joint Cruise 2-1','Kronprins Haakon'
-2021710,'2021 Joint Cruise 2-2','Kronprins Haakon'
-2021713,'2021 A-Twain','Kronprins Haakon'
-2022702,'2022 JC3 Closing the Gaps’,'Kronprins Haakon'
-2022625,'2022 Polarfront Study’,'Kristine Bonnevie'
-2022114,'2022 Connenctivity in Polar Cod and Capelin’,'G.O.Sars'
-2022712,'2022 Mooring Service Cruise’,'Kronprins Haakon'
+cruiseNumber,cruiseName,vesselName,processCruise?
+2018616,'2018 Ocean Mixing Process Study','Kristine Bonnevie',y
+2018707,'2018 Joint Cruise 1-2','Kronprins Haakon',n
+2018709,'2018 Physical Process Cruise','Kronprins Haakon',y
+2018710,'2018 Paleo Cruise','Kronprins Haakon',n
+2019616,'2019 Technology Test Cruise','Kristine Bonnevie',y
+2019706,'2019 Seasonal Study Q3','Kronprins Haakon',n
+2019710,'2019 Mooring Service/A-Twain','Kronprins Haakon',y
+2019711,'2019 Seasonal Study Q4','Kronprins Haakon',n
+2020113,'2020 Mooring Service Cruise','G.O.Sars',y
+2021702,'2021 Winter Process Cruise','Kronprins Haakon',y
+2021703,'2021 Seasonal Study Q1','Kronprins Haakon',n
+2021704,'2021 Seasonal Study Q2','Kronprins Haakon',n
+2021708,'2021 Joint Cruise 2-1','Kronprins Haakon',n
+2021710,'2021 Joint Cruise 2-2','Kronprins Haakon',n
+2021713,'2021 A-Twain','Kronprins Haakon',y
+2022702,'2022 JC3 Closing the Gaps’,'Kronprins Haakon',n
+2022625,'2022 Polarfront Study’,'Kristine Bonnevie',y
+2022114,'2022 Connenctivity in Polar Cod and Capelin’,'G.O.Sars',n
+2022712,'2022 Mooring Service Cruise’,'Kronprins Haakon',y

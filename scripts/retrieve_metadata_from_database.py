@@ -27,13 +27,13 @@ __date__ = '2021-05-19'
 __updated__ = '2021-11-12'
 
 class InputFile:
-    
+
     def __init__(self, filePath, sheetName, headerRow, dataFirstRow):
         self.filePath = filePath
         self.sheetName = sheetName
         self.headerRow = headerRow
         self.dataFirstRow = dataFirstRow
-    
+
     def loadData(self):
         '''
         Loading data file
@@ -44,10 +44,10 @@ class InputFile:
 
         '''
         filetype = self.filePath.split('.')[-1]
-        
+
         self.headerRow -= 1
         self.dataFirstRow -= 1
-        
+
         if filetype == 'xlsx':
             self.data = pd.read_excel(self.filePath, sheet_name=self.sheetName, header=self.headerRow, skiprows=range(self.headerRow+1,self.dataFirstRow), engine= 'openpyxl', keep_default_na=False)
         elif filetype == 'xls':
@@ -56,10 +56,10 @@ class InputFile:
             self.data = pd.read_csv(self.filePath, header=self.headerRow, skiprows=range(self.headerRow+1,self.dataFirstRow), keep_default_na=False)
         elif filetype == 'tsv':
             self.data = pd.read_csv(self.filePath, header=self.headerRow, skiprows=range(self.headerRow+1,self.dataFirstRow), keep_default_na=False, sep='\t')
-        
+
         self.data = self.data.replace(r'^\s*$', np.nan, regex=True)
         self.data = self.data.dropna(how='all', axis=1)
-            
+
     def updateColumnNames(self):
         '''
         Checking that there is an eventID column. Aborting if not.
@@ -73,12 +73,12 @@ class InputFile:
         headers = list(self.data.columns)
         headers = [header.lower() for header in headers] # column headers in lower case
         headers = [header.replace(" ","") for header in headers] # column headers without spaces
-        
+
         if 'eventid' in headers:
             idx = headers.index('eventid')
             eventIDHeader = list(self.data.columns)[idx]
             self.data = self.data.rename(columns={eventIDHeader: "eventID"})
-            
+
             for header in self.data.columns:
                 if header != 'eventID':
                     self.data = self.data.rename(columns={header: header+"_input_file"})
@@ -87,7 +87,7 @@ class InputFile:
             sys.exit()
 
 class OutputFile:
-    
+
     def __init__(self, filePath):
         self.filePath = filePath
 
@@ -97,16 +97,16 @@ class OutputFile:
         Pull data based on a list of event IDs, provided in the data file
         Event IDs that do not exist in the metadata catalogue will not be retrieved.
         No additional row will be written to the dataframe in this case.
-        
+
         Returns
         -------
         None.
 
         '''
-        metadataCatalogue = pd.read_csv('../../drupal8multisite/web/export_aen_2021_11_08.csv', delimiter = '|')
-        
+        metadataCatalogue = pd.read_csv('../../drupal8multisite/web/export_aen_2021_12_21.csv', delimiter = '|')
+
         self.inputFile.data.dropna(subset = ['eventID'], inplace = True)
-        
+
         self.inputFile.data['eventID'] = self.inputFile.data['eventID'].str.lower()
         try:
             self.inputFile.data['eventID'] = self.inputFile.data['eventID'].replace('/','-', regex=True)
@@ -116,11 +116,11 @@ class OutputFile:
             self.inputFile.data['eventID'] = self.inputFile.data['eventID'].replace('+','-', regex=True)
         except:
             pass
-        
+
         eventIDs = self.inputFile.data['eventID'].to_list()
-        
+
         df = metadataCatalogue.loc[metadataCatalogue['eventid'].isin(eventIDs)]
-        
+
         # Creating new columns from the hstore key/value pairs in the 'other' column
         self.metadataDF = df.join(df['other'].str.extractall(r'\"(.+?)\"=>\"(.+?)\"')
              .reset_index()
@@ -129,7 +129,7 @@ class OutputFile:
              .agg(lambda x: ''.join(x.dropna()))
              .replace('', np.nan)
              )
-        
+
         # Updating eventdate to UTC ISO 8601, ready to publish data. Event date removed on following line.
         self.metadataDF['eventdate'] = self.metadataDF['eventdate']+'T'+self.metadataDF['eventtime']+'Z'
         self.metadataDF = self.metadataDF.drop(['other', 'history', 'modified', 'created', 'eventtime'], axis = 1)
@@ -161,26 +161,26 @@ class OutputFile:
              "pi_institution",
              "recordedBy",
              "sampleType"]
-        
+
         requiredColumnsLower = [col.lower() for col in requiredColumns]
-        
+
         self.outputDF = pd.DataFrame(columns = requiredColumns)
-        
+
         for col in requiredColumns:
             self.outputDF[col] = self.metadataDF[col.lower()]
-        
+
         for col in self.metadataDF.columns:
             if col.lower() not in requiredColumnsLower:
                 self.outputDF[col] = self.metadataDF[col]
-        
+
         # Deleting empty columns from metadata catalogue
         self.outputDF.dropna(how='all', axis=1, inplace=True)
-        
+
         if 'eventID' not in self.outputDF:
-            self.outputDF['eventID'] = '' 
-        
+            self.outputDF['eventID'] = ''
+
         self.outputDF = pd.merge(self.outputDF, self.inputFile.data, on='eventID', how='right')
-    
+
     def writeREADMESheet(self, writer):
         '''
         Write a README sheet to the xlsx file, for the readers aid.
@@ -195,7 +195,7 @@ class OutputFile:
         Updated version with README
 
         '''
-        
+
         readme = pd.DataFrame({'Read Me': [
             'This file has been created by merging data from a provided input file with data extracted from the metadata catalogue',
             '',
@@ -222,15 +222,15 @@ class OutputFile:
             'If you notice any mistakes, please report them to data.nleg@unis.no so they can be corrected in the metadata catalogue.',
             'data.nleg@unis.no'
             ]})
-        
+
         readme.to_excel(writer, sheet_name='README', index=False, startrow=1, startcol=1)
-        
+
         readmesheet = writer.sheets['README']
-        
+
         readmesheet.set_column('B:B', 200)
-                
+
         return writer
-    
+
     def writeFile(self):
         '''
         Output pandas dataframe object. Determine filetype and call relevant function.
@@ -240,16 +240,16 @@ class OutputFile:
         None.
 
         '''
-        
+
         filetype = self.filePath.split('.')[-1]
-        
+
         if filetype == 'xlsx':
             self.writeXLSX()
         elif filetype == 'csv':
             self.writeCSV()
         elif filetype == 'tsv':
             self.writeTSV()
-    
+
     def writeCSV(self):
         '''
         Output pandas dataframe object to csv
@@ -260,7 +260,7 @@ class OutputFile:
 
         '''
         self.outputDF.to_csv(self.filePath,index=False)
-    
+
     def writeTSV(self):
         '''
         Output pandas dataframe object to tsv
@@ -271,7 +271,7 @@ class OutputFile:
 
         '''
         self.outputDF.to_csv(self.filePath,sep='\t', index=False)
-    
+
     def writeXLSX(self):
         '''
         Write merged dataframe to an excel sheet that will be downloaded by the user
@@ -282,20 +282,20 @@ class OutputFile:
 
         '''
         writer = pd.ExcelWriter(self.filePath, engine='xlsxwriter')
-        
+
         writer = self.writeREADMESheet(writer)
-        
+
         self.outputDF.to_excel(writer, sheet_name='Data', index=False, startrow=1)
-                
+
         workbook = writer.book
         worksheet = writer.sheets['Data']
-        
+
         # Set font
         DEFAULT_FONT = 'Calibri'
         DEFAULT_SIZE = 10
         workbook.formats[0].set_font_name(DEFAULT_FONT)
         workbook.formats[0].set_font_size(DEFAULT_SIZE)
-    
+
         eventID_header_format = workbook.add_format({
             'font_name': DEFAULT_FONT,
             'bold': True,
@@ -304,7 +304,7 @@ class OutputFile:
             'font_size': DEFAULT_SIZE+2,
             'bg_color': '#b5ecf0'
         })
-        
+
         input_header_format = workbook.add_format({
             'font_name': DEFAULT_FONT,
             'bold': True,
@@ -313,7 +313,7 @@ class OutputFile:
             'font_size': DEFAULT_SIZE+2,
             'bg_color': '#f0f2cf'
         })
-        
+
         metadata_catalogue_header_format = workbook.add_format({
             'font_name': DEFAULT_FONT,
             'bold': True,
@@ -322,15 +322,15 @@ class OutputFile:
             'font_size': DEFAULT_SIZE+2,
             'bg_color': '#c7eeb8'
         })
-        
+
         unregistered_eventid_format = workbook.add_format({
             'bg_color': '#ec7d7d',
             'font_name': DEFAULT_FONT,
             'font_size': DEFAULT_SIZE,
         })
-        
+
         n = 0
-        
+
         for col_num, value in enumerate(self.outputDF.columns.values):
             if value in ['eventID']:
                 worksheet.write(1, col_num, value, eventID_header_format)
@@ -342,29 +342,29 @@ class OutputFile:
                 else:
                     worksheet.write(0, col_num, '', input_header_format)
                 n += 1
-                
+
             else:
                 worksheet.write(1, col_num, value, metadata_catalogue_header_format)
                 worksheet.write(0, col_num, '', metadata_catalogue_header_format)
-        
+
         worksheet.write(0, 1, 'Columns extracted from metadata catalogue', metadata_catalogue_header_format)
-        
+
         for idx, eventid in enumerate(self.outputDF['eventID']):
             if eventid not in self.metadataDF['eventid'].to_list():
                 row = idx + 2
                 worksheet.write(row,0,eventid,unregistered_eventid_format)
-                
-        
+
+
         worksheet.set_column(2,len(self.outputDF.columns),18)
         worksheet.set_column('A:B', 36)
-        
+
         writer.save()
-        
+
     #
-        
-     
+
+
 def main(argv=None):
-    
+
     try:
         args = parse_options()
         inputFilePath = args.inputfp
@@ -372,17 +372,17 @@ def main(argv=None):
         headerRow = int(args.header)
         dataFirstRow = int(args.dataFirstRow)
         outputFilePath = args.outputfp
-        
-        inputFile = InputFile(inputFilePath, inputSheetName, headerRow, dataFirstRow)    
+
+        inputFile = InputFile(inputFilePath, inputSheetName, headerRow, dataFirstRow)
         inputFile.loadData()
         inputFile.updateColumnNames()
-        
+
         outputFile = OutputFile(outputFilePath)
         outputFile.inputFile = inputFile
         outputFile.retrieveMetadata()
         outputFile.mergeDataAndMetadata()
         outputFile.writeFile()
-    
+
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
@@ -451,16 +451,16 @@ def run(inputFilePath,inputSheetName,headerRow,dataFirstRow,outputFilePath):
     None.
 
     '''
-    
-    inputFile = InputFile(inputFilePath, inputSheetName, headerRow, dataFirstRow)    
+
+    inputFile = InputFile(inputFilePath, inputSheetName, headerRow, dataFirstRow)
     inputFile.loadData()
     inputFile.updateColumnNames()
-    
+
     outputFile = OutputFile(outputFilePath)
     outputFile.inputFile = inputFile
     outputFile.retrieveMetadata()
     outputFile.mergeDataAndMetadata()
     outputFile.writeFile()
-        
+
 if __name__ == "__main__":
     main(sys.argv[1:])

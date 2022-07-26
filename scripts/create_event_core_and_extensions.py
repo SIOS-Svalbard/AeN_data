@@ -93,7 +93,7 @@ def loadMetadataCatalogue():
     '''
     Fetching metadata from the metadata catalogue
     '''
-    return = pd.read_csv('/home/ubuntu/AeN_csv/export_aen_2021_11_08.csv', delimiter = '|')
+    return pd.read_csv('/home/ubuntu/AeN_csv/export_aen_2021_11_08.csv', delimiter = '|')
 
 def findAllParents(eventIDs, metadataCatalogue):
     '''

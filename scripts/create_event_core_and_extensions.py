@@ -83,12 +83,6 @@ def find_gear_id(geartype):
 
     return gear_uri
 
-def removeSamplingActivities(df):
-
-    print(df.columns)
-
-    return df
-
 def loadMetadataCatalogue():
     '''
     Fetching metadata from the metadata catalogue

@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>Nansen Legacy Darwin Core Event Core and Extensions Creating Tool</title>
+<style>
+body{
+	font: 16px/1.4 "Helvetica Neue", helvetica, sans-serif;
+ 	width: 90%;
+ 	margin: 0 auto;
+ }
+fieldset{
+	float:left;
+	margin-top: 1em;
+	width: 45%;
+	box-sizing: border-box;
+}
+fieldset label{
+	display: block;
+	float: left;
+	width: 24em;
+	margin-right: 1em;
+}
+fieldset legend{
+	font-weight: bold;
+	text-transform: uppercase;
+}
+main{
+	width: 60%;
+}
+.wrapper{
+    margin: auto;
+    width: 100%;
+    padding:10px;
+}
+
+</style>
+<main>
+  <h1>Nansen Legacy Darwin Core Event Core and Extensions Generator</h1>
+  <p>This is a tool that can be used to create an <a href="https://rs.gbif.org/core/dwc_event_2022-02-02.xml">Event Core</a>,
+	<a href="https://rs.gbif.org/core/dwc_occurrence_2022-02-02.xml">Occurrence Extension</a> and part of a
+	<a href="https://rs.gbif.org/extension/obis/extended_measurement_or_fact.xml">MeasurementOrFact Extension</a> for a Darwin Core Archive as separate sheets in an XLSX file.
+	Metadata are taken from the
+  <a href="https://sios-svalbard.org/aen/tools">metadata catalogue</a> hosted on the SIOS webpage</p>
+
+	<h2>Instructions</h2>
+	<ol>
+		<li>Create or find a file that includes an Event ID column, and one record
+	  per row. One row should represent one specimen or a group of specimens of the same species sampled in the same sampling event.<br>
+		These samples should have the sampling activity (or Niskin bottle, ice core...) listed as the parent event, though this does not need
+		to be included in the file.
+		<br><b>Do not include</b> the eventids of subsamples, sampling activities, Niskin bottles, ice cores.</li><br>
+		<li>Upload and submit your file filling in the form below.</li><br>
+		<li>Download and open the XLSX file that should have been created and read the README sheet first.</li><br>
+		<li>Check and correct the contents of the other sheets.
+		Notify <a href = "mailto: data.nleg@unis.no">data.nleg@unis.no</a>
+		if you spot anything that has been logged incorrectly in the metadata catalogue.</li><br>
+		<li>Add any missing measurements you have taken based on your sample in the MeasurementOrFact extension sheet.</li><br>
+		<li>Contact <a href = "mailto: helpdesk@gbif.no">helpdesk@gbif.no</a> who can help you convert this to a Darwin Core Archive. <b>Do not publish this with GBIF straight away.</b>
+		Instead, publish the file privately so only you can see it. Then, download the Darwin Core Archive and publish it with a
+		<a href="https://sios-svalbard.org/DataSubmission">data centre that contributes to SIOS</a></li><br>
+		<li>Contact GBIF again and ask to publish your Darwin Core Archive with them using the same DOI.</li><br>
+	</ol>
+
+	<h2>Create file:</h2>
+  <form method = "post" enctype="multipart/form-data">
+	Select file (xls, xlsx, csv or tsv) <input id="fileupload" name="myfile" type="file" /><br><br>
+  	Sheet name (if applicable): <input type = "text" name = "sheet_name"><br><br>
+  	Row number of column headers: <input type = "text" name = "header_row_number"><br><br>
+  	Row number of first row that contains data: <input type = "text" name = "data_first_row_number"><br><br>
+  <input type = "submit" value = "submit" name="submit"/><br><br>
+  </form>
+
+	<p>Contact <a href = "mailto: data.nleg@unis.no">data.nleg@unis.no</a> if you have any problems.</p>
+	<p>Video: <a href="https://www.youtube.com/watch?v=1Fuq8VZW_4c">Darwin Core Archives and how to create them</a><br>
+		Manual: <a href="https://drive.google.com/file/d/1skC5oNYFyv5jkfG4lVlVOGANbstiSTIe/view?usp=sharing">Step by step guide on how to publish FAIR Nansen Legacy datasets</a>
+	</p>
+
+	<br>
+</main>

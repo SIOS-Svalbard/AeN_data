@@ -34,6 +34,7 @@ event_core_columns = ['eventID',
 
 occurrence_extension_columns = ['occurrenceID',
                            'eventID',
+                           'basisOfRecord',
                            'eventDate',
                            'decimalLatitude',
                            'decimalLongitude',
@@ -422,7 +423,8 @@ class OutputFile:
             self.occurrenceDF['decimalLatitude'] = self.occurrenceMetadata['decimallatitude']
             self.occurrenceDF['minimumDepthInMeters'] = self.occurrenceMetadata['minimumDepthInMeters']
             self.occurrenceDF['maximumDepthInMeters'] = self.occurrenceMetadata['maximumDepthInMeters']
-
+            self.occurrenceDF['basisOfRecord'] = 'Occurrence'
+            
             try:
                 self.occurrenceDF['scientificName'] = self.occurrenceMetadata['scientificName']
                 self.occurrenceDF['scientificNameID'] = ''

@@ -216,27 +216,13 @@ class OutputFile:
         self.parentEventIDs = findAllParents(self.eventIDs, self.metadataCatalogue)
         self.eventCoreDF = retrieveMetadata(self.parentEventIDs, self.metadataCatalogue)
 
-        cruisenumbers = []
         # Making cruise number the parenteventid of each sampling activity
         for idx, row in self.eventCoreDF.iterrows():
             if type(row['parenteventid']) != str:
-                self.eventCoreDF['parenteventid'][idx] = row['cruisenumber']
-                cruisenumbers.append(row['cruisenumber'])
-
-        cruisenumbers = list(set(cruisenumbers))
-
-        for cruisenumber in cruisenumbers:
-            cruisedic = {
-                'eventid': cruisenumber,
-                'eventdate': cruises.loc[cruises['cruiseNumber'] == cruisenumber, 'eventDate'].item(),
-                'samplingprotocol': 'Research cruise, ' + cruises.loc[cruises['cruiseNumber'] == cruisenumber, 'samplingProtocol'].item(),
-                'eventremarks': cruises.loc[cruises['cruiseNumber'] == cruisenumber, 'cruiseName'].item()[1:-1]
-                }
-            self.eventCoreDF = self.eventCoreDF.append(cruisedic, ignore_index=True)
+                self.eventCoreDF['parenteventid'][idx] = cruises.loc[cruises['cruiseNumber'] == row['cruisenumber'], 'wikidata'].item()
 
         # Ordering dataframe
         self.eventCoreDF = self.eventCoreDF.sort_values(by=['eventdate', 'parenteventid', 'minimumDepthInMeters'], ascending = [True,True,True], na_position='first')
-
 
     def event_core_drop_columns(self):
         '''
@@ -424,7 +410,7 @@ class OutputFile:
             self.occurrenceDF['minimumDepthInMeters'] = self.occurrenceMetadata['minimumDepthInMeters']
             self.occurrenceDF['maximumDepthInMeters'] = self.occurrenceMetadata['maximumDepthInMeters']
             self.occurrenceDF['basisOfRecord'] = 'Occurrence'
-            
+
             try:
                 self.occurrenceDF['scientificName'] = self.occurrenceMetadata['scientificName']
                 self.occurrenceDF['scientificNameID'] = ''

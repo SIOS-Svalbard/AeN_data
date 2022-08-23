@@ -140,7 +140,7 @@ cookie = Cookie.SimpleCookie(os.environ.get("HTTP_COOKIE"))
 
 method = os.environ.get("REQUEST_METHOD", "GET")
 
-templates = TemplateLookup(directories = ['AeN_data/templates'], output_encoding='utf-8')
+templates = TemplateLookup(directories = ['templates'], output_encoding='utf-8')
 
 if method == "GET": # This is for getting the page
     print_html_template()

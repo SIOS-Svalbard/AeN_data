@@ -189,7 +189,7 @@ class OutputFile:
 
         self.write_sheet('Occurrence Extension', self.occurrenceDF)
 
-        self.write_sheet('extendedMeasurementOrFact Extension', self.mofDF)
+        self.write_sheet('extendedMoF Extension', self.mofDF)
 
         self.write_README()
 
@@ -557,7 +557,7 @@ class OutputFile:
             'In Darwin Core, only sampling events have an eventID. Occurrences have an OccurrenceID.',
             'Relevant eventIDs from the metadata catalogue have been used as occurrenceIDs in the Occurrence Extension.',
             '',
-            'extendedMeasurementOrFact Extension:',
+            'extendedMeasurementOrFact Extension (extendedMoF Extension):',
             'https://rs.gbif.org/extension/obis/extended_measurement_or_fact.xml',
             'A log of measurements or facts related to a sampling event or occurrence',
             'Linked to the sampling event with the sampling event ID (required)',

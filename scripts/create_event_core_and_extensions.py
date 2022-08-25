@@ -120,7 +120,7 @@ def retrieveMetadata(eventIDs, metadataCatalogue):
     # Creating new columns from the hstore key/value pairs in the 'other' column
     df = metadataCatalogue.loc[metadataCatalogue['eventid'].isin(eventIDs)]
 
-    df = df.join(df['other'].str.extractall(r'\"(.+?)\"=>\"(.+?)\"')
+    df = df.join(df['other'].str.extractall(r'\*(.+?)\*=>\*(.+?)\*')
          .reset_index()
          .pivot(index=['level_0', 'match'], columns=0, values=1)
          .groupby(level=0)
@@ -189,7 +189,7 @@ class OutputFile:
 
         self.write_sheet('Occurrence Extension', self.occurrenceDF)
 
-        self.write_sheet('MeasurementOrFacts Extension', self.mofDF)
+        self.write_sheet('extendedMeasurementOrFact Extension', self.mofDF)
 
         self.write_README()
 
@@ -543,7 +543,7 @@ class OutputFile:
             '',
             'Event Core:',
             'https://rs.gbif.org/core/dwc_event_2022-02-02.xml',
-            'A log of the sampling activities. It also includes a row for each cruise',
+            'A log of the sampling activities.',
             '',
             'Occurrence Extension:',
             'https://rs.gbif.org/core/dwc_occurrence_2022-02-02.xml',
@@ -557,7 +557,7 @@ class OutputFile:
             'In Darwin Core, only sampling events have an eventID. Occurrences have an OccurrenceID.',
             'Relevant eventIDs from the metadata catalogue have been used as occurrenceIDs in the Occurrence Extension.',
             '',
-            'MeasurementOrFacts Extension:',
+            'extendedMeasurementOrFact Extension:',
             'https://rs.gbif.org/extension/obis/extended_measurement_or_fact.xml',
             'A log of measurements or facts related to a sampling event or occurrence',
             'Linked to the sampling event with the sampling event ID (required)',

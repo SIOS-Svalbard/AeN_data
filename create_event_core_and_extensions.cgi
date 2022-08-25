@@ -134,7 +134,7 @@ def warn(message,color='red'):
     message = bytes(message,"utf-8")
     sys.stdout.buffer.write(b'<p style="color:'+bytes(color,"utf-8")+b'">'+message+b'</p>')
 
-cgitb.enable() # comment out when not developing tool
+#cgitb.enable() # comment out when not developing tool
 
 cookie = Cookie.SimpleCookie(os.environ.get("HTTP_COOKIE"))
 

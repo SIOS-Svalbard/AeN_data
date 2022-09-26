@@ -119,14 +119,17 @@ def findAllParents(eventIDs, metadataCatalogue):
 def retrieveMetadata(eventIDs, metadataCatalogue):
     # Creating new columns from the hstore key/value pairs in the 'other' column
     df = metadataCatalogue.loc[metadataCatalogue['eventid'].isin(eventIDs)]
-
-    df = df.join(df['other'].str.extractall(r'\*(.+?)\*=>\*(.+?)\*')
-         .reset_index()
-         .pivot(index=['level_0', 'match'], columns=0, values=1)
-         .groupby(level=0)
-         .agg(lambda x: ''.join(x.dropna()))
-         .replace('', np.nan)
-         )
+    
+    try: # Doesn't work if key already a column in dataframe - this is an error in the metadata catalogue.
+        df = df.join(df['other'].str.extractall(r'\*(.+?)\*=>\*(.+?)\*')
+             .reset_index()
+             .pivot(index=['level_0', 'match'], columns=0, values=1)
+             .groupby(level=0)
+             .agg(lambda x: ''.join(x.dropna()))
+             .replace('', np.nan)
+             )
+    except:
+        pass
 
     # Updating eventdate to UTC ISO 8601, ready to publish data. Event date removed on following line.
     df['eventdate'] = df['eventdate']+'T'+df['eventtime']+'Z'
@@ -135,10 +138,15 @@ def retrieveMetadata(eventIDs, metadataCatalogue):
 
         if row['geartype'] == 'CTD w/bottles':
             if type(row['parenteventid']) == str:
-
-                df.at[idx,'samplingprotocol'] = 'Niskin bottle' + ' (' + row['samplingprotocol']+')'
+                if type(row['samplingprotocol']) == str:
+                    df.at[idx,'samplingprotocol'] = 'Niskin bottle' + ' (' + row['samplingprotocol']+')'
+                else:
+                    df.at[idx,'samplingprotocol'] = 'Niskin bottle'
             else:
-                df.at[idx,'samplingprotocol'] = 'CTD with bottles' + ' (' + row['samplingprotocol']+')'
+                if type(row['samplingprotocol']) == str:
+                    df.at[idx,'samplingprotocol'] = 'CTD with bottles' + ' (' + row['samplingprotocol']+')'
+                else:
+                    df.at[idx,'samplingprotocol'] = 'CTD with bottles'
         elif type(row['geartype']) != str:
             if type(row['samplingprotocol']) == str:
                 df.at[idx, 'samplingprotocol'] = row['samplingprotocol']
@@ -221,6 +229,10 @@ class OutputFile:
             if type(row['parenteventid']) != str:
                 self.eventCoreDF['parenteventid'][idx] = cruises.loc[cruises['cruiseNumber'] == row['cruisenumber'], 'wikidata'].item()
 
+        for col in event_core_columns:
+            if col not in self.eventCoreDF.columns:
+                self.eventCoreDF[col] = ''
+                
         # Ordering dataframe
         self.eventCoreDF = self.eventCoreDF.sort_values(by=['eventdate', 'parenteventid', 'minimumDepthInMeters'], ascending = [True,True,True], na_position='first')
 
@@ -391,6 +403,10 @@ class OutputFile:
         # Otherwise is the highest level input.
         self.occurrenceMetadata = self.occurrenceMetadata[~self.occurrenceMetadata['eventid'].isin(self.subsamplesDF['measurementID'])]
 
+        for col in event_core_columns:
+            if col not in self.occurrenceMetadata.columns:
+                self.occurrenceMetadata[col] = ''
+                
         if len(self.occurrenceMetadata) > 0:
             # Ordering dataframe
             self.occurrenceMetadata = self.occurrenceMetadata.sort_values(by=['eventdate', 'parenteventid', 'minimumDepthInMeters'], ascending = [True,True,True], na_position='first')

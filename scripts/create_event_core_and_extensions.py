@@ -628,7 +628,7 @@ def run(inputFilePath,inputSheetName,headerRow,dataFirstRow,outputFilePath):
     inputFile.loadData()
     inputFile.updateColumnNames()
 
-    eventIDs = list(inputFile.data['eventID'])
+    eventIDs = list(set(inputFile.data['eventID']))
     eventIDs = [x for x in eventIDs if type(x) == str] # Removing nans)
 
     output = OutputFile(outputFilePath, eventIDs)

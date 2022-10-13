@@ -18,7 +18,7 @@ import shutil
 import http.cookies as Cookie
 import tempfile
 from openpyxl import load_workbook
-metadata_retrieval_filepath = '/home/lukem/Documents/gitrepo/AeN_data/scripts'
+metadata_retrieval_filepath = 'scripts'
 sys.path.insert(0, metadata_retrieval_filepath)
 from retrieve_metadata_from_database import run as retrieve_metadata
 from mako.lookup import TemplateLookup
